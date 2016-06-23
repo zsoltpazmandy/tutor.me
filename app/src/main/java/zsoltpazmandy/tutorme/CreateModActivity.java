@@ -153,10 +153,8 @@ public class CreateModActivity extends AppCompatActivity {
         return moduleJSON;
     }
 
-    public JSONObject getModuleRecordsJSON() {
-
+    public JSONObject getModuleRecordsJSON() throws JSONException {
         FileInputStream fileInput = null;
-
         try {
 
             fileInput = openFileInput("module_records");
@@ -174,14 +172,16 @@ public class CreateModActivity extends AppCompatActivity {
             JSONObject moduleRecordsJSON = new JSONObject(oneBigString);
             return moduleRecordsJSON;
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (FileNotFoundException FNFE) {
+
+            JSONObject newModuleRecords = new JSONObject();
+            newModuleRecords.put("Modules", 0);
+            setModuleRecordsJSON(newModuleRecords.toString());
+
+        } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
-        return null;
+        return getModuleRecordsJSON();
     }
 
     public void setModuleRecordsJSON(String moduleRecordsString) {
@@ -202,85 +202,14 @@ public class CreateModActivity extends AppCompatActivity {
     public void incrementModCount() throws JSONException, IOException {
 
         int counter = moduleCount() + 1;
-
-        FileInputStream fileInput = null;
-
-        try {
-
-            fileInput = openFileInput("module_records");
-            InputStreamReader streamReader = new InputStreamReader(fileInput);
-            char[] data = new char[100];
-            String oneBigString = "";
-            int size;
-
-            while ((size = streamReader.read(data)) > 0) {
-                String read_data = String.copyValueOf(data, 0, size);
-                oneBigString += read_data;
-                data = new char[100];
-            }
-
-            JSONObject moduleRecordsJSON = new JSONObject(oneBigString);
-            moduleRecordsJSON.put("Modules", counter);
-
-            try {
-
-                FileOutputStream fou = openFileOutput("module_records", Context.MODE_PRIVATE);
-                OutputStreamWriter osw = new OutputStreamWriter(fou);
-                osw.write(moduleRecordsJSON.toString());
-                osw.flush();
-                osw.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+        JSONObject moduleRecordsJSON = getModuleRecordsJSON();
+        moduleRecordsJSON.put("Modules", counter);
+        setModuleRecordsJSON(moduleRecordsJSON.toString());
     }
 
     public int moduleCount() throws JSONException, IOException {
-
-        FileInputStream fileInput = null;
-
-        try {
-
-            fileInput = openFileInput("module_records");
-            InputStreamReader streamReader = new InputStreamReader(fileInput);
-            char[] data = new char[100];
-            String oneBigString = "";
-            int size;
-
-            while ((size = streamReader.read(data)) > 0) {
-                String read_data = String.copyValueOf(data, 0, size);
-                oneBigString += read_data;
-                data = new char[100];
-            }
-
-            JSONObject moduleRecordsJSON = new JSONObject(oneBigString);
-
-            return moduleRecordsJSON.getInt("Modules");
-
-        } catch (FileNotFoundException FNFE) {
-
-            JSONObject newModuleRecords = new JSONObject();
-            newModuleRecords.put("Modules", 0);
-
-            try {
-
-                FileOutputStream fou = openFileOutput("module_records", Context.MODE_PRIVATE);
-                OutputStreamWriter osw = new OutputStreamWriter(fou);
-                osw.write(newModuleRecords.toString());
-                osw.flush();
-                osw.close();
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            return 0;
-        }
+        JSONObject moduleRecordsJSON = getModuleRecordsJSON();
+        return moduleRecordsJSON.getInt("Modules");
     }
 
     public void resetCounter() throws IOException, JSONException {

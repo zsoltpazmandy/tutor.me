@@ -23,7 +23,7 @@ public class ViewLibrary extends AppCompatActivity {
 
         try {
 
-            FileInputStream fileInput = openFileInput("module_records");
+            FileInputStream fileInput = openFileInput("2");
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String wholeModule = "";
