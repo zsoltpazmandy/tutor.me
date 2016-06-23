@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">Welcome</string>
+    <string name="action_settings">Settings</string>
+    <string name="sign_up_butt">Sign up</string>
+    <string name="log_in_butt">Log in</string>
+    <string name="create_mod_butt">Create Module</string>
+    <string name="title_activity_create_mod">Create Module</string>
+    <string name="title_activity_config_slide">Choose Slide</string>
+    <string name="title_activity_make_text_slide">Creating Plaintext Slide</string>
+    <string name="title_activity_make_table_slide">Creating Table Slide</string>
+    <string name="name_of_your_module_tag">Name of your module:</string>
+    <string name="enter_name_here_hint">Enter name here (max 100 char)</string>
+    <string name="module_description_tag">Description:</string>
+    <string name="describe_your_module_here_hint">Describe your module (max 1000 char)</string>
+    <string name="next_butt">Next</string>
+    <string name="choose_slide_type_tag">Select the type of slide that best represents the material you\'re going to discuss in the next slide</string>
+    <string name="text_slide_top_tag">Enter text to put on the slide</string>
+    <string name="text_slide_edit_view_hint">Enter text here (max 2000 char)</string>
+    <string name="finish_butt">Finish</string>
+    <string name="next_slide_butt">Add new Slide</string>
+    <string name="plaintext_image_tag">Plaintext</string>
+    <string name="table_image_tag">Table</string>
+    <string name="view_lib_butt">View Library</string>
+    <string name="title_activity_view_library">Browse Module Library</string>
+</resources>

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".AddSlide"
+    tools:showIn="@layout/activity_add_slide">
+
+    <TextView
+
+        android:id="@+id/selectSlideHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/choose_slide_type_tag"
+        />
+
+    <TextView
+
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:id="@+id/plaintextSlideTag"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="40dp"
+        android:layout_below="@+id/selectSlideHint"
+        android:text="@string/plaintext_image_tag"
+        android:textAlignment="center"
+        />
+
+
+    <TextView
+
+        android:paddingTop="@dimen/activity_vertical_margin"
+        android:id="@+id/tableSlideTag"
+        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:paddingRight="100dp"
+        android:layout_below="@id/selectSlideHint"
+        android:text="@string/table_image_tag"
+        android:textAlignment="center" />
+
+
+    <ImageView
+        android:id="@+id/plaintextImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="20dp"
+        android:layout_below="@id/plaintextSlideTag"
+        android:src="@drawable/plaintext" />
+
+    <ImageView
+        android:id="@+id/tableImage"
+        android:layout_below="@id/tableSlideTag"
+        android:layout_alignParentRight="true"
+        android:paddingRight="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/table" />
+
+</RelativeLayout>
