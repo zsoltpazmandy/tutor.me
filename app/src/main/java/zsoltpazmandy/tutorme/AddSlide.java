@@ -29,8 +29,6 @@ public class AddSlide extends AppCompatActivity {
         ImageView textSlideImg = (ImageView) findViewById(R.id.plaintextImage);
         assert textSlideImg != null;
 
-        Toast.makeText(this, "Module initiated", Toast.LENGTH_SHORT).show();
-
         module = getIntent().getStringArrayListExtra("Module frame");
 
         textSlideImg.setOnClickListener(new View.OnClickListener() {
