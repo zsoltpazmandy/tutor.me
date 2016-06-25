@@ -63,6 +63,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.MainActivity" />
         </activity>
+        <activity
+            android:name=".ViewLibPopUpModDisplay"
+            android:label="@string/title_activity_view_lib_pop_up_mod_display"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="zsoltpazmandy.tutorme.ViewLibrary" />
+        </activity>
     </application>
 
 </manifest>

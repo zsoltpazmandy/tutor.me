@@ -26,7 +26,7 @@ public class AddSlide extends AppCompatActivity {
 
         TextView textSlideTag = (TextView) findViewById(R.id.plaintextSlideTag);
 
-        ImageView textSlideImg = (ImageView) findViewById(R.id.plaintextImage);
+        final ImageView textSlideImg = (ImageView) findViewById(R.id.plaintextImage);
         assert textSlideImg != null;
 
         module = getIntent().getStringArrayListExtra("Module frame");
@@ -44,7 +44,7 @@ public class AddSlide extends AppCompatActivity {
 
         TextView tableSlideTag = (TextView) findViewById(R.id.tableSlideTag);
 
-        ImageView tableSlideImg = (ImageView) findViewById(R.id.tableImage);
+        final ImageView tableSlideImg = (ImageView) findViewById(R.id.tableImage);
         assert tableSlideImg != null;
 
         tableSlideImg.setOnClickListener(new View.OnClickListener() {
@@ -56,6 +56,7 @@ public class AddSlide extends AppCompatActivity {
                 startActivityForResult(addTableSlide, 1);
             }
         });
+
     }
 
     @Override
@@ -78,5 +79,8 @@ public class AddSlide extends AppCompatActivity {
         }
     }
 
-
+    @Override
+    public void onBackPressed() {
+        return;
+    }
 }

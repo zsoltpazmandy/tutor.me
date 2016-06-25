@@ -18,52 +18,61 @@
         android:id="@+id/selectSlideHint"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/choose_slide_type_tag"
-        />
+        android:text="@string/choose_slide_type_tag" />
 
-    <TextView
-
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:id="@+id/plaintextSlideTag"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:paddingLeft="40dp"
-        android:layout_below="@+id/selectSlideHint"
-        android:text="@string/plaintext_image_tag"
-        android:textAlignment="center"
-        />
-
-
-    <TextView
-
-        android:paddingTop="@dimen/activity_vertical_margin"
-        android:id="@+id/tableSlideTag"
-        android:layout_alignParentRight="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:paddingRight="100dp"
         android:layout_below="@id/selectSlideHint"
-        android:text="@string/table_image_tag"
-        android:textAlignment="center" />
+        android:orientation="vertical"
+        android:id="@+id/plaintextLL"
+        android:layout_centerHorizontal="true"
+        >
 
+        <ImageView
+            android:id="@+id/plaintextImage"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:src="@drawable/plaintext" />
 
-    <ImageView
-        android:id="@+id/plaintextImage"
+        <TextView
+            android:id="@+id/plaintextSlideTag"
+            android:layout_width="150dp"
+            android:textSize="@dimen/slide_tag_font_size"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/plaintextImage"
+            android:text="@string/plaintext_image_tag"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="20dp"
-        android:layout_below="@id/plaintextSlideTag"
-        android:src="@drawable/plaintext" />
+        android:layout_below="@id/plaintextLL"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="@dimen/activity_vertical_margin">
 
-    <ImageView
-        android:id="@+id/tableImage"
-        android:layout_below="@id/tableSlideTag"
-        android:layout_alignParentRight="true"
-        android:paddingRight="20dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/table" />
+        <ImageView
+            android:id="@+id/tableImage"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_below="@id/plaintextImage"
+            android:src="@drawable/table" />
+
+        <TextView
+            android:id="@+id/tableSlideTag"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tableImage"
+            android:textSize="@dimen/slide_tag_font_size"
+            android:text="@string/table_image_tag"
+            android:textAlignment="center" />
+
+    </LinearLayout>
+
+
+
 
 </RelativeLayout>

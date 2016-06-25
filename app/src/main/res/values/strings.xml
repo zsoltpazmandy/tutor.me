@@ -12,7 +12,7 @@
     <string name="enter_name_here_hint">Enter name here (max 100 char)</string>
     <string name="module_description_tag">Description:</string>
     <string name="describe_your_module_here_hint">Describe your module (max 1000 char)</string>
-    <string name="next_butt">Next</string>
+    <string name="next_butt">Create Slides</string>
     <string name="choose_slide_type_tag">Select the type of slide that best represents the material you\'re going to discuss in the next slide</string>
     <string name="text_slide_top_tag">Enter text to put on the slide</string>
     <string name="text_slide_edit_view_hint">Enter text here (max 2000 char)</string>
@@ -23,4 +23,7 @@
     <string name="view_lib_butt">View Library</string>
     <string name="title_activity_view_library">Browse Module Library</string>
     <string name="total_module_count">Total module count</string>
+    <string name="title_activity_view_lib_pop_up_mod_display">View Module</string>
+    <string name="cancel_hint">Please press \'Back\' to cancel module.</string>
+    <string name="cancel_slide_butt">Cancel Slide</string>
 </resources>

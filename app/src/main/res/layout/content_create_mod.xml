@@ -62,4 +62,21 @@
         android:layout_below="@id/moduleDescriptionEdit"
         android:text="@string/next_butt" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/resetLib"
+        android:text="reset library"
+        android:layout_below="@id/moduleDescriptionEdit"
+        android:layout_marginTop="@dimen/activity_vertical_margin"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/cancel_instructions"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="@string/cancel_hint"
+        android:layout_below="@id/moduleBeginButton"
+        android:layout_centerHorizontal="true"/>
+
 </RelativeLayout>

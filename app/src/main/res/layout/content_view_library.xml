@@ -32,8 +32,8 @@
          android:layout_height="match_parent"
          android:id="@+id/library_listview"
          android:layout_below="@id/display_top">
-
      </ListView>
+
 
 
 

@@ -38,6 +38,25 @@ public class CreateModActivity extends AppCompatActivity {
         TextView moduleDescTag = (TextView) findViewById(R.id.moduleDescriptionTag);
         final EditText moduleDescEdit = (EditText) findViewById(R.id.moduleDescriptionEdit);
 
+        Button reset = (Button) findViewById(R.id.resetLib);
+
+        // THIS IS A TEMPORARY FEATURE: it purges the entire local DB
+        reset.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    purgeLibrary();
+                    resetCounter();
+                    Toast.makeText(CreateModActivity.this, "Library purged, counter reset", Toast.LENGTH_SHORT).show();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        //-----------------------------
+
         Button nextButt = (Button) findViewById(R.id.moduleBeginButton);
         assert nextButt != null;
         nextButt.setOnClickListener(new View.OnClickListener() {
@@ -47,6 +66,17 @@ public class CreateModActivity extends AppCompatActivity {
                 if (moduleNameEdit.getText().length() == 0) {
                     Toast.makeText(CreateModActivity.this, "Please enter a name for your module", Toast.LENGTH_SHORT).show();
                     return;
+                }
+
+                try {
+
+                    if (isNameTaken(moduleNameEdit.getText().toString().trim())) {
+                        Toast.makeText(CreateModActivity.this, "A module with that name already exists. Please choose a different name.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
                 }
 
                 if (moduleDescEdit.getText().length() == 0) {
@@ -64,14 +94,17 @@ public class CreateModActivity extends AppCompatActivity {
 
                 module.add("1");                                // AuthorID int
                 module.add("0");                                // PRO      bool/ ID       int
-                module.add(moduleNameEdit.getText().toString());
-                module.add(moduleDescEdit.getText().toString());
+                module.add(moduleNameEdit.getText().toString().trim());
+                moduleNameEdit.setEnabled(false);
+                module.add(moduleDescEdit.getText().toString().trim());
+                moduleDescEdit.setEnabled(false);
                 module.add("1#2#3#4");                          // stores review IDs separated by # delimiter
                 module.add("1#2#3#4");                          // stores IDs of module's trainers separated by # delimiter
 
                 Intent startAddingSlides = new Intent(CreateModActivity.this, AddSlide.class);
                 startAddingSlides.putStringArrayListExtra("Module frame", module);
                 startActivityForResult(startAddingSlides, 1);
+
 
             }
         });
@@ -125,8 +158,8 @@ public class CreateModActivity extends AppCompatActivity {
         JSONObject moduleJSON = new JSONObject();
         moduleJSON.put("ID", Integer.parseInt(module.get(0)));
         moduleJSON.put("AuthorID", Integer.parseInt(module.get(1)));
-        moduleJSON.put("PRO", Boolean.parseBoolean(module.get(2)));
-        moduleJSON.put("Name", module.get(3));
+        moduleJSON.put("PRO", Integer.parseInt(module.get(2)));
+        moduleJSON.put("Name", module.get(3).trim());
         moduleJSON.put("Description", module.get(4));
 
         String temp = module.get(5);
@@ -212,6 +245,44 @@ public class CreateModActivity extends AppCompatActivity {
         return moduleRecordsJSON.getInt("Modules");
     }
 
+    public boolean isNameTaken(String moduleName) throws IOException, JSONException {
+
+        int modCount = moduleCount();
+
+        FileInputStream fileInput = null;
+
+        ArrayList<String> allModuleNames = new ArrayList<>();
+
+        JSONObject moduleJSON = new JSONObject();
+
+        for (int i = 1; i <= modCount; i++) {
+
+            fileInput = openFileInput(String.valueOf(i));
+            InputStreamReader streamReader = new InputStreamReader(fileInput);
+            char[] data = new char[100];
+            String moduleString = "";
+            int size;
+
+            while ((size = streamReader.read(data)) > 0) {
+                String read_data = String.copyValueOf(data, 0, size);
+                moduleString += read_data;
+                data = new char[100];
+            }
+
+            if (moduleString.length() > 0) {
+                moduleJSON = new JSONObject(moduleString);
+                allModuleNames.add(moduleJSON.getString("Name"));
+            }
+
+        }
+
+        if (moduleJSON.equals(null)) {
+            return false;
+        }
+
+        return allModuleNames.contains(moduleName);
+    }
+
     public void resetCounter() throws IOException, JSONException {
 
         if (moduleCount() > 0) { // it's already at zero, no need to reset
@@ -242,13 +313,19 @@ public class CreateModActivity extends AppCompatActivity {
     }
 
     public void purgeLibrary() throws IOException, JSONException {
-        for (int i = 0; i < moduleCount(); i++) {
+        for (int i = 1; i <= moduleCount(); i++) {
             FileOutputStream fou = openFileOutput("" + i, Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
             osw.write("");
             osw.flush();
             osw.close();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, "Module cancelled.", Toast.LENGTH_SHORT).show();
+        finish();
     }
 
 }
