@@ -64,9 +64,10 @@
 
     <Button
         android:layout_width="wrap_content"
+        android:textColor="#AD0000"
         android:layout_height="wrap_content"
         android:id="@+id/resetLib"
-        android:text="reset library"
+        android:text="[ ! reset library ! ]"
         android:layout_below="@id/moduleDescriptionEdit"
         android:layout_marginTop="@dimen/activity_vertical_margin"/>
 
