@@ -354,7 +354,7 @@
                     android:text="@string/finish_butt" />
 
                 <Button
-                    android:id="@+id/nextSlide"
+                    android:id="@+id/nextSlideButt"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_column="1"

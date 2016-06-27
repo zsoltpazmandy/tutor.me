@@ -75,6 +75,10 @@ public class AddSlide extends AppCompatActivity {
                 moduleComplete.putStringArrayListExtra("Module complete", module);
                 setResult(1, moduleComplete);
                 finish();
+//          new table slide added
+//            case 3:
+//          finished adding table slides
+//            case 4:
 
         }
     }

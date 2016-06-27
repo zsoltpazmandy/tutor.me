@@ -38,9 +38,10 @@ public class CreateModActivity extends AppCompatActivity {
         TextView moduleDescTag = (TextView) findViewById(R.id.moduleDescriptionTag);
         final EditText moduleDescEdit = (EditText) findViewById(R.id.moduleDescriptionEdit);
 
-        Button reset = (Button) findViewById(R.id.resetLib);
 
         // THIS IS A TEMPORARY FEATURE: it purges the entire local DB
+        Button reset = (Button) findViewById(R.id.resetLib);
+        assert reset != null;
         reset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
