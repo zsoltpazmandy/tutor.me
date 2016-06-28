@@ -1,10 +1,10 @@
-# tutor.me
+![Learning tab concept](readme_res/logo.png)
 
 A community-based, extensible tutoring platform for Android.
 
 # Project Proposal
 
-`Zsolt Pazmandy [ID: 1600690] MSc Computer Science Summer Project 2016`
+`Zsolt Pazmandy MSc Computer Science Summer Project 2016`
 
 ## Introduction
 
