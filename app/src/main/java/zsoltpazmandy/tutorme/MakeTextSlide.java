@@ -10,11 +10,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MakeTextSlide extends AppCompatActivity {
 
-    ArrayList<String> module = new ArrayList<String>();
+    JSONObject module;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,7 +32,11 @@ public class MakeTextSlide extends AppCompatActivity {
         Button addSlideButt = (Button) findViewById(R.id.nextSlide);
         assert addSlideButt != null;
 
-        module = getIntent().getStringArrayListExtra("Module frame");
+        try {
+            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         addSlideButt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -43,10 +48,25 @@ public class MakeTextSlide extends AppCompatActivity {
                 }
 
                 String userInput = slideStringEdit.getText().toString();
-                module.add(userInput);
+
+                int amountOfSlides = 0;
+
+                try {
+                    amountOfSlides = module.getJSONArray("Types of Slides").length();
+                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                try {
+                    module.put("Slide " + amountOfSlides, userInput);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 Intent slideAdded = new Intent(MakeTextSlide.this, AddSlide.class);
-                slideAdded.putStringArrayListExtra("Slide added to module", module);
+                slideAdded.putExtra("Slide added to module", module.toString());
                 setResult(1, slideAdded);
                 finish();
             }
@@ -58,16 +78,32 @@ public class MakeTextSlide extends AppCompatActivity {
         finishButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (slideStringEdit.getText().length() == 0) {
                     Toast.makeText(MakeTextSlide.this, "You can't make an empty slide", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
                 String userInput = slideStringEdit.getText().toString();
-                module.add(userInput);
+
+                int amountOfSlides = 0;
+
+                try {
+                    amountOfSlides = module.getJSONArray("Types of Slides").length();
+                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    module.put("Slide " + amountOfSlides, userInput);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
                 Intent addingSlidesOver = new Intent(MakeTextSlide.this, AddSlide.class);
-                addingSlidesOver.putStringArrayListExtra("Last slide added to module", module);
+                addingSlidesOver.putExtra("Last slide added to module", module.toString());
                 setResult(2, addingSlidesOver);
                 finish();
 

@@ -10,19 +10,26 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MakeTableSlide extends AppCompatActivity {
 
-    ArrayList<String> module = new ArrayList<>();
-    ArrayList<String> wordsInTable = new ArrayList<>();
+    JSONObject module;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_table_slide);
 
-        module = getIntent().getStringArrayListExtra("Module frame");
+        try {
+            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -210,15 +217,28 @@ public class MakeTableSlide extends AppCompatActivity {
                 temp.add(row0col1.getText().toString().trim());
                 temp.add(row0col2.getText().toString().trim());
 
-                wordsInTable.addAll(module);
+                int amountOfSlides = 0;
 
+                try {
+                    amountOfSlides = module.getJSONArray("Types of Slides").length();
+                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
 
-                for (int i = 0; i < col1 * 2; i++) {
-                    wordsInTable.add(temp.get(i));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                temp.removeAll(Arrays.asList("", null));
+
+                for (String s : temp) {
+                    try {
+                        module.accumulate("Slide " + amountOfSlides, s);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 Intent addNextSlide = new Intent(MakeTableSlide.this, AddSlide.class);
-                addNextSlide.putStringArrayListExtra("Slide added to module", wordsInTable);
+                addNextSlide.putExtra("Slide added to module", module.toString());
                 setResult(3, addNextSlide);
                 finish();
 
@@ -326,19 +346,38 @@ public class MakeTableSlide extends AppCompatActivity {
                 temp.add(row0col1.getText().toString().trim());
                 temp.add(row0col2.getText().toString().trim());
 
-                wordsInTable.addAll(module);
+                int amountOfSlides = 0;
 
-                for (int i = 0; i < col1 * 2; i++) {
-                    wordsInTable.add(temp.get(i));
+                try {
+                    amountOfSlides = module.getJSONArray("Types of Slides").length();
+                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                temp.removeAll(Arrays.asList("", null));
+
+                for (String s : temp) {
+                    try {
+                        module.accumulate("Slide " + amountOfSlides, s);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 Intent addingSlidesOver = new Intent(MakeTableSlide.this, AddSlide.class);
-                addingSlidesOver.putStringArrayListExtra("Last slide added to module", wordsInTable);
+                addingSlidesOver.putExtra("Last slide added to module", module.toString());
                 setResult(2, addingSlidesOver);
                 finish();
             }
         });
 
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        Toast.makeText(this, "Your slide is not saved yet, please press 'Finish' to save your Module.", Toast.LENGTH_SHORT).show();
+        return;
     }
 }

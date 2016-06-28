@@ -9,16 +9,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class AddSlide extends AppCompatActivity {
 
-    ArrayList<String> module = new ArrayList<>();
+    JSONObject module;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_slide);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -27,17 +29,29 @@ public class AddSlide extends AppCompatActivity {
         TextView textSlideTag = (TextView) findViewById(R.id.plaintextSlideTag);
 
         final ImageView textSlideImg = (ImageView) findViewById(R.id.plaintextImage);
+
         assert textSlideImg != null;
 
-        module = getIntent().getStringArrayListExtra("Module frame");
+        try {
+            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         textSlideImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                try {
+                    module.accumulate("Types of Slides", "#");
+                    module.accumulate("Types of Slides", 1);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Intent addPlaintextSlide = new Intent(AddSlide.this, MakeTextSlide.class);
-                addPlaintextSlide.putStringArrayListExtra("Module frame", module);
+                addPlaintextSlide.putExtra("Module frame ready", module.toString());
                 Toast.makeText(AddSlide.this, "Adding Plaintext slide to module", Toast.LENGTH_SHORT).show();
-                startActivityForResult(addPlaintextSlide, 1);
+                startActivityForResult(addPlaintextSlide, 10);
 
             }
         });
@@ -50,10 +64,21 @@ public class AddSlide extends AppCompatActivity {
         tableSlideImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent addTableSlide = new Intent(AddSlide.this, MakeTableSlide.class);
-                addTableSlide.putStringArrayListExtra("Module frame", module);
-                Toast.makeText(AddSlide.this, "Adding text-table slide to module", Toast.LENGTH_SHORT).show();
-                startActivityForResult(addTableSlide, 1);
+
+                assert module != null;
+
+                try {
+                    module.accumulate("Types of Slides", "#");
+                    module.accumulate("Types of Slides", "2");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Intent addPlaintextSlide = new Intent(AddSlide.this, MakeTableSlide.class);
+                addPlaintextSlide.putExtra("Module frame ready", module.toString());
+                Toast.makeText(AddSlide.this, "Adding Table slide to module", Toast.LENGTH_SHORT).show();
+                startActivityForResult(addPlaintextSlide, 10);
+
             }
         });
 
@@ -64,22 +89,37 @@ public class AddSlide extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (resultCode) {
             case 1:
-                module.clear();
-                module.addAll(data.getStringArrayListExtra("Slide added to module"));
+                try {
+                    module = new JSONObject(data.getStringExtra("Slide added to module"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
-                module.clear();
-                module.addAll(data.getStringArrayListExtra("Last slide added to module"));
+
+                try {
+                    module = new JSONObject(data.getStringExtra("Last slide added to module"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Intent moduleComplete = new Intent(AddSlide.this, CreateModActivity.class);
-                moduleComplete.putStringArrayListExtra("Module complete", module);
+                moduleComplete.putExtra("Module complete", module.toString());
                 setResult(1, moduleComplete);
                 finish();
+
                 break;
+
             case 3:
-                module.clear();
-                module.addAll(data.getStringArrayListExtra("Slide added to module"));
+                try {
+                    module = new JSONObject(data.getStringExtra("Slide added to module"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
+
                 break;
 //            case 4:
 //                module.clear();
