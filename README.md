@@ -93,23 +93,6 @@ Users must be able to initiate communication with other members of the community
 ##### 5. Android Application
 Users must be able to access their profiles, learning material, and communications channels which connect them with the rest of the community (whether the user is a Trainer or a Learner) in order to maintain an seamless and efficient service. The development of the application and the integration of the first 4 core logic elements are the final step of the development of the core functions of the platform.
 
-### Schedule
-
-| # 	| Component 		| Duration 	| Start date		| Finish date 		|
-| - 	| -					| -		 	| -					| -			 		|
-|  1. 	| User Functions 	| 2 days 	| to be determined 	| to be determined 	|
-| 1.1.	| Testing 			| 1 day 	| to be determined 	| to be determined 	|
-|  2. 	| Create Module 	| 7 days 	| to be determined 	| to be determined 	|
-| 2.1.	| Testing 			| 1 day 	| to be determined 	| to be determined 	|
-|  3. 	| Learn Module 		| 7 days 	| to be determined 	| to be determined 	|
-| 3.1.	| Testing 			| 1 day 	| to be determined 	| to be determined 	|
-|  4. 	| IM 				| 2 days 	| to be determined 	| to be determined 	|
-| 4.1.	| Testing 			| 1 day 	| to be determined 	| to be determined 	|
-|  5. 	| Android App 		| 7 days 	| to be determined 	| to be determined 	|
-| 5.1.	| UI 				| 1 day 	| to be determined 	| to be determined 	|
-| 5.2.	| Integration 		| 1-2 days 	| to be determined 	| to be determined 	|
-| 5.3.	| Testing 			| 1 day 	| to be determined 	| to be determined 	|
-
 ### Future Extension
 
 >1. Payments using PayPal direct debit
