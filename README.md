@@ -1,10 +1,12 @@
-![Learning tab concept](readme_res/logo.png)
+![tutor.me](readme_res/logo.png)
 
 A community-based, extensible tutoring platform for Android.
 
 # Project Proposal
 
 `Zsolt Pazmandy MSc Computer Science Summer Project 2016`
+
+![A brief demo of the current state of the app](readme_res/2016_06_27_12_04_54_12_09_56.gif)
 
 ## Introduction
 
@@ -45,8 +47,6 @@ When a Learner takes up a Pro module they choose a Trainer from all the availabl
 ##### Creating Modules
 
 Any registered user may author learning modules and have them stored and readily available in the Module Library for other users to find and learn from. The application is intended to provide as much freedom to its trainers in compiling their learning modules as possible. Therefore, several of the most common teaching material design patterns are available for the trainers to choose from. However, for the scope of the current project the creation of modules is limited to text input only. The user may choose from several templates (eg. tables, fill-in-the-gaps, multiple-choice questions etc) to present the learning material. This is to be extended in the future with the possibility of including other media e.g. images, animations, audio and video.
-
-![Library tab concept](readme_res/library_tab.png)
 
 ![Creating Module concept](readme_res/create_example_1.png)
 
