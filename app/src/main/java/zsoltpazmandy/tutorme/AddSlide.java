@@ -75,10 +75,17 @@ public class AddSlide extends AppCompatActivity {
                 moduleComplete.putStringArrayListExtra("Module complete", module);
                 setResult(1, moduleComplete);
                 finish();
-//          new table slide added
-//            case 3:
-//          finished adding table slides
+                break;
+            case 3:
+                module.clear();
+                module.addAll(data.getStringArrayListExtra("Slide added to module"));
+                Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
+                break;
 //            case 4:
+//                module.clear();
+//                module.addAll(data.getStringArrayListExtra("Slide added to module"));
+//                Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
+//                Intent moduleComplete
 
         }
     }
@@ -88,3 +95,24 @@ public class AddSlide extends AppCompatActivity {
         return;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -210,13 +210,17 @@ public class MakeTableSlide extends AppCompatActivity {
                 temp.add(row0col1.getText().toString().trim());
                 temp.add(row0col2.getText().toString().trim());
 
+                wordsInTable.addAll(module);
+
+
                 for (int i = 0; i < col1 * 2; i++) {
                     wordsInTable.add(temp.get(i));
                 }
 
                 Intent addNextSlide = new Intent(MakeTableSlide.this, AddSlide.class);
-                addNextSlide.putStringArrayListExtra("Slide added to module", module);
+                addNextSlide.putStringArrayListExtra("Slide added to module", wordsInTable);
                 setResult(3, addNextSlide);
+                finish();
 
             }
         });
@@ -322,13 +326,16 @@ public class MakeTableSlide extends AppCompatActivity {
                 temp.add(row0col1.getText().toString().trim());
                 temp.add(row0col2.getText().toString().trim());
 
+                wordsInTable.addAll(module);
+
                 for (int i = 0; i < col1 * 2; i++) {
                     wordsInTable.add(temp.get(i));
                 }
 
                 Intent addingSlidesOver = new Intent(MakeTableSlide.this, AddSlide.class);
-                addingSlidesOver.putStringArrayListExtra("Last slide added to module", module);
-                setResult(4, addingSlidesOver);
+                addingSlidesOver.putStringArrayListExtra("Last slide added to module", wordsInTable);
+                setResult(2, addingSlidesOver);
+                finish();
             }
         });
 

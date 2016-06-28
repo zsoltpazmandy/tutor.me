@@ -122,6 +122,7 @@ public class CreateModActivity extends AppCompatActivity {
             try {
                 JSONObject moduleJSON = JSONify(module);
                 saveModule(moduleJSON);
+                System.out.println(moduleJSON);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -182,7 +183,7 @@ public class CreateModActivity extends AppCompatActivity {
 
         for (int i = 0; i < amountOfSlides; i++) {
             int num = i + 1;
-            moduleJSON.put("Slide #" + num, module.get(7 + i));
+            moduleJSON.accumulate("Slide #" + num, module.get(7 + i).trim());
         }
         return moduleJSON;
     }
