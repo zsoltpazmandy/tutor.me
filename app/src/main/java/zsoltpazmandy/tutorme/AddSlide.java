@@ -42,7 +42,6 @@ public class AddSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 try {
-                    module.accumulate("Types of Slides", "#");
                     module.accumulate("Types of Slides", 1);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -68,7 +67,6 @@ public class AddSlide extends AppCompatActivity {
                 assert module != null;
 
                 try {
-                    module.accumulate("Types of Slides", "#");
                     module.accumulate("Types of Slides", "2");
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -87,15 +85,20 @@ public class AddSlide extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
         switch (resultCode) {
+
             case 1:
+
                 try {
                     module = new JSONObject(data.getStringExtra("Slide added to module"));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
+
                 break;
+
             case 2:
 
                 try {
@@ -110,23 +113,6 @@ public class AddSlide extends AppCompatActivity {
                 finish();
 
                 break;
-
-            case 3:
-                try {
-                    module = new JSONObject(data.getStringExtra("Slide added to module"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
-
-                break;
-//            case 4:
-//                module.clear();
-//                module.addAll(data.getStringArrayListExtra("Slide added to module"));
-//                Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
-//                Intent moduleComplete
-
         }
     }
 
@@ -135,24 +121,3 @@ public class AddSlide extends AppCompatActivity {
         return;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

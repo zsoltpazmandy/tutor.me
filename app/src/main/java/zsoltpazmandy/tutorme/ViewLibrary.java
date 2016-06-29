@@ -54,7 +54,7 @@ public class ViewLibrary extends AppCompatActivity {
 
             JSONObject moduleRecordsJSON = new JSONObject(moduleRecordsString);
 
-            modCount = moduleRecordsJSON.getInt("Modules");
+            modCount = moduleRecordsJSON.getInt("IDs");
             String count = "" + modCount;
 
             counter.setText(count);

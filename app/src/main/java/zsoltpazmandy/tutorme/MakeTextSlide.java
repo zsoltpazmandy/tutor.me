@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,11 +52,9 @@ public class MakeTextSlide extends AppCompatActivity {
 
                 try {
                     amountOfSlides = module.getJSONArray("Types of Slides").length();
-                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    amountOfSlides = 1;
                 }
-
 
                 try {
                     module.put("Slide " + amountOfSlides, userInput);
@@ -90,10 +87,8 @@ public class MakeTextSlide extends AppCompatActivity {
 
                 try {
                     amountOfSlides = module.getJSONArray("Types of Slides").length();
-                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
-
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    amountOfSlides = 1;
                 }
 
                 try {

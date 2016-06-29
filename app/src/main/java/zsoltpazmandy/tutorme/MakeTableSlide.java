@@ -221,10 +221,10 @@ public class MakeTableSlide extends AppCompatActivity {
 
                 try {
                     amountOfSlides = module.getJSONArray("Types of Slides").length();
-                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
+//                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
 
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    amountOfSlides = 1;
                 }
 
                 temp.removeAll(Arrays.asList("", null));
@@ -239,7 +239,7 @@ public class MakeTableSlide extends AppCompatActivity {
 
                 Intent addNextSlide = new Intent(MakeTableSlide.this, AddSlide.class);
                 addNextSlide.putExtra("Slide added to module", module.toString());
-                setResult(3, addNextSlide);
+                setResult(1, addNextSlide);
                 finish();
 
             }
@@ -350,9 +350,9 @@ public class MakeTableSlide extends AppCompatActivity {
 
                 try {
                     amountOfSlides = module.getJSONArray("Types of Slides").length();
-                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
+//                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
                 } catch (JSONException e) {
-                    e.printStackTrace();
+                    amountOfSlides = 1;
                 }
 
                 temp.removeAll(Arrays.asList("", null));
