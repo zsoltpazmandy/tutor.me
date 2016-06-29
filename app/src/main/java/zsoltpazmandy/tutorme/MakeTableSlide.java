@@ -221,7 +221,6 @@ public class MakeTableSlide extends AppCompatActivity {
 
                 try {
                     amountOfSlides = module.getJSONArray("Types of Slides").length();
-//                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
 
                 } catch (JSONException e) {
                     amountOfSlides = 1;
@@ -350,7 +349,6 @@ public class MakeTableSlide extends AppCompatActivity {
 
                 try {
                     amountOfSlides = module.getJSONArray("Types of Slides").length();
-//                    if (amountOfSlides > 1) amountOfSlides = amountOfSlides / 2;
                 } catch (JSONException e) {
                     amountOfSlides = 1;
                 }

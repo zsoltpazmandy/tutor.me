@@ -1,6 +1,5 @@
 package zsoltpazmandy.tutorme;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -15,15 +14,12 @@ import android.widget.TextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class ViewLibrary extends AppCompatActivity {
+
+    final Functions f = new Functions();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,30 +33,10 @@ public class ViewLibrary extends AppCompatActivity {
 
         TextView counter = (TextView) findViewById(R.id.counter);
         assert counter != null;
-        int modCount = 0;
         try {
-
-            FileInputStream fileInput = openFileInput("module_records");
-            InputStreamReader streamReader = new InputStreamReader(fileInput);
-            char[] data = new char[100];
-            String moduleRecordsString = "";
-            int size;
-
-            while ((size = streamReader.read(data)) > 0) {
-                String read_data = String.copyValueOf(data, 0, size);
-                moduleRecordsString += read_data;
-                data = new char[100];
-            }
-
-            JSONObject moduleRecordsJSON = new JSONObject(moduleRecordsString);
-
-            modCount = moduleRecordsJSON.getInt("IDs");
-            String count = "" + modCount;
-
-            counter.setText(count);
-
-        } catch (IOException | JSONException e1) {
-            e1.printStackTrace();
+            counter.setText("" + f.moduleCount(getApplicationContext()));
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
         }
 
         ListView listView = (ListView) findViewById(R.id.library_listview);
@@ -68,7 +44,7 @@ public class ViewLibrary extends AppCompatActivity {
         ArrayList<String> modulesNamesList = null;
 
         try {
-            modulesNamesList = getModuleNames(modCount);
+            modulesNamesList = f.getModuleNames(getApplicationContext());
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -88,7 +64,7 @@ public class ViewLibrary extends AppCompatActivity {
 
                 try {
 
-                    JSONObject moduleSelectedJSON = getModuleJSON(moduleSelected);
+                    JSONObject moduleSelectedJSON = f.getModuleJSON(getApplicationContext(), moduleSelected);
 
                     ArrayList<String> moduleInfo = new ArrayList<String>();
 
@@ -138,109 +114,6 @@ public class ViewLibrary extends AppCompatActivity {
             }
         });
 
-    }
-
-    public ArrayList<String> getModuleNames(int modCount) throws IOException, JSONException {
-
-        ArrayList<String> moduleNames = new ArrayList<>();
-
-        for (int i = 1; i <= modCount; i++) {
-
-            FileInputStream fileInput = openFileInput(String.valueOf(i));
-            InputStreamReader streamReader = new InputStreamReader(fileInput);
-            char[] data = new char[100];
-            String moduleString = "";
-
-            int size;
-            while ((size = streamReader.read(data)) > 0) {
-                String read_data = String.copyValueOf(data, 0, size);
-                moduleString += read_data;
-                data = new char[100];
-            }
-
-            JSONObject moduleJSON = new JSONObject(moduleString);
-            moduleNames.add(moduleJSON.getString("Name"));
-
-        }
-        return moduleNames;
-    }
-
-    public int moduleCount() throws JSONException, IOException {
-        JSONObject moduleRecordsJSON = getModuleRecordsJSON();
-        return moduleRecordsJSON.getInt("Modules");
-    }
-
-    public JSONObject getModuleRecordsJSON() throws JSONException {
-        FileInputStream fileInput = null;
-        try {
-
-            fileInput = openFileInput("module_records");
-            InputStreamReader streamReader = new InputStreamReader(fileInput);
-            char[] data = new char[100];
-            String oneBigString = "";
-            int size;
-
-            while ((size = streamReader.read(data)) > 0) {
-                String read_data = String.copyValueOf(data, 0, size);
-                oneBigString += read_data;
-                data = new char[100];
-            }
-
-            JSONObject moduleRecordsJSON = new JSONObject(oneBigString);
-            return moduleRecordsJSON;
-
-        } catch (FileNotFoundException FNFE) {
-
-            JSONObject newModuleRecords = new JSONObject();
-            newModuleRecords.put("Modules", 0);
-            setModuleRecordsJSON(newModuleRecords.toString());
-
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-        return getModuleRecordsJSON();
-    }
-
-    public void setModuleRecordsJSON(String moduleRecordsString) {
-
-        try {
-
-            FileOutputStream fou = openFileOutput("module_records", Context.MODE_PRIVATE);
-            OutputStreamWriter osw = new OutputStreamWriter(fou);
-            osw.write(moduleRecordsString);
-            osw.flush();
-            osw.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public JSONObject getModuleJSON(String moduleName) throws JSONException, IOException {
-
-        for (int i = 1; i <= moduleCount(); i++) {
-
-            FileInputStream fileInput = openFileInput(String.valueOf(i));
-            InputStreamReader streamReader = new InputStreamReader(fileInput);
-            char[] data = new char[100];
-            String moduleString = "";
-
-            int size;
-            while ((size = streamReader.read(data)) > 0) {
-                String read_data = String.copyValueOf(data, 0, size);
-                moduleString += read_data;
-                data = new char[100];
-            }
-
-            JSONObject moduleJSON = new JSONObject(moduleString);
-
-            if (moduleJSON.getString("Name").equals(moduleName)) {
-                return moduleJSON;
-            }
-
-        }
-
-        return null;
     }
 
 }
