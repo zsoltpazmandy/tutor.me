@@ -84,17 +84,12 @@ public class CreateModActivity extends AppCompatActivity {
                     moduleNameEdit.setEnabled(false);
                     module.put("Description", moduleDescEdit.getText().toString().trim());
                     moduleDescEdit.setEnabled(false);
-                    module.put("Pro", false);
-
+                    module.put("PRO", 0);
+                    module.put("AuthorID", 1);
                     // populating Rev & Trainer arrays, with fake IDs for now
                     module.accumulate("Reviews", 1);
-                    module.accumulate("Reviews", 2);
-                    module.accumulate("Reviews", 3);
-                    module.accumulate("Reviews", 4);
                     module.accumulate("Trainers", 1);
-                    module.accumulate("Trainers", 2);
-                    module.accumulate("Trainers", 3);
-                    module.accumulate("Trainers", 4);
+
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -119,8 +114,26 @@ public class CreateModActivity extends AppCompatActivity {
 
             JSONObject module = null;
 
+
+
             try {
                 module = new JSONObject(data.getStringExtra("Module complete"));
+
+                int amountOfSlides = 0;
+
+                String temp = null;
+
+                try {
+                    temp = module.getString("Types of Slides");
+                    temp = temp.replace("[", "").replace("]", "");
+
+                    amountOfSlides = temp.split(",").length;
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                module.put("No. of Slides", amountOfSlides);
             } catch (JSONException e) {
                 e.printStackTrace();
             }

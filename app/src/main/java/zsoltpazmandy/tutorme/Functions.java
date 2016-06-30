@@ -3,7 +3,6 @@ package zsoltpazmandy.tutorme;
 import android.content.Context;
 import android.widget.Toast;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -18,6 +17,8 @@ import java.util.List;
 
 /**
  * Created by zsolt on 29/06/16.
+ * <p/>
+ * All Module management functions are found here
  */
 public class Functions {
 
@@ -41,9 +42,13 @@ public class Functions {
                 data = new char[100];
             }
 
+            // if records file is found all in order
+
             moduleRecordsJSON = new JSONObject(oneBigString);
 
         } catch (FileNotFoundException FNFE) {
+
+            // if the file does not exist, it's created from scratch
 
             JSONObject newModuleRecords = new JSONObject();
             newModuleRecords.put("IDs", null);
@@ -51,6 +56,9 @@ public class Functions {
             return getModuleRecordsJSON(context);
 
         } catch (JSONException | IOException e) {
+
+            // if the file exists, but there is no data found inside, it is initialised
+
             JSONObject newModuleRecords = new JSONObject();
             newModuleRecords.put("IDs", null);
             setModuleRecordsJSON(context, newModuleRecords.toString());
@@ -61,19 +69,14 @@ public class Functions {
 
     public JSONObject getModuleJSON(Context context, String name) throws IOException, JSONException {
         JSONObject returnObject = new JSONObject();
-        JSONObject records = getModuleRecordsJSON(context);
+
         FileInputStream fileInput = null;
-        int[] moduleIDs = new int[moduleCount(context)];
 
-        JSONArray moduleIDsArray = records.getJSONArray("IDs");
-
-        for (int i = 0; i < moduleIDsArray.length(); i++) {
-            moduleIDs[0] = moduleIDsArray.getInt(i);
-        }
+        List<Integer> IDs = getIDs(context);
 
         for (int i = 0; i < moduleCount(context); i++) {
 
-            fileInput = context.openFileInput("" + moduleIDs[i]);
+            fileInput = context.openFileInput("" + IDs.get(i));
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String moduleString = "";
@@ -97,29 +100,26 @@ public class Functions {
 
     public ArrayList<String> getModuleNames(Context context) throws IOException, JSONException {
         ArrayList<String> namesToReturn = new ArrayList<>();
-//        JSONObject records = getModuleRecordsJSON(context);
-//        FileInputStream fileInput = null;
-//
-//        ArrayList<Integer> IDs = new ArrayList<>();
-//
-//
-//        for (int i = 0; i < moduleCount(context); i++) {
-//
-//            fileInput = context.openFileInput("" + moduleIDsArray.get(i));
-//            InputStreamReader streamReader = new InputStreamReader(fileInput);
-//            char[] data = new char[100];
-//            String moduleString = "";
-//            int size;
-//
-//            while ((size = streamReader.read(data)) > 0) {
-//                String read_data = String.copyValueOf(data, 0, size);
-//                moduleString += read_data;
-//                data = new char[100];
-//            }
-//
-//            JSONObject currentObj = new JSONObject(moduleString);
-//            namesToReturn.add(currentObj.getString("Name"));
-//        }
+
+        FileInputStream fileInput = null;
+
+        for (int i = 0; i < moduleCount(context); i++) {
+
+            fileInput = context.openFileInput("" + getIDs(context).get(i));
+            InputStreamReader streamReader = new InputStreamReader(fileInput);
+            char[] data = new char[100];
+            String moduleString = "";
+            int size;
+
+            while ((size = streamReader.read(data)) > 0) {
+                String read_data = String.copyValueOf(data, 0, size);
+                moduleString += read_data;
+                data = new char[100];
+            }
+
+            JSONObject currentObj = new JSONObject(moduleString);
+            namesToReturn.add(currentObj.getString("Name"));
+        }
         return namesToReturn;
     }
 
@@ -127,11 +127,14 @@ public class Functions {
 
         ArrayList<Integer> IDsToReturn = new ArrayList<>();
 
+        String temp;
+
         for (int i = 0; i < moduleCount(context); i++) {
-            String temp = getModuleRecordsJSON(context).getString("IDs");
-            System.out.println(temp);
-//            IDsToReturn.add()
+            temp = getModuleRecordsJSON(context).getString("IDs");
+            temp = temp.replace("[", "").replace("]", "");
+            IDsToReturn.add(Integer.parseInt(temp.split(",")[i]));
         }
+
         return IDsToReturn;
     }
 
@@ -168,8 +171,6 @@ public class Functions {
             osw.flush();
             osw.close();
             Toast.makeText(context, "Module successfully added to Library", Toast.LENGTH_SHORT).show();
-            System.out.println(module.toString());
-            System.out.println(getModuleRecordsJSON(context).toString());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -227,17 +228,17 @@ public class Functions {
 
     public boolean isNameTaken(Context context, String moduleName) throws IOException, JSONException {
 
-        int modCount = moduleCount(context);
-
         FileInputStream fileInput = null;
 
         ArrayList<String> allModuleNames = new ArrayList<>();
 
-        JSONObject moduleJSON = new JSONObject();
+        JSONObject currentModule = new JSONObject();
 
-        for (int i = 1; i <= modCount; i++) {
+        List<Integer> IDs = getIDs(context);
 
-            fileInput = context.openFileInput(String.valueOf(i));
+        for (int i = 0; i < moduleCount(context); i++) {
+
+            fileInput = context.openFileInput("" + IDs.get(i));
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String moduleString = "";
@@ -250,23 +251,21 @@ public class Functions {
             }
 
             if (moduleString.length() > 0) {
-                moduleJSON = new JSONObject(moduleString);
-                allModuleNames.add(moduleJSON.getString("Name"));
+                currentModule = new JSONObject(moduleString);
+                allModuleNames.add(currentModule.getString("Name"));
             }
 
         }
 
-        if (moduleJSON.equals(null)) {
-            return false;
-        }
-
-        return allModuleNames.contains(moduleName);
+        return !currentModule.equals(null) && allModuleNames.contains(moduleName);
     }
 
     public void purgeLibrary(Context context) throws IOException, JSONException {
 
-        for (int i = 0; i <= moduleCount(context); i++) {
-            FileOutputStream fou = context.openFileOutput("" + i, Context.MODE_PRIVATE);
+        List<Integer> IDs = getIDs(context);
+
+        for (int i = 0; i < moduleCount(context); i++) {
+            FileOutputStream fou = context.openFileOutput("" + IDs.get(i), Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
             osw.write("");
             osw.flush();

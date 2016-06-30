@@ -34,7 +34,16 @@ public class ViewLibrary extends AppCompatActivity {
         TextView counter = (TextView) findViewById(R.id.counter);
         assert counter != null;
         try {
-            counter.setText("" + f.moduleCount(getApplicationContext()));
+
+            String counterText = "" + f.moduleCount(getApplicationContext());
+
+            counter.setText(counterText);
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            f.getIDs(getApplicationContext());
         } catch (JSONException | IOException e) {
             e.printStackTrace();
         }
@@ -76,7 +85,7 @@ public class ViewLibrary extends AppCompatActivity {
                     moduleInfo.add(moduleSelectedJSON.getString("AuthorID"));
 
                     // PRO/free
-                    moduleInfo.add(moduleSelectedJSON.getString("PRO"));
+                    moduleInfo.add("" + moduleSelectedJSON.getInt("PRO"));
 
                     // Name of module (must be unique)
                     moduleInfo.add(moduleSelectedJSON.getString("Name"));
@@ -86,10 +95,10 @@ public class ViewLibrary extends AppCompatActivity {
 
                     // Array of IDs of Ratings (once Ratings objects implemented, will serve
                     // to provide Ratings value (in range 1-5 to be displayed in the Module Library)
-                    moduleInfo.add(moduleSelectedJSON.getJSONArray("Reviews").toString());
+                    moduleInfo.add("" + moduleSelectedJSON.getInt("Reviews"));
 
                     // array of IDs of the module's trainers - to be implemented:
-                    moduleInfo.add(moduleSelectedJSON.getJSONArray("Trainers").toString());
+                    moduleInfo.add("" + moduleSelectedJSON.getInt("Trainers"));
 
                     moduleInfo.add("" + moduleSelectedJSON.getInt("No. of Slides"));
 
@@ -97,7 +106,7 @@ public class ViewLibrary extends AppCompatActivity {
                     // might implement later to show previews of module content before in
                     // popup view. for now: not in use:
                     for (int i = 1; i <= moduleSelectedJSON.getInt("No. of Slides"); i++) {
-                        moduleInfo.add(moduleSelectedJSON.getString("Slide #" + i));
+                        moduleInfo.add(moduleSelectedJSON.getString("Slide " + i));
                     }
 
                     Intent showModulePop = new Intent(ViewLibrary.this, ViewLibPopUpModDisplay.class);

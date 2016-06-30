@@ -48,8 +48,15 @@ public class ViewLibPopUpModDisplay extends Activity {
         descView.setText(infoToShow.get(4));
 
         TextView slideNumView = (TextView) findViewById(R.id.popUpTextNoOfSlides);
-        String noOfSlides = "Contains " + infoToShow.get(7) + " slides.";
-        slideNumView.setText(noOfSlides);
+
+        // singular or plural "Slide/s"
+        int amountOfSlides = Integer.parseInt(infoToShow.get(7));
+        if (amountOfSlides > 1) {
+            String noOfSlides = "Contains " + infoToShow.get(7) + " slides.";
+            slideNumView.setText(noOfSlides);
+        } else {
+            slideNumView.setText("Contains 1 slide.");
+        }
 
     }
 
