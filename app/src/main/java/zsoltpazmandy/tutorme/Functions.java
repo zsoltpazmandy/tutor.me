@@ -76,7 +76,7 @@ public class Functions {
 
         for (int i = 0; i < moduleCount(context); i++) {
 
-            fileInput = context.openFileInput("" + IDs.get(i));
+            fileInput = context.openFileInput("module" + IDs.get(i));
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String moduleString = "";
@@ -105,7 +105,7 @@ public class Functions {
 
         for (int i = 0; i < moduleCount(context); i++) {
 
-            fileInput = context.openFileInput("" + getIDs(context).get(i));
+            fileInput = context.openFileInput("module" + getIDs(context).get(i));
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String moduleString = "";
@@ -165,7 +165,7 @@ public class Functions {
 
             updateModuleRecords(context, module);
 
-            FileOutputStream fou = context.openFileOutput(module.get("ID").toString(), Context.MODE_PRIVATE);
+            FileOutputStream fou = context.openFileOutput("module" + module.get("ID").toString(), Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
             osw.write(module.toString());
             osw.flush();
@@ -238,7 +238,7 @@ public class Functions {
 
         for (int i = 0; i < moduleCount(context); i++) {
 
-            fileInput = context.openFileInput("" + IDs.get(i));
+            fileInput = context.openFileInput("module" + IDs.get(i));
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String moduleString = "";
@@ -265,7 +265,7 @@ public class Functions {
         List<Integer> IDs = getIDs(context);
 
         for (int i = 0; i < moduleCount(context); i++) {
-            FileOutputStream fou = context.openFileOutput("" + IDs.get(i), Context.MODE_PRIVATE);
+            FileOutputStream fou = context.openFileOutput("module" + IDs.get(i), Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
             osw.write("");
             osw.flush();

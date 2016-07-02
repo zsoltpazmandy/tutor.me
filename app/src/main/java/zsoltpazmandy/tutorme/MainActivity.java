@@ -8,7 +8,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
+
+import org.json.JSONException;
+
+import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -19,15 +24,10 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Button signUpButt = (Button) findViewById(R.id.signUpButt);
-        assert signUpButt != null;
-        signUpButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "sign up button pressed", Toast.LENGTH_SHORT).show();
-
-            }
-        });
+        final EditText usernameField = (EditText) findViewById(R.id.username_textfield);
+        usernameField.setMaxWidth(usernameField.getWidth());
+        final EditText passwordField = (EditText) findViewById(R.id.password_textfield);
+        passwordField.setMaxWidth(passwordField.getWidth());
 
         Button loginButt = (Button) findViewById(R.id.login_butt);
         assert loginButt != null;
@@ -35,6 +35,58 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(MainActivity.this, "login button pressed", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+        Button signUpButt = (Button) findViewById(R.id.signUpButt);
+        assert signUpButt != null;
+        signUpButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                User user = new User(getApplicationContext());
+
+                boolean success = false;
+
+                try {
+
+                    if (!usernameField.getText().toString().matches("^[\\w_-]+")) {
+                        Toast.makeText(getApplicationContext(), "Username format incorrect.\nUse: A-Z, a-z, 0-9, _, -", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!(usernameField.getText().toString().length() > 2 && usernameField.getText().toString().length() < 11)) {
+                        Toast.makeText(getApplicationContext(), "Username must be 3-10 characters long.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!passwordField.getText().toString().matches("^[\\w_-]+")) {
+                        Toast.makeText(getApplicationContext(), "Password format incorrect.\nUse: A-Z, a-z, 0-9, _, -", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    if (!(passwordField.getText().toString().length() > 5 && passwordField.getText().toString().length() < 11)) {
+                        Toast.makeText(getApplicationContext(), "Password must be 6-10 characters long.", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    success = user.register(getApplicationContext(),
+                            usernameField.getText().toString().trim().toLowerCase(),
+                            passwordField.getText().toString().trim().toLowerCase());
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (success) {
+                    Toast.makeText(getApplicationContext(), "Username registered.", Toast.LENGTH_SHORT).show();
+                    // begin "complete profile" activity
+                } else {
+                    Toast.makeText(getApplicationContext(), "Registration failed. Username taken.", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -53,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         final Button viewLibButt = (Button) findViewById(R.id.viewLibButt);
         assert viewLibButt != null;
         viewLibButt.setOnClickListener(new View.OnClickListener() {
@@ -61,6 +112,21 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent openLibrary = new Intent(MainActivity.this, ViewLibrary.class);
                 startActivity(openLibrary);
+            }
+        });
+
+        final Button resetUserbase = (Button) findViewById(R.id.resetUserBase_butt);
+        assert resetUserbase != null;
+        resetUserbase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                User u = new User(getApplicationContext());
+                try {
+                    u.purgeUserRecords(getApplicationContext());
+                    u.resetCounter(getApplicationContext());
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

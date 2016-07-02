@@ -114,8 +114,6 @@ public class CreateModActivity extends AppCompatActivity {
 
             JSONObject module = null;
 
-
-
             try {
                 module = new JSONObject(data.getStringExtra("Module complete"));
 
@@ -139,7 +137,7 @@ public class CreateModActivity extends AppCompatActivity {
             }
 
             f.saveModule(getApplicationContext(), module);
-
+            System.out.println(module);
             Toast.makeText(getApplicationContext(), "Module added to the library", Toast.LENGTH_SHORT).show();
             finish();
         }

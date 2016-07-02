@@ -28,4 +28,6 @@
     <string name="cancel_slide_butt">Cancel Slide</string>
     <string name="enter_word_hint">Enter word</string>
     <string name="table_slide_hint">Words you put in the left column will be registered as target words: write the words here you want your Learner to learn, we\'ll use this information to generate quizzes later.</string>
+    <string name="login_username_hint">username</string>
+    <string name="login_pass_hint">password</string>
 </resources>
