@@ -30,4 +30,7 @@
     <string name="table_slide_hint">Words you put in the left column will be registered as target words: write the words here you want your Learner to learn, we\'ll use this information to generate quizzes later.</string>
     <string name="login_username_hint">username</string>
     <string name="login_pass_hint">password</string>
+    <string name="title_activity_profile_setup">Setup User Profile</string>
+    <string name="username_label">Username: </string>
+    <string name="age_label">Age:</string>
 </resources>

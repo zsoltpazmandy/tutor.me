@@ -71,6 +71,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.ViewLibrary" />
         </activity>
+        <activity
+            android:name=".ProfileSetup"
+            android:label="@string/title_activity_profile_setup"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="zsoltpazmandy.tutorme.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

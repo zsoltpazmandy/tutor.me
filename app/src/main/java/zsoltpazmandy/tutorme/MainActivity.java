@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
                 User user = new User(getApplicationContext());
 
-                boolean success = false;
+                int returnVal = 0;
 
                 try {
 
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
                         return;
                     }
 
-                    success = user.register(getApplicationContext(),
+                    returnVal = user.register(getApplicationContext(),
                             usernameField.getText().toString().trim().toLowerCase(),
                             passwordField.getText().toString().trim().toLowerCase());
 
@@ -81,9 +81,20 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                if (success) {
+                if (returnVal != 0) {
                     Toast.makeText(getApplicationContext(), "Username registered.", Toast.LENGTH_SHORT).show();
+
+                    Intent setupProfile = new Intent(MainActivity.this, ProfileSetup.class);
+                    try {
+                        setupProfile.putExtra("User String", user.getUser(getApplicationContext(), returnVal).toString());
+                        startActivity(setupProfile);
+                        finish();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                     // begin "complete profile" activity
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Registration failed. Username taken.", Toast.LENGTH_SHORT).show();
                 }

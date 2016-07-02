@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="zsoltpazmandy.tutorme.ProfileSetup"
+    tools:showIn="@layout/activity_profile_setup">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="1.0">
+
+            <TextView
+                android:id="@+id/username_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:maxLines="1"
+                android:text="@string/username_label"
+                android:textSize="@dimen/profile_setup_text_size" />
+
+            <EditText
+                android:id="@+id/username_field"
+                android:layout_weight="0.7"
+                android:maxLines="1"
+                android:textSize="@dimen/profile_setup_text_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/age_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:text="@string/age_label"
+                android:textSize="@dimen/profile_setup_text_size" />
+
+            <Spinner
+                android:id="@+id/age_spinner"
+                android:layout_width="wrap_content"
+                android:layout_weight="0.7"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/profile_setup_text_size" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/location_label"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.3"
+                android:textSize="@dimen/profile_setup_text_size"
+                android:text="Location" />
+
+            <Spinner
+                android:id="@+id/location_spinner"
+                android:layout_width="wrap_content"
+                android:layout_weight="0.7"
+                android:textSize="@dimen/profile_setup_text_size"
+                android:layout_height="wrap_content"
+                />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <TextView
+                android:id="@+id/languages_label"
+                android:layout_width="wrap_content"
+                android:layout_weight="0.3"
+                android:textSize="@dimen/profile_setup_text_size"
+                android:layout_height="wrap_content"
+                android:text="Languages" />
+
+            <Spinner
+                android:id="@+id/languages_spinner"
+                android:layout_width="wrap_content"
+                android:layout_weight="0.7"
+                android:textSize="@dimen/profile_setup_text_size"
+                android:layout_height="wrap_content"
+                 />
+        </LinearLayout>
+
+
+
+        <LinearLayout
+            android:id="@+id/interestsLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+            
+            <TextView
+                android:id="@+id/interests_label"
+                android:layout_width="wrap_content"
+                android:textSize="@dimen/profile_setup_text_size"
+                android:layout_height="wrap_content"
+                android:text="Interests" />
+
+            <CheckBox
+                android:id="@+id/language_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="languages" />
+
+            <CheckBox
+                android:id="@+id/travel_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="travelling" />
+
+            <CheckBox
+                android:id="@+id/sports_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="sports" />
+
+            <CheckBox
+                android:id="@+id/history_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="history" />
+
+            <CheckBox
+                android:id="@+id/music_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="music" />
+
+            <CheckBox
+                android:id="@+id/science_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="science" />
+
+            <CheckBox
+                android:id="@+id/arts_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="arts" />
+
+            <CheckBox
+                android:id="@+id/food_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="food &amp; cuisine" />
+
+            <CheckBox
+                android:id="@+id/health_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="health" />
+
+            <CheckBox
+                android:id="@+id/computers_check"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="computers" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

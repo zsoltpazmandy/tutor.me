@@ -27,7 +27,6 @@ public class User {
     private double rating;
     private int[] learning;
     private int[] training;
-    private int nationality;
     private int[] languages;
     private int age;
     private int location;
@@ -68,7 +67,6 @@ public class User {
             for (int i = 0; i < tempTraining.length; i++) {
                 this.training[i] = Integer.parseInt(tempTraining[i]);
             }
-            this.nationality = user.getInt("Nationality");
             String[] tempLanguages = user.getString("Languages").replace("[", "").replace("]", "").split(",");
             this.languages = new int[tempLanguages.length];
             for (int i = 0; i < tempLanguages.length; i++) {
@@ -115,7 +113,10 @@ public class User {
         return returnObject;
     }
 
-    public boolean register(Context context, String username, String password) throws JSONException, IOException {
+    public int register(Context context, String username, String password) throws JSONException, IOException {
+
+        int returnIDtoReg = 0;
+
         boolean taken = true;
         boolean flag = true;
 
@@ -125,6 +126,7 @@ public class User {
             JSONObject newUser = new JSONObject();
 
             int newId = assignID(context);
+            returnIDtoReg = newId;
 
             newUser.put("ID", newId).put("Username", username).put("Password", password);
 
@@ -139,7 +141,8 @@ public class User {
         } else {
             flag = false;
         }
-        return flag;
+
+        return returnIDtoReg;
     }
 
     public boolean isUsernameTaken(Context context, String username) {
@@ -411,10 +414,6 @@ public class User {
         return training;
     }
 
-    public int getNationality() {
-        return nationality;
-    }
-
     public int[] getLanguages() {
         return languages;
     }
@@ -453,10 +452,6 @@ public class User {
 
     public void setTraining(int[] training) {
         this.training = training;
-    }
-
-    public void setNationality(int nationality) {
-        this.nationality = nationality;
     }
 
     public void setLanguages(int[] languages) {
@@ -499,7 +494,7 @@ public class User {
                 returnValue = "Science";
                 break;
             case 6:
-                returnValue = "Nature";
+                returnValue = "Arts";
                 break;
             case 7:
                 returnValue = "Food & Cuisine";
@@ -508,7 +503,7 @@ public class User {
                 returnValue = "Health";
                 break;
             case 9:
-                returnValue = "Media/IT";
+                returnValue = "Computers";
                 break;
         }
 

@@ -29,8 +29,7 @@
         android:layout_below="@id/tutorme_logo"
         android:orientation="horizontal"
         android:id="@+id/loginline"
-        android:weightSum="1"
-        android:theme="1">
+        android:weightSum="1">
 
         <EditText
             android:id="@+id/username_textfield"
