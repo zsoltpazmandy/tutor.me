@@ -80,6 +80,29 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.MainActivity" />
         </activity>
+        <activity
+            android:name=".Home"
+            android:label="@string/title_activity_home"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="zsoltpazmandy.tutorme.MainActivity" />
+        </activity>
+        <activity
+            android:name=".ProfileTab"
+            android:label="@string/title_activity_profile_tab"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".LearningTab"
+            android:label="@string/title_activity_learning_tab"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".TrainingTab"
+            android:label="@string/title_activity_training_tab"
+            android:theme="@style/AppTheme.NoActionBar">
+
+        </activity>
     </application>
 
 </manifest>

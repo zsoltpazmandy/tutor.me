@@ -111,8 +111,6 @@ public class AddSlide extends AppCompatActivity {
                 moduleComplete.putExtra("Module complete", module.toString());
                 setResult(1, moduleComplete);
                 finish();
-
-                break;
         }
     }
 

@@ -33,7 +33,6 @@ public class User {
     private int[] interests;
 
     public User(Context context) {
-
     }
 
     public User(Context context, int id) {
@@ -511,6 +510,8 @@ public class User {
     }
 
     public String decodeCountry(int countryID) {
+
+        countryID = countryID - 1;
 
         String returnValue = "";
 
@@ -1100,6 +1101,8 @@ public class User {
     }
 
     public String decodeLanguage(int languageID) {
+
+        languageID = languageID -1;
 
         String returnValue = "";
 

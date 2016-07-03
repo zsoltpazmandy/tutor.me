@@ -1,103 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="zsoltpazmandy.tutorme.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <ImageView
-        android:id="@+id/tutorme_logo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:src="@drawable/logo" />
-
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:paddingLeft="@dimen/double_activity_horizontal_margin"
-        android:paddingRight="@dimen/double_activity_horizontal_margin"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/tutorme_logo"
-        android:orientation="horizontal"
-        android:id="@+id/loginline"
-        android:weightSum="1">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/username_textfield"
+        <ImageView
+            android:id="@+id/tutorme_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8"
-            android:maxLength="10"
-            android:hint="@string/login_username_hint"/>
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:src="@drawable/logo" />
+
+        <LinearLayout
+            android:id="@+id/loginline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tutorme_logo"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/double_activity_horizontal_margin"
+            android:paddingRight="@dimen/double_activity_horizontal_margin"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/username_textfield"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:hint="@string/login_username_hint"
+                android:maxLength="10" />
+
+            <Button
+                android:id="@+id/login_butt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="@string/log_in_butt" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/signupline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/loginline"
+            android:orientation="horizontal"
+            android:paddingLeft="@dimen/double_activity_horizontal_margin"
+            android:paddingRight="@dimen/double_activity_horizontal_margin"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/password_textfield"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.8"
+                android:hint="@string/login_pass_hint"
+                android:inputType="textPassword"
+                android:maxLength="10" />
+
+            <Button
+                android:id="@+id/signUpButt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.2"
+                android:text="@string/sign_up_butt" />
+        </LinearLayout>
 
         <Button
-            android:id="@+id/login_butt"
+            android:id="@+id/resetUserBase_butt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/log_in_butt"
-            android:layout_weight="0.2"/>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/loginline"
-        android:orientation="horizontal"
-        android:paddingLeft="@dimen/double_activity_horizontal_margin"
-        android:paddingRight="@dimen/double_activity_horizontal_margin"
-        android:weightSum="1"
-        android:id="@+id/signupline">
-
-        <EditText
-            android:id="@+id/password_textfield"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:layout_weight="0.8"
-            android:maxLength="10"
-            android:hint="@string/login_pass_hint"/>
-
-        <Button
-            android:id="@+id/signUpButt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/sign_up_butt"
-            android:layout_weight="0.2" />
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/createModButt"
-        android:layout_width="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/create_mod_butt"
-        android:layout_below="@id/signupline"/>
-
-    <Button
-        android:id="@+id/viewLibButt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/createModButt"
-        android:layout_centerHorizontal="true"
-        android:text="@string/view_lib_butt" />
-
-    <Button
-        android:id="@+id/resetUserBase_butt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/viewLibButt"
-        android:textColor="#AD0000"
-        android:text="[ ! reset userbase ! ]"
-        android:layout_centerHorizontal="true" />
-
-</RelativeLayout>
+            android:layout_below="@id/signupline"
+            android:layout_centerHorizontal="true"
+            android:text="[ ! reset userbase ! ]"
+            android:textColor="#AD0000" />
+    </RelativeLayout>
+</ScrollView>

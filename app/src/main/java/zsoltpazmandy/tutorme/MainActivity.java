@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
 
-                    if (!usernameField.getText().toString().matches("^[\\w_-]+")) {
+                    if (!usernameField.getText().toString().trim().matches("^[\\w_-]+")) {
                         Toast.makeText(getApplicationContext(), "Username format incorrect.\nUse: A-Z, a-z, 0-9, _, -", Toast.LENGTH_SHORT).show();
                         return;
                     }
@@ -99,30 +99,6 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Registration failed. Username taken.", Toast.LENGTH_SHORT).show();
                 }
 
-            }
-        });
-
-        // Create Module button launches the create module activity
-        // and finishes the main activity
-
-        Button createButt = (Button) findViewById(R.id.createModButt);
-        assert createButt != null;
-        createButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent createModule = new Intent(MainActivity.this, CreateModActivity.class);
-                startActivity(createModule);
-            }
-        });
-
-
-        final Button viewLibButt = (Button) findViewById(R.id.viewLibButt);
-        assert viewLibButt != null;
-        viewLibButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent openLibrary = new Intent(MainActivity.this, ViewLibrary.class);
-                startActivity(openLibrary);
             }
         });
 
