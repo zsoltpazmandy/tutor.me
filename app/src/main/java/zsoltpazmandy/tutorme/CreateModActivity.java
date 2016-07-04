@@ -17,6 +17,8 @@ import java.io.IOException;
 
 public class CreateModActivity extends AppCompatActivity {
 
+    JSONObject tempAuth2 = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +27,14 @@ public class CreateModActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         final Functions f = new Functions();
+
+        JSONObject author = null;
+        try {
+            author = new JSONObject(getIntent().getStringExtra("User"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
 
         TextView moduleNameTag = (TextView) findViewById(R.id.moduleNameTag);
         final EditText moduleNameEdit = (EditText) findViewById(R.id.moduleNameEdit);
@@ -48,6 +58,9 @@ public class CreateModActivity extends AppCompatActivity {
                 }
             }
         });
+
+        final JSONObject tempAuth = author;
+        tempAuth2 = author;
 
         Button nextButt = (Button) findViewById(R.id.moduleBeginButton);
         assert nextButt != null;
@@ -85,7 +98,8 @@ public class CreateModActivity extends AppCompatActivity {
                     module.put("Description", moduleDescEdit.getText().toString().trim());
                     moduleDescEdit.setEnabled(false);
                     module.put("PRO", 0);
-                    module.put("AuthorID", 1);
+
+                    module.put("Author", tempAuth.get("Username"));
                     // populating Rev & Trainer arrays, with fake IDs for now
                     module.accumulate("Reviews", 1);
                     module.accumulate("Trainers", 1);
@@ -141,6 +155,7 @@ public class CreateModActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Module added to the library", Toast.LENGTH_SHORT).show();
 
             Intent returnHome = new Intent(CreateModActivity.this, Home.class);
+            returnHome.putExtra("User", tempAuth2.toString());
             startActivity(returnHome);
 
             finish();

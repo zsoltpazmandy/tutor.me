@@ -129,11 +129,11 @@ public class User {
 
             newUser.put("ID", newId).put("Username", username).put("Password", password);
 
-            if(!saveUser(context, newUser)){
+            if (!saveUser(context, newUser)) {
                 flag = false;
             }
 
-            if(!setUserRecordsJSON(context, getUserRecords(context).accumulate("IDs", newId).toString())){
+            if (!setUserRecordsJSON(context, getUserRecords(context).accumulate("IDs", newId).toString())) {
                 flag = false;
             }
 
@@ -383,7 +383,7 @@ public class User {
         JSONObject newUserRecords = new JSONObject();
         newUserRecords.put("IDs", 0);
 
-        if(setUserRecordsJSON(context, newUserRecords.toString())){
+        if (setUserRecordsJSON(context, newUserRecords.toString())) {
             Toast.makeText(context, "User counter reset", Toast.LENGTH_SHORT).show();
         }
 
@@ -511,286 +511,284 @@ public class User {
 
     public String decodeCountry(int countryID) {
 
-        countryID = countryID - 1;
-
         String returnValue = "";
 
         switch (countryID) {
-            case 0:
+            case 1:
                 returnValue = "Afghanistan";
                 break;
-            case 1:
+            case 2:
                 returnValue = "Albania";
                 break;
-            case 2:
+            case 3:
                 returnValue = "Algeria";
                 break;
-            case 3:
+            case 4:
                 returnValue = "Andorra";
                 break;
-            case 4:
+            case 5:
                 returnValue = "Angola";
                 break;
-            case 5:
+            case 6:
                 returnValue = "Antigua and Barbuda";
                 break;
-            case 6:
+            case 7:
                 returnValue = "Argentina";
                 break;
-            case 7:
+            case 8:
                 returnValue = "Armenia";
                 break;
-            case 8:
+            case 9:
                 returnValue = "Australia";
                 break;
-            case 9:
+            case 10:
                 returnValue = "Austria";
                 break;
-            case 10:
+            case 11:
                 returnValue = "Azerbaijan";
                 break;
-            case 11:
+            case 12:
                 returnValue = "Bahamas";
                 break;
-            case 12:
+            case 13:
                 returnValue = "Bahrain";
                 break;
-            case 13:
+            case 14:
                 returnValue = "Bangladesh";
                 break;
-            case 14:
+            case 15:
                 returnValue = "Barbados";
                 break;
-            case 15:
+            case 16:
                 returnValue = "Belarus";
                 break;
-            case 16:
+            case 17:
                 returnValue = "Belgium";
                 break;
-            case 17:
+            case 18:
                 returnValue = "Belize";
                 break;
-            case 18:
+            case 19:
                 returnValue = "Benin";
                 break;
-            case 19:
+            case 20:
                 returnValue = "Bhutan";
                 break;
-            case 20:
+            case 21:
                 returnValue = "Bolivia";
                 break;
-            case 21:
+            case 22:
                 returnValue = "Bosnia and Herzegovina";
                 break;
-            case 22:
+            case 23:
                 returnValue = "Botswana";
                 break;
-            case 23:
+            case 24:
                 returnValue = "Brazil";
                 break;
-            case 24:
+            case 25:
                 returnValue = "Brunei Darussalam";
                 break;
-            case 25:
+            case 26:
                 returnValue = "Bulgaria";
                 break;
-            case 26:
+            case 27:
                 returnValue = "Burkina Faso";
                 break;
-            case 27:
+            case 28:
                 returnValue = "Burundi";
                 break;
-            case 28:
+            case 29:
                 returnValue = "Cabo Verde";
                 break;
-            case 29:
+            case 30:
                 returnValue = "Cambodia";
                 break;
-            case 30:
+            case 31:
                 returnValue = "Cameroon";
                 break;
-            case 31:
+            case 32:
                 returnValue = "Canada";
                 break;
-            case 32:
-                returnValue = "Central African Republic";
-                break;
             case 33:
-                returnValue = "Chad";
+                returnValue = "CAR";
                 break;
             case 34:
-                returnValue = "Chile";
+                returnValue = "Chad";
                 break;
             case 35:
-                returnValue = "China";
+                returnValue = "Chile";
                 break;
             case 36:
-                returnValue = "Colombia";
+                returnValue = "China";
                 break;
             case 37:
-                returnValue = "Comoros";
+                returnValue = "Colombia";
                 break;
             case 38:
-                returnValue = "Congo";
+                returnValue = "Comoros";
                 break;
             case 39:
-                returnValue = "Costa Rica";
+                returnValue = "Congo";
                 break;
             case 40:
-                returnValue = "Côte d'Ivoire";
+                returnValue = "Costa Rica";
                 break;
             case 41:
-                returnValue = "Croatia";
+                returnValue = "Côte d'Ivoire";
                 break;
             case 42:
-                returnValue = "Cuba";
+                returnValue = "Croatia";
                 break;
             case 43:
-                returnValue = "Cyprus";
+                returnValue = "Cuba";
                 break;
             case 44:
-                returnValue = "Czech Republic";
+                returnValue = "Cyprus";
                 break;
             case 45:
-                returnValue = "Democratic People's Republic of Korea (North Korea)";
+                returnValue = "Czech Republic";
                 break;
             case 46:
-                returnValue = "Democratic Republic of the Cong";
+                returnValue = "DPRK";
                 break;
             case 47:
-                returnValue = "Denmark";
+                returnValue = "DRC";
                 break;
             case 48:
-                returnValue = "Djibouti";
+                returnValue = "Denmark";
                 break;
             case 49:
-                returnValue = "Dominica";
+                returnValue = "Djibouti";
                 break;
             case 50:
-                returnValue = "Dominican Republic";
+                returnValue = "Dominica";
                 break;
             case 51:
-                returnValue = "Ecuador";
+                returnValue = "Dominican Republic";
                 break;
             case 52:
-                returnValue = "Egypt";
+                returnValue = "Ecuador";
                 break;
             case 53:
-                returnValue = "El Salvador";
+                returnValue = "Egypt";
                 break;
             case 54:
-                returnValue = "Equatorial Guinea";
+                returnValue = "El Salvador";
                 break;
             case 55:
-                returnValue = "Eritrea";
+                returnValue = "Equatorial Guinea";
                 break;
             case 56:
-                returnValue = "Estonia";
+                returnValue = "Eritrea";
                 break;
             case 57:
-                returnValue = "Ethiopia";
+                returnValue = "Estonia";
                 break;
             case 58:
-                returnValue = "Fiji";
+                returnValue = "Ethiopia";
                 break;
             case 59:
-                returnValue = "Finland";
+                returnValue = "Fiji";
                 break;
             case 60:
-                returnValue = "France";
+                returnValue = "Finland";
                 break;
             case 61:
-                returnValue = "Gabon";
+                returnValue = "France";
                 break;
             case 62:
-                returnValue = "Gambia";
+                returnValue = "Gabon";
                 break;
             case 63:
-                returnValue = "Georgia";
+                returnValue = "Gambia";
                 break;
             case 64:
-                returnValue = "Germany";
+                returnValue = "Georgia";
                 break;
             case 65:
-                returnValue = "Ghana";
+                returnValue = "Germany";
                 break;
             case 66:
-                returnValue = "Greece";
+                returnValue = "Ghana";
                 break;
             case 67:
-                returnValue = "Grenada";
+                returnValue = "Greece";
                 break;
             case 68:
-                returnValue = "Guatemala";
+                returnValue = "Grenada";
                 break;
             case 69:
-                returnValue = "Guinea";
+                returnValue = "Guatemala";
                 break;
             case 70:
-                returnValue = "Guinea-Bissau";
+                returnValue = "Guinea";
                 break;
             case 71:
-                returnValue = "Guyana";
+                returnValue = "Guinea-Bissau";
                 break;
             case 72:
-                returnValue = "Haiti";
+                returnValue = "Guyana";
                 break;
             case 73:
-                returnValue = "Honduras";
+                returnValue = "Haiti";
                 break;
             case 74:
-                returnValue = "Hungary";
+                returnValue = "Honduras";
                 break;
             case 75:
-                returnValue = "Iceland";
+                returnValue = "Hungary";
                 break;
             case 76:
-                returnValue = "India";
+                returnValue = "Iceland";
                 break;
             case 77:
-                returnValue = "Indonesia";
+                returnValue = "India";
                 break;
             case 78:
-                returnValue = "Iran";
+                returnValue = "Indonesia";
                 break;
             case 79:
-                returnValue = "Iraq";
+                returnValue = "Iran";
                 break;
             case 80:
-                returnValue = "Ireland";
+                returnValue = "Iraq";
                 break;
             case 81:
-                returnValue = "Israel";
+                returnValue = "Ireland";
                 break;
             case 82:
-                returnValue = "Italy";
+                returnValue = "Israel";
                 break;
             case 83:
-                returnValue = "Jamaica";
+                returnValue = "Italy";
                 break;
             case 84:
-                returnValue = "Japan";
+                returnValue = "Jamaica";
                 break;
             case 85:
-                returnValue = "Jordan";
+                returnValue = "Japan";
                 break;
             case 86:
-                returnValue = "Kazakhstan";
+                returnValue = "Jordan";
                 break;
             case 87:
-                returnValue = "Kenya";
+                returnValue = "Kazakhstan";
                 break;
             case 88:
-                returnValue = "Kiribati";
+                returnValue = "Kenya";
                 break;
             case 89:
-                returnValue = "Kuwait";
+                returnValue = "Kiribati";
                 break;
             case 90:
-                returnValue = "Kyrgyzstan";
+                returnValue = "Kuwait";
                 break;
             case 91:
-                returnValue = "Lao People's Democratic Republic (Laos)";
+                returnValue = "Kyrgyzstan";
+                break;
+            case 92:
+                returnValue = "Laos";
                 break;
             case 93:
                 returnValue = "Latvia";
@@ -850,7 +848,7 @@ public class User {
                 returnValue = "Mexico";
                 break;
             case 112:
-                returnValue = "Micronesia (Federated States of)";
+                returnValue = "Micronesia";
                 break;
             case 113:
                 returnValue = "Monaco";
@@ -931,7 +929,7 @@ public class User {
                 returnValue = "Qatar";
                 break;
             case 139:
-                returnValue = "Republic of Korea (South Korea)";
+                returnValue = "South Korea";
                 break;
             case 140:
                 returnValue = "Republic of Moldova";
@@ -946,13 +944,13 @@ public class User {
                 returnValue = "Rwanda";
                 break;
             case 144:
-                returnValue = "Saint Kitts and Nevis";
+                returnValue = "St Kitts and Nevis";
                 break;
             case 145:
                 returnValue = "Saint Lucia";
                 break;
             case 146:
-                returnValue = "Saint Vincent and the Grenadines";
+                returnValue = "St Vincent";
                 break;
             case 147:
                 returnValue = "Samoa";
@@ -1060,16 +1058,16 @@ public class User {
                 returnValue = "Ukraine";
                 break;
             case 182:
-                returnValue = "United Arab Emirates";
+                returnValue = "UAE";
                 break;
             case 183:
-                returnValue = "United Kingdom of Great Britain and Northern Ireland";
+                returnValue = "UK";
                 break;
             case 184:
-                returnValue = "United Republic of Tanzania";
+                returnValue = "Tanzania";
                 break;
             case 185:
-                returnValue = "United States of America";
+                returnValue = "USA";
                 break;
             case 186:
                 returnValue = "Uruguay";
@@ -1102,326 +1100,716 @@ public class User {
 
     public String decodeLanguage(int languageID) {
 
-        languageID = languageID -1;
-
         String returnValue = "";
 
         switch (languageID) {
-            case 0:
+            case 1:
                 returnValue = "Afrikaans";
                 break;
-            case 1:
+
+            case 2:
                 returnValue = "Akan";
                 break;
-            case 2:
+
+            case 3:
                 returnValue = "Albanian";
                 break;
-            case 3:
+
+            case 4:
                 returnValue = "Amharic";
                 break;
-            case 4:
+
+            case 5:
                 returnValue = "Arabic";
                 break;
-            case 5:
+
+            case 6:
                 returnValue = "Armenian";
                 break;
-            case 6:
+
+            case 7:
                 returnValue = "Azerbaijani";
                 break;
-            case 7:
+
+            case 8:
                 returnValue = "Belarusian";
                 break;
-            case 8:
+
+            case 9:
                 returnValue = "Bengali";
                 break;
-            case 9:
+
+            case 10:
                 returnValue = "Bosnian";
                 break;
-            case 10:
+
+            case 11:
                 returnValue = "Bulgarian";
                 break;
-            case 11:
+
+            case 12:
                 returnValue = "Burmese";
                 break;
-            case 12:
+
+            case 13:
                 returnValue = "Cantonese";
                 break;
-            case 13:
+
+            case 14:
                 returnValue = "Catalan";
                 break;
-            case 14:
+
+            case 15:
                 returnValue = "Chinese, Simplified";
                 break;
-            case 15:
+
+            case 16:
                 returnValue = "Chinese, Traditional";
                 break;
-            case 16:
+
+            case 17:
                 returnValue = "Chuukese";
                 break;
-            case 17:
+
+            case 18:
                 returnValue = "Croatian";
                 break;
-            case 18:
+
+            case 19:
                 returnValue = "Czech";
                 break;
-            case 19:
+
+            case 20:
                 returnValue = "Danish";
                 break;
-            case 20:
+
+            case 21:
                 returnValue = "Dutch";
                 break;
-            case 21:
+
+            case 22:
                 returnValue = "Dzongkha";
                 break;
-            case 22:
+
+            case 23:
                 returnValue = "English";
                 break;
-            case 23:
+
+            case 24:
                 returnValue = "Estonian";
                 break;
-            case 24:
+
+            case 25:
                 returnValue = "Farsi";
                 break;
-            case 25:
+
+            case 26:
                 returnValue = "Finnish";
                 break;
-            case 26:
+
+            case 27:
                 returnValue = "Flemish";
                 break;
-            case 27:
+
+            case 28:
                 returnValue = "French";
                 break;
-            case 28:
+
+            case 29:
                 returnValue = "Fukienese";
                 break;
-            case 29:
+
+            case 30:
                 returnValue = "Georgian";
                 break;
-            case 30:
+
+            case 31:
                 returnValue = "German";
                 break;
-            case 31:
+
+            case 32:
                 returnValue = "Greek";
                 break;
-            case 32:
+
+            case 33:
                 returnValue = "Gujarati";
                 break;
-            case 33:
+
+            case 34:
                 returnValue = "Haitian Creole";
                 break;
-            case 34:
+
+            case 35:
                 returnValue = "Hebrew";
                 break;
-            case 35:
+
+            case 36:
                 returnValue = "Hindi";
                 break;
-            case 36:
+
+            case 37:
                 returnValue = "Hmong";
                 break;
-            case 37:
+
+            case 38:
                 returnValue = "Hungarian";
                 break;
-            case 38:
+
+            case 39:
                 returnValue = "Icelandic";
                 break;
-            case 39:
+
+            case 40:
                 returnValue = "Indonesian";
                 break;
-            case 40:
+
+            case 41:
                 returnValue = "Italian";
                 break;
-            case 41:
+
+            case 42:
                 returnValue = "Japanese";
                 break;
-            case 42:
+
+            case 43:
                 returnValue = "Javanese";
                 break;
-            case 43:
+
+            case 44:
                 returnValue = "Kannada";
                 break;
-            case 44:
+
+            case 45:
                 returnValue = "Kazakh";
                 break;
-            case 45:
+
+            case 46:
                 returnValue = "Khalkha Mongolian";
                 break;
-            case 46:
+
+            case 47:
                 returnValue = "Khmer";
                 break;
-            case 47:
+
+            case 48:
                 returnValue = "Korean";
                 break;
-            case 48:
+
+            case 49:
                 returnValue = "Kurdish";
                 break;
-            case 49:
+
+            case 50:
                 returnValue = "Lao";
                 break;
-            case 50:
+
+            case 51:
                 returnValue = "Latin";
                 break;
-            case 51:
+
+            case 52:
                 returnValue = "Latvian";
                 break;
-            case 52:
+
+            case 53:
                 returnValue = "Lingala";
                 break;
-            case 53:
+
+            case 54:
                 returnValue = "Lithuanian";
                 break;
-            case 54:
+
+            case 55:
                 returnValue = "Macedonian";
                 break;
-            case 55:
+
+            case 56:
                 returnValue = "Malagasy";
                 break;
-            case 56:
+
+            case 57:
                 returnValue = "Malay";
                 break;
-            case 57:
+
+            case 58:
                 returnValue = "Maltese";
                 break;
-            case 58:
+
+            case 59:
                 returnValue = "Mandarin";
                 break;
-            case 59:
+
+            case 60:
                 returnValue = "Marathi";
                 break;
-            case 60:
+
+            case 61:
                 returnValue = "Marshallese";
                 break;
-            case 61:
+
+            case 62:
                 returnValue = "Nepali";
                 break;
-            case 62:
+
+            case 63:
                 returnValue = "Norwegian";
                 break;
-            case 63:
+
+            case 64:
                 returnValue = "Nuer";
                 break;
-            case 64:
+
+            case 65:
                 returnValue = "Nyanja";
                 break;
-            case 65:
+
+            case 66:
                 returnValue = "Pashto";
                 break;
-            case 66:
+
+            case 67:
                 returnValue = "Polish";
                 break;
-            case 67:
+
+            case 68:
                 returnValue = "Portuguese";
                 break;
-            case 68:
+
+            case 69:
                 returnValue = "Punjabi";
                 break;
-            case 69:
+
+            case 70:
                 returnValue = "Quechua";
                 break;
-            case 70:
+
+            case 71:
                 returnValue = "Romani";
                 break;
-            case 71:
+
+            case 72:
                 returnValue = "Romanian";
                 break;
-            case 72:
+
+            case 73:
                 returnValue = "Romansch";
                 break;
-            case 73:
+
+            case 74:
                 returnValue = "Rundi";
                 break;
-            case 74:
+
+            case 75:
                 returnValue = "Russian";
                 break;
-            case 75:
+
+            case 76:
                 returnValue = "Samoan";
                 break;
-            case 76:
+
+            case 77:
                 returnValue = "Serbian";
                 break;
-            case 77:
+
+            case 78:
                 returnValue = "Shanghainese";
                 break;
-            case 78:
+
+            case 79:
                 returnValue = "Sinhala";
                 break;
-            case 79:
+
+            case 80:
                 returnValue = "Slovak";
                 break;
-            case 80:
+
+            case 81:
                 returnValue = "Slovene";
                 break;
-            case 81:
+
+            case 82:
                 returnValue = "Somali";
                 break;
-            case 82:
+
+            case 83:
                 returnValue = "Sotho";
                 break;
-            case 83:
+
+            case 84:
                 returnValue = "Spanish";
                 break;
-            case 84:
+
+            case 85:
                 returnValue = "Swahili";
                 break;
-            case 85:
+
+            case 86:
                 returnValue = "Swedish";
                 break;
-            case 86:
+
+            case 87:
                 returnValue = "Tagalog";
                 break;
-            case 87:
+
+            case 88:
                 returnValue = "Tajik";
                 break;
-            case 88:
+
+            case 89:
                 returnValue = "Tamil";
                 break;
-            case 89:
+
+            case 90:
                 returnValue = "Telugu";
                 break;
-            case 90:
+
+            case 91:
                 returnValue = "Thai";
                 break;
-            case 91:
+
+            case 92:
                 returnValue = "Tibetan";
                 break;
+
             case 93:
                 returnValue = "Tigrinya";
                 break;
+
             case 94:
                 returnValue = "Tswana";
                 break;
+
             case 95:
                 returnValue = "Turkish";
                 break;
+
             case 96:
                 returnValue = "Turkmen";
                 break;
+
             case 97:
                 returnValue = "Ukrainian";
                 break;
+
             case 98:
                 returnValue = "Urdu";
                 break;
+
             case 99:
                 returnValue = "Uzbek";
                 break;
+
             case 100:
                 returnValue = "Vietnamese";
                 break;
+
             case 101:
                 returnValue = "Welsh";
                 break;
+
             case 102:
                 returnValue = "Yao";
                 break;
+
             case 103:
                 returnValue = "Yiddish";
                 break;
+
             case 104:
                 returnValue = "Zulu";
                 break;
+
         }
 
         return returnValue;
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

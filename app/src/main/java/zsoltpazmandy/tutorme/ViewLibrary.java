@@ -82,7 +82,7 @@ public class ViewLibrary extends AppCompatActivity {
 
                     // ID of author of Module (to be used to retrieve User data once there's a DB
                     // with name, info, ratings & stats)
-                    moduleInfo.add(moduleSelectedJSON.getString("AuthorID"));
+                    moduleInfo.add(moduleSelectedJSON.getString("Author"));
 
                     // PRO/free
                     moduleInfo.add("" + moduleSelectedJSON.getInt("PRO"));

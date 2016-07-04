@@ -31,7 +31,7 @@
     <string name="login_username_hint">username</string>
     <string name="login_pass_hint">password</string>
     <string name="title_activity_profile_setup">Setup User Profile</string>
-    <string name="username_label">Username: </string>
+    <string name="username_label">Username</string>
     <string name="age_label">Age:</string>
     <string name="location_label">Location</string>
     <string name="languages1_label">First Language</string>
@@ -59,4 +59,5 @@
     <string name="title_activity_profile_tab">ProfileTab</string>
     <string name="title_activity_learning_tab">LearningTab</string>
     <string name="title_activity_training_tab">TrainingTab</string>
+    <string name="rating_label">Rating</string>
 </resources>

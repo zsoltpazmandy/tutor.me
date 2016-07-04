@@ -70,13 +70,13 @@ public class ProfileSetup extends AppCompatActivity {
         languages1Spinner.setAdapter(languages1SpinnerAdapter);
 
         TextView languages2Label = (TextView) findViewById(R.id.languages2_label);
-        Spinner languages2Spinner = (Spinner) findViewById(R.id.languages2_spinner);
+        final Spinner languages2Spinner = (Spinner) findViewById(R.id.languages2_spinner);
         ArrayAdapter<CharSequence> languages2SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
         languages2SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages2Spinner.setAdapter(languages2SpinnerAdapter);
 
         TextView languages3Label = (TextView) findViewById(R.id.languages3_label);
-        Spinner languages3Spinner = (Spinner) findViewById(R.id.languages3_spinner);
+        final Spinner languages3Spinner = (Spinner) findViewById(R.id.languages3_spinner);
         ArrayAdapter<CharSequence> languages3SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
         languages3SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages3Spinner.setAdapter(languages3SpinnerAdapter);
@@ -114,6 +114,12 @@ public class ProfileSetup extends AppCompatActivity {
                         userUpdate.put("Location", locationSpinner.getSelectedItemPosition());
                         userUpdate.accumulate("Languages", "x"); // padding from beginning with "x", so it's always a JSONArray
                         userUpdate.accumulate("Languages", languages1Spinner.getSelectedItemPosition());
+                        if(languages2Spinner.getSelectedItemPosition()!=0) {
+                            userUpdate.accumulate("Languages", languages2Spinner.getSelectedItemPosition());
+                        }
+                        if(languages3Spinner.getSelectedItemPosition()!=0) {
+                            userUpdate.accumulate("Languages", languages3Spinner.getSelectedItemPosition());
+                        }
 
                         ArrayList<String> interests = new ArrayList<>();
 
