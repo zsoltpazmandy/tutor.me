@@ -22,6 +22,11 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
+
 // SETUP TEXT FIELDS
         final EditText usernameField = (EditText) findViewById(R.id.username_textfield);
         usernameField.setMaxWidth(usernameField.getWidth());

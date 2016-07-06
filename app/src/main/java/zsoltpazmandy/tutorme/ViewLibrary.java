@@ -28,6 +28,11 @@ public class ViewLibrary extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
+
         TextView displayTop = (TextView) findViewById(R.id.display_top);
         assert displayTop != null;
 

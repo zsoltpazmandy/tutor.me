@@ -26,6 +26,11 @@ public class ProfileSetup extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
+
         Intent userIntent = getIntent();
 
         JSONObject user = new JSONObject();
@@ -38,17 +43,6 @@ public class ProfileSetup extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-// USERNAME
-        TextView usernameLabel = (TextView) findViewById(R.id.username_label);
-        TextView usernameField = (TextView) findViewById(R.id.username_field);
-        try {
-            assert usernameField != null;
-            usernameField.setText(user.getString("Username"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        usernameField.setEnabled(false);
 // AGE
         TextView ageLabel = (TextView) findViewById(R.id.age_label);
         final Spinner ageSpinner = (Spinner) findViewById(R.id.age_spinner);

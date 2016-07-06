@@ -25,6 +25,11 @@ public class MakeTableSlide extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_table_slide);
 
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
+
         try {
             module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
         } catch (JSONException e) {

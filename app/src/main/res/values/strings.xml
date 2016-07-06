@@ -33,8 +33,8 @@
     <string name="title_activity_profile_setup">Setup User Profile</string>
     <string name="username_label">Username</string>
     <string name="age_label">Age:</string>
-    <string name="location_label">Location</string>
-    <string name="languages1_label">First Language</string>
+    <string name="location_label">Location (required)</string>
+    <string name="languages1_label">First Language (required)</string>
     <string name="languages2_label">Second Language</string>
     <string name="languages3_label">Third Language</string>
     <string name="interests_check_label">Interests</string>
@@ -48,10 +48,10 @@
     <string name="food_check_label"><![CDATA[food & cuisine]]></string>
     <string name="health_check_label">health</string>
     <string name="computers_check_label">computers</string>
-    <string name="you_may_change_your_userrname_and_password_later">You may change your userrname and password later, along with all the other settings below.</string>
+    <string name="you_may_change_your_username_and_password_later">Configure all of your preferences below. You can change your Username and Password by clicking on Account Settings on the Profile tab.</string>
     <string name="profile_setup_age_hint">Please select your age (optional)</string>
-    <string name="profile_setup_location_hint">Please select your location. We\'ll use this information to match you up with other users from similar timezones. (required)</string>
-    <string name="profile_setup_mothertongue_hint">Please select your mother-tongue (required)</string>
+    <string name="profile_setup_location_hint">Please select your location. We\'ll use this information to match you up with other users from similar timezones.</string>
+    <string name="profile_setup_mothertongue_hint">Please select your mother-tongue</string>
     <string name="profile_setup_second_language_hint">Please select your second language (optional)</string>
     <string name="profile_setup_third_language_hin">Please select your third language (optional)</string>
     <string name="profile_setup_interests_hint">Please tick one or more of your interests. We\'ll use this to attempt to match you up with other users with similar preferences. (optional)</string>

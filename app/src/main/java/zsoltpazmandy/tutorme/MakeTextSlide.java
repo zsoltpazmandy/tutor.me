@@ -25,6 +25,11 @@ public class MakeTextSlide extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
+
         TextView textSlideTopTag = (TextView) findViewById(R.id.textSlideTopTag);
         final EditText slideStringEdit = (EditText) findViewById(R.id.textSlideString);
 
