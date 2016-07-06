@@ -89,16 +89,16 @@ public class Home extends AppCompatActivity {
         TextView language2 = (TextView) findViewById(R.id.profile_tab_textview_language2);
         TextView language3 = (TextView) findViewById(R.id.profile_tab_textview_language3);
         TextView interests = (TextView) findViewById(R.id.profile_tab_textview_interest);
-        final CheckBox languagesCheck = (CheckBox) findViewById(R.id.language_check);
-        final CheckBox travelCheck = (CheckBox) findViewById(R.id.travel_check);
-        final CheckBox sportsCheck = (CheckBox) findViewById(R.id.sports_check);
-        final CheckBox historyCheck = (CheckBox) findViewById(R.id.history_check);
-        final CheckBox musicCheck = (CheckBox) findViewById(R.id.music_check);
-        final CheckBox scienceCheck = (CheckBox) findViewById(R.id.science_check);
-        final CheckBox artsCheck = (CheckBox) findViewById(R.id.arts_check);
-        final CheckBox foodCheck = (CheckBox) findViewById(R.id.food_check);
-        final CheckBox healthCheck = (CheckBox) findViewById(R.id.health_check);
-        final CheckBox computersCheck = (CheckBox) findViewById(R.id.computers_check);
+        CheckBox languagesCheck = (CheckBox) findViewById(R.id.language_check);
+        CheckBox travelCheck = (CheckBox) findViewById(R.id.travel_check);
+        CheckBox sportsCheck = (CheckBox) findViewById(R.id.sports_check);
+        CheckBox historyCheck = (CheckBox) findViewById(R.id.history_check);
+        CheckBox musicCheck = (CheckBox) findViewById(R.id.music_check);
+        CheckBox scienceCheck = (CheckBox) findViewById(R.id.science_check);
+        CheckBox artsCheck = (CheckBox) findViewById(R.id.arts_check);
+        CheckBox foodCheck = (CheckBox) findViewById(R.id.food_check);
+        CheckBox healthCheck = (CheckBox) findViewById(R.id.health_check);
+        CheckBox computersCheck = (CheckBox) findViewById(R.id.computers_check);
         final EditText userEdit = (EditText) findViewById(R.id.profile_tab_edittext_username);
         final EditText ratingEdit = (EditText) findViewById(R.id.profile_tab_edittext_rating);
         final EditText locationEdit = (EditText) findViewById(R.id.profile_tab_edittext_location);
@@ -125,7 +125,6 @@ public class Home extends AppCompatActivity {
         language3Edit.setEnabled(false);
 
 
-
         assert avatar != null;
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -148,8 +147,9 @@ public class Home extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent editProfile = new Intent(Home.this, ProfileSetup.class);
-                editProfile.putExtra("Edit Profile", user.toString());
-
+                editProfile.putExtra("User String", user.toString());
+                startActivity(editProfile);
+                finish();
             }
         });
 
@@ -164,12 +164,11 @@ public class Home extends AppCompatActivity {
         });
 
 
-
         try {
 
             userEdit.setText(user.getString("Username"));
             locationEdit.setText(u.decodeCountry(Integer.parseInt(user.getString("Location"))));
-            String[] tmp = user.getString("Languages").replace("[", "").replace("]", "").split(",");
+            String[] tmp = user.getString("Languages").replace("[", "").replace("]", "").replace("\"", "").replace("\\", "").split(",");
             language1Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[1])));
 
             if (tmp.length == 3) {
@@ -181,42 +180,45 @@ public class Home extends AppCompatActivity {
                 language3Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[3])));
             }
 
-            int[] interestIDs = u.getInterests(getApplicationContext(), user);
+            int[] interestIDs = new int[0];
 
-            for (int i = 0; i < interestIDs.length; i++) {
-                switch (interestIDs[i]) {
-                    case 1:
-                        languagesCheck.setChecked(true);
-                        break;
-                    case 2:
-                        travelCheck.setChecked(true);
-                        break;
-                    case 3:
-                        sportsCheck.setChecked(true);
-                        break;
-                    case 4:
-                        historyCheck.setChecked(true);
-                        break;
-                    case 5:
-                        musicCheck.setChecked(true);
-                        break;
-                    case 6:
-                        scienceCheck.setChecked(true);
-                        break;
-                    case 7:
-                        artsCheck.setChecked(true);
-                        break;
-                    case 8:
-                        foodCheck.setChecked(true);
-                        break;
-                    case 9:
-                        healthCheck.setChecked(true);
-                        break;
-                    case 10:
-                        computersCheck.setChecked(true);
-                        break;
+            interestIDs = u.getInterests(getApplicationContext(), user);
+
+            if (!("" + interestIDs[0]).equals(""))
+                for (int interestID : interestIDs) {
+                    switch (interestID) {
+                        case 1:
+                            languagesCheck.setChecked(true);
+                            break;
+                        case 2:
+                            travelCheck.setChecked(true);
+                            break;
+                        case 3:
+                            sportsCheck.setChecked(true);
+                            break;
+                        case 4:
+                            historyCheck.setChecked(true);
+                            break;
+                        case 5:
+                            musicCheck.setChecked(true);
+                            break;
+                        case 6:
+                            scienceCheck.setChecked(true);
+                            break;
+                        case 7:
+                            artsCheck.setChecked(true);
+                            break;
+                        case 8:
+                            foodCheck.setChecked(true);
+                            break;
+                        case 9:
+                            healthCheck.setChecked(true);
+                            break;
+                        case 10:
+                            computersCheck.setChecked(true);
+                            break;
+                    }
                 }
-            }
 
         } catch (JSONException e) {
             e.printStackTrace();

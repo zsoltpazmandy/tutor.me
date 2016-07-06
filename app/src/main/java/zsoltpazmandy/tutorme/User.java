@@ -448,7 +448,25 @@ public class User {
         return training;
     }
 
-    public int[] getLanguages() {
+    public int[] getLanguages(Context context, JSONObject user) {
+        int[] languages = new int[3];
+
+        String[] tempLanguages = new String[0];
+
+        try {
+
+            String tempString = user.getString("Languages").replace("[", "").replace("]", "").replace("\\", "").substring(3);
+            tempLanguages = tempString.split(",");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        for (int i = 1; i < tempLanguages.length; i++) {
+            languages[i - 1] = Integer.parseInt(tempLanguages[i].replace("\"", ""));
+        }
+
         return languages;
     }
 
@@ -477,8 +495,9 @@ public class User {
             e.printStackTrace();
         }
 
+//        if (!("" + tempInterests[0]).equals("\"\""))
         for (int i = 1; i < tempInterests.length; i++) {
-            interests[i - 1] = Integer.parseInt(tempInterests[i].replace("\"", "")) +1;
+            interests[i - 1] = Integer.parseInt(tempInterests[i].replace("\"", "")) + 1;
         }
 
         return interests;
