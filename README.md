@@ -1,4 +1,4 @@
-![tutor.me](readme_res/logo.png)
+![tutor.me](readme_res/logo2.png)
 
 A community-based, extensible tutoring platform for Android.
 
