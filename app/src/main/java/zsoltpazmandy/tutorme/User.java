@@ -144,6 +144,41 @@ public class User {
         return returnIDtoReg;
     }
 
+    public int login(Context context, String username, String password) {
+        int userID = 0;
+        boolean found = false;
+
+        try {
+
+            List<Integer> allIDs = getUserIDs(context);
+
+            for (int i = 1; i < userCount(context); i++) {
+                if (getUser(context, allIDs.get(i)).getString("Username").equals(username)) {
+                    if (getUser(context, allIDs.get(i)).getString("Password").equals(password)) {
+                        userID = allIDs.get(i);
+                        Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show();
+                        found = true;
+                        return userID;
+                    } else {
+                        if (getUser(context, allIDs.get(i)).getString("Username").equals(username) &&
+                                !getUser(context, allIDs.get(i)).getString("Password").equals(password)) {
+                            Toast.makeText(context, "Password incorrect", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+
+            if (!found) {
+                Toast.makeText(context, "Username cannot be found in database", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return userID;
+    }
+
     public boolean isUsernameTaken(Context context, String username) {
 
         boolean taken = false;
@@ -425,7 +460,27 @@ public class User {
         return location;
     }
 
-    public int[] getInterests() {
+    public int[] getInterests(Context context, JSONObject user) {
+
+        int[] interests = new int[10];
+
+        String[] tempInterests = new String[0];
+
+        try {
+
+            String tempString = user.getString("Interests").replace("[", "").replace("]", "").replace("x", "");
+            tempString = tempString.substring(3, tempString.length());
+            tempInterests = tempString.split(",");
+
+        } catch (JSONException e) {
+
+            e.printStackTrace();
+        }
+
+        for (int i = 1; i < tempInterests.length; i++) {
+            interests[i - 1] = Integer.parseInt(tempInterests[i].replace("\"", "")) +1;
+        }
+
         return interests;
     }
 
@@ -1525,291 +1580,3 @@ public class User {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

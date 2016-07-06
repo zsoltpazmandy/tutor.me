@@ -3,6 +3,7 @@ package zsoltpazmandy.tutorme;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -35,28 +36,36 @@ public class ViewLibPopUpModDisplay extends Activity {
         int pro = Integer.parseInt(infoToShow.get(2));
 
         if (pro == 1) {
-            proView.setText("PRO Module");
+            proView.setText(R.string.popup_view_pro_tag);
         } else {
-            proView.setText("Free Module");
+            proView.setText(R.string.popup_view_free_tag);
         }
 
         TextView ratingView = (TextView) findViewById(R.id.popUpTextViewRating);
         String ratingText = "Review IDs: " + infoToShow.get(5);
         ratingView.setText(ratingText);
 
-        TextView descView = (TextView) findViewById(R.id.popUpTextViewDesc);
-        descView.setText(infoToShow.get(4));
+        Button enrollButt = (Button) findViewById(R.id.enrollButt);
+        if(pro == 1){
+            enrollButt.setText(R.string.popup_view_enroll_pro);
+        } else {
+            enrollButt.setText(R.string.popup_enroll_free);
+        }
+
 
         TextView slideNumView = (TextView) findViewById(R.id.popUpTextNoOfSlides);
 
         // singular or plural "Slide/s"
         int amountOfSlides = Integer.parseInt(infoToShow.get(7));
         if (amountOfSlides > 1) {
-            String noOfSlides = "Contains " + infoToShow.get(7) + " slides.";
+            String noOfSlides = getString(R.string.noOfSlides_contains) + infoToShow.get(7) + getString(R.string.noOfSlides_slides);
             slideNumView.setText(noOfSlides);
         } else {
-            slideNumView.setText("Contains 1 slide.");
+            slideNumView.setText(R.string.noOfSlides_contains_one);
         }
+
+        TextView descView = (TextView) findViewById(R.id.popUpTextViewDesc);
+        descView.setText(infoToShow.get(4));
 
     }
 

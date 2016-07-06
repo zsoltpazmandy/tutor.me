@@ -8,15 +8,26 @@
     tools:context="zsoltpazmandy.tutorme.LearningTab"
     tools:showIn="@layout/activity_learning_tab">
 
-    <TextView
+
+    <EditText
+        android:id="@+id/learning_search_field"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="The modules you're currently taking, or have already completed are going to show up here"/>
+        android:hint="Search Module Library"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:textStyle="italic"
+        android:layout_height="wrap_content" />
+
     <Button
         android:id="@+id/viewLibButt"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@id/learning_search_field"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
         android:text="@string/view_lib_butt" />
 </RelativeLayout>

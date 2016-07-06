@@ -20,7 +20,7 @@
     <string name="next_slide_butt">Add new Slide</string>
     <string name="plaintext_image_tag">Plaintext</string>
     <string name="table_image_tag">Table</string>
-    <string name="view_lib_butt">View Library</string>
+    <string name="view_lib_butt">Browse All</string>
     <string name="title_activity_view_library">Browse Module Library</string>
     <string name="total_module_count">Total module count</string>
     <string name="title_activity_view_lib_pop_up_mod_display">View Module</string>
@@ -60,4 +60,30 @@
     <string name="title_activity_learning_tab">LearningTab</string>
     <string name="title_activity_training_tab">TrainingTab</string>
     <string name="rating_label">Rating</string>
+    <string name="learning_search_butt">Search</string>
+    <string name="popup_view_pro_tag">PRO Module</string>
+    <string name="popup_view_free_tag">Free Module</string>
+    <string name="popup_view_enroll_pro">Enroll ($)</string>
+    <string name="popup_enroll_free">Enroll for free</string>
+    <string name="noOfSlides_contains">"Contains "</string>
+    <string name="noOfSlides_slides">" slides."</string>
+    <string name="noOfSlides_contains_one">Contains 1 slide.</string>
+    <string name="title_activity_sdasd">sdasd</string>
+    <string name="title_activity_login">Sign in</string>
+
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password (optional)</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="error_invalid_email">This email address is invalid</string>
+    <string name="error_invalid_password">This password is too short</string>
+    <string name="error_incorrect_password">This password is incorrect</string>
+    <string name="error_field_required">This field is required</string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email
+        completions."
+    </string>
+    <string name="logout_butt">Log out</string>
+    <string name="edit_profile_but">Edit Profile</string>
+    <string name="account_settings_butt">Account settings</string>
 </resources>

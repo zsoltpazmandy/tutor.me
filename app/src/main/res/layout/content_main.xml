@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="zsoltpazmandy.tutorme.MainActivity"
     tools:showIn="@layout/activity_main">
@@ -12,20 +12,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <ImageView
-            android:id="@+id/tutorme_logo"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/logo_layout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:src="@drawable/logo" />
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/tutorme_logo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/logo" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/loginline"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tutorme_logo"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_below="@id/logo_layout"
             android:orientation="horizontal"
             android:paddingLeft="@dimen/double_activity_horizontal_margin"
             android:paddingRight="@dimen/double_activity_horizontal_margin"

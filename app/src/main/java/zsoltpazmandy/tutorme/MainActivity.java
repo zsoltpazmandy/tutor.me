@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,26 +22,51 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+// SETUP TEXT FIELDS
         final EditText usernameField = (EditText) findViewById(R.id.username_textfield);
         usernameField.setMaxWidth(usernameField.getWidth());
         final EditText passwordField = (EditText) findViewById(R.id.password_textfield);
         passwordField.setMaxWidth(passwordField.getWidth());
 
+// LOGIN BUTTON
         Button loginButt = (Button) findViewById(R.id.login_butt);
         assert loginButt != null;
         loginButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "login button pressed", Toast.LENGTH_SHORT).show();
+
+                String username = usernameField.getText().toString().trim();
+                String password = passwordField.getText().toString().trim();
+
+                User user = new User(getApplicationContext());
+
+                if (validateInput(username, password)) {
+                    int returnVal = user.login(getApplicationContext(), username, password);
+                    if (returnVal != 0) {
+                        Intent launchHome = new Intent(MainActivity.this, Home.class);
+                        try {
+                            launchHome.putExtra("User", user.getUser(getApplicationContext(), returnVal).toString());
+                            startActivity(launchHome);
+                            finish();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
 
             }
         });
 
+
+// SIGN UP BUTTON
         Button signUpButt = (Button) findViewById(R.id.signUpButt);
         assert signUpButt != null;
         signUpButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                String username = usernameField.getText().toString().trim();
+                String password = passwordField.getText().toString().trim();
 
                 User user = new User(getApplicationContext());
 
@@ -51,29 +74,9 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
 
-                    if (!usernameField.getText().toString().trim().matches("^[\\w_-]+")) {
-                        Toast.makeText(getApplicationContext(), "Username format incorrect.\nUse: A-Z, a-z, 0-9, _, -", Toast.LENGTH_SHORT).show();
-                        return;
+                    if (validateInput(username, password)) {
+                        returnVal = user.register(getApplicationContext(), username, password);
                     }
-
-                    if (!(usernameField.getText().toString().length() > 2 && usernameField.getText().toString().length() < 11)) {
-                        Toast.makeText(getApplicationContext(), "Username must be 3-10 characters long.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (!passwordField.getText().toString().matches("^[\\w_-]+")) {
-                        Toast.makeText(getApplicationContext(), "Password format incorrect.\nUse: A-Z, a-z, 0-9, _, -", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    if (!(passwordField.getText().toString().length() > 5 && passwordField.getText().toString().length() < 11)) {
-                        Toast.makeText(getApplicationContext(), "Password must be 6-10 characters long.", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
-
-                    returnVal = user.register(getApplicationContext(),
-                            usernameField.getText().toString().trim().toLowerCase(),
-                            passwordField.getText().toString().trim().toLowerCase());
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -92,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
-                    // begin "complete profile" activity
 
                 } else {
                     Toast.makeText(getApplicationContext(), "Registration failed. Username taken.", Toast.LENGTH_SHORT).show();
@@ -118,27 +119,29 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public boolean validateInput(String username, String password) {
+        boolean result = true;
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (!username.trim().matches("^[\\w_-]+")) {
+            Toast.makeText(getApplicationContext(), "Username format incorrect.\nUse: A-Z, a-z, 0-9, _, -", Toast.LENGTH_SHORT).show();
+            result = false;
         }
 
-        return super.onOptionsItemSelected(item);
-    }
+        if (!(username.trim().length() > 2 && username.trim().length() < 11)) {
+            Toast.makeText(getApplicationContext(), "Username must be 3-10 characters long.", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
 
+        if (!password.trim().matches("^[\\w_-]+")) {
+            Toast.makeText(getApplicationContext(), "Password format incorrect.\nUse: A-Z, a-z, 0-9, _, -", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        if (!(password.trim().length() > 5 && password.trim().length() < 11)) {
+            Toast.makeText(getApplicationContext(), "Password must be 6-10 characters long.", Toast.LENGTH_SHORT).show();
+            result = false;
+        }
+
+        return result;
+    }
 }

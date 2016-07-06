@@ -2,11 +2,6 @@ package zsoltpazmandy.tutorme;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class ProfileTab extends AppCompatActivity {
 
@@ -23,9 +18,6 @@ public class ProfileTab extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
-
-
-
 
     }
 
