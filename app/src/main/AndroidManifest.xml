@@ -106,13 +106,6 @@
             android:name=".TrainingTab"
             android:label="@string/title_activity_training_tab"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".sdasd"
-            android:label="@string/title_activity_sdasd"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity
-            android:name=".LoginActivity"
-            android:label="@string/title_activity_login"></activity>
     </application>
 
 </manifest>

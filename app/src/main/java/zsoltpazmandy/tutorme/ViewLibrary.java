@@ -21,6 +21,8 @@ public class ViewLibrary extends AppCompatActivity {
 
     final Functions f = new Functions();
 
+    JSONObject user = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,13 @@ public class ViewLibrary extends AppCompatActivity {
             e.printStackTrace();
         }
 
+        JSONObject user = null;
+        try {
+            user = new JSONObject(getIntent().getStringExtra("User String"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         ListView listView = (ListView) findViewById(R.id.library_listview);
 
         ArrayList<String> modulesNamesList = null;
@@ -70,6 +79,7 @@ public class ViewLibrary extends AppCompatActivity {
         assert listView != null;
         listView.setAdapter(libraryAdapter);
 
+        final JSONObject finalUser = user;
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -115,7 +125,7 @@ public class ViewLibrary extends AppCompatActivity {
                     }
 
                     Intent showModulePop = new Intent(ViewLibrary.this, ViewLibPopUpModDisplay.class);
-
+                    showModulePop.putExtra("User String", finalUser.toString());
                     showModulePop.putStringArrayListExtra("Module Info", moduleInfo);
 
                     startActivityForResult(showModulePop, 1);
@@ -130,6 +140,18 @@ public class ViewLibrary extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == 1){
+            try {
+                this.user = new JSONObject(data.getStringExtra("User String"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 
 

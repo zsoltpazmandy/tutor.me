@@ -243,6 +243,7 @@ public class Home extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent openLibrary = new Intent(Home.this, ViewLibrary.class);
+                openLibrary.putExtra("User String", user.toString());
                 startActivity(openLibrary);
             }
         });

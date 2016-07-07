@@ -446,9 +446,9 @@ public class User {
     public int getAge(Context context, JSONObject user) {
         int age = 0;
 
-        try{
+        try {
             age = Integer.parseInt(user.getString("Age"));
-        }catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         return age;
@@ -483,8 +483,56 @@ public class User {
         return rating;
     }
 
-    public int[] getLearning() {
-        return learning;
+    public int[] getLearning(Context context, JSONObject user) {
+
+        Functions f = new Functions();
+
+        int[] learningTheseModules = new int[0];
+
+        try {
+            learningTheseModules = new int[f.moduleCount(context)];
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String[] tempArray = new String[1];
+
+        try {
+            String tempLearning = user.getString("Learning");
+            tempLearning = tempLearning.replace("[", "").replace("]", "");
+
+            if(tempLearning.contains(",")) {
+                tempArray = tempLearning.split(",");
+            } else {
+                tempArray[0] = tempLearning;
+            }
+
+            if (tempArray.length == 1) {
+                learningTheseModules[0] = Integer.parseInt(tempArray[0]);
+            } else {
+                for (int i = 0; i < tempArray.length; i++) {
+                    learningTheseModules[i] = Integer.parseInt(tempArray[i]);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return learningTheseModules;
+    }
+
+    public boolean isLearning(Context context, JSONObject user, int moduleID) {
+        boolean result = false;
+
+        for (int i = 0; i < getLearning(context, user).length; i++) {
+            if (getLearning(context, user)[i] == moduleID)
+                result = true;
+        }
+
+        return result;
     }
 
     public int[] getTraining() {
@@ -507,8 +555,15 @@ public class User {
         this.rating = rating;
     }
 
-    public void setLearning(int[] learning) {
-        this.learning = learning;
+    public void addToLearning(Context context, JSONObject user, int newLearning) {
+
+        try {
+            user.accumulate("Learning", newLearning);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        saveUser(context, user);
     }
 
     public void setTraining(int[] training) {
