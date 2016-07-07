@@ -20,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Home extends AppCompatActivity {
 
@@ -53,7 +54,11 @@ public class Home extends AppCompatActivity {
         setupTabs();
 
         setupProfileTab();
-        setupLearningTab();
+        try {
+            setupLearningTab();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         setupTrainingTab();
 
     }
@@ -108,13 +113,20 @@ public class Home extends AppCompatActivity {
         CheckBox foodCheck = (CheckBox) findViewById(R.id.food_check);
         CheckBox healthCheck = (CheckBox) findViewById(R.id.health_check);
         CheckBox computersCheck = (CheckBox) findViewById(R.id.computers_check);
-        final EditText userEdit = (EditText) findViewById(R.id.profile_tab_edittext_username);
-        final EditText ratingEdit = (EditText) findViewById(R.id.profile_tab_edittext_rating);
-        final EditText locationEdit = (EditText) findViewById(R.id.profile_tab_edittext_location);
-        final EditText language1Edit = (EditText) findViewById(R.id.profile_tab_edittext_language1);
-        final EditText language2Edit = (EditText) findViewById(R.id.profile_tab_edittext_language2);
-        final EditText language3Edit = (EditText) findViewById(R.id.profile_tab_edittext_language3);
-        final EditText ageEdit = (EditText) findViewById(R.id.profile_tab_edittext_age);
+        EditText userEdit = (EditText) findViewById(R.id.profile_tab_edittext_username);
+        userEdit.setMaxWidth(userEdit.getWidth());
+        EditText ratingEdit = (EditText) findViewById(R.id.profile_tab_edittext_rating);
+        ratingEdit.setMaxWidth(userEdit.getWidth());
+        EditText locationEdit = (EditText) findViewById(R.id.profile_tab_edittext_location);
+        locationEdit.setMaxWidth(userEdit.getWidth());
+        EditText language1Edit = (EditText) findViewById(R.id.profile_tab_edittext_language1);
+        language1Edit.setMaxWidth(userEdit.getWidth());
+        EditText language2Edit = (EditText) findViewById(R.id.profile_tab_edittext_language2);
+        language2Edit.setMaxWidth(userEdit.getWidth());
+        EditText language3Edit = (EditText) findViewById(R.id.profile_tab_edittext_language3);
+        language3Edit.setMaxWidth(userEdit.getWidth());
+        EditText ageEdit = (EditText) findViewById(R.id.profile_tab_edittext_age);
+        ageEdit.setMaxWidth(userEdit.getWidth());
 
         languagesCheck.setEnabled(false);
         travelCheck.setEnabled(false);
@@ -243,28 +255,33 @@ public class Home extends AppCompatActivity {
 
     }
 
-    public void setupLearningTab() {
+    public void setupLearningTab() throws JSONException {
 
         TextView learningView = (TextView) findViewById(R.id.learning_tab_currently_learning_top);
 
-        if (u.getLearning(getApplicationContext(), user).length < 3 &&
-                u.getLearning(getApplicationContext(), user)[0] == 0 &&
-                u.getLearning(getApplicationContext(), user)[1] == 0) {
+        ArrayList<Integer> learningIDs = new ArrayList<>();
+
+        for (int i : u.getLearning(getApplicationContext(), user)) {
+            if (i != 0) {
+                learningIDs.add(i);
+                System.out.println(i);
+            }
+        }
+
+        if (learningIDs.size() == 0) {
             assert learningView != null;
             learningView.setText(R.string.no_module_taken_yet);
         } else {
             assert learningView != null;
             learningView.setText(R.string.i_m_currently_learning);
 
-            int[] currentModules = u.getLearning(getApplicationContext(), user);
+            List<Integer> currentModules = u.getLearning(getApplicationContext(), user);
 
             ListView learningList = (ListView) findViewById(R.id.learning_tab_currently_learning_list);
 
             ArrayList<String> learningModules = new ArrayList<>();
 
-
             for (int i : currentModules) {
-                if (i == 0) break;
                 try {
                     learningModules.add(f.getModule(getApplicationContext(), i).getString("Name"));
                 } catch (JSONException e) {

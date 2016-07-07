@@ -157,8 +157,21 @@ public class ViewLibrary extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
 
+        User u = new User(getApplicationContext());
         Intent returnToHome = new Intent(ViewLibrary.this, Home.class);
-        returnToHome.putExtra("User", user.toString());
+        JSONObject user = null;
+
+        try {
+            user = new JSONObject(getIntent().getStringExtra("User String"));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            returnToHome.putExtra("User",  u.getUser(getApplicationContext(), Integer.parseInt(user.getString("ID"))).toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         startActivity(returnToHome);
         finish();
     }

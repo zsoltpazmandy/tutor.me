@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,42 +8,45 @@
     tools:context="zsoltpazmandy.tutorme.LearningTab"
     tools:showIn="@layout/activity_learning_tab">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/learning_tab_vertical_LL"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:orientation="vertical"
-        android:id="@+id/learning_tab_vertical_LL">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/learning_tab_currently_learning_top"
-            android:text="@string/i_m_currently_learning"
-            android:textSize="@dimen/profile_setup_text_size"/>
-
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_height="match_parent"
-            android:id="@+id/learning_tab_currently_learning_list">
-        </ListView>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:layout_marginBottom="@dimen/activity_vertical_margin" />
+        android:layout_marginRight="@dimen/activity_horizontal_margin">
 
         <Button
             android:id="@+id/viewLibButt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_alignParentRight="true"
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="@string/view_lib_butt" />
-    </LinearLayout>
-</ScrollView>
+
+        <View
+            android:id="@+id/learning_tab_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/viewLibButt"
+            android:layout_marginBottom="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:id="@+id/learning_tab_currently_learning_top"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/learning_tab_horizontal"
+            android:text="@string/i_m_currently_learning"
+            android:textSize="@dimen/profile_setup_text_size" />
+
+
+        <ListView
+            android:id="@+id/learning_tab_currently_learning_list"
+            android:layout_below="@id/learning_tab_currently_learning_top"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/activity_vertical_margin" />
+
+    </RelativeLayout>
+</RelativeLayout>

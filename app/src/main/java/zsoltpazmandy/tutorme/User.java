@@ -483,19 +483,9 @@ public class User {
         return rating;
     }
 
-    public int[] getLearning(Context context, JSONObject user) {
+    public List<Integer> getLearning(Context context, JSONObject user) {
 
-        Functions f = new Functions();
-
-        int[] learningTheseModules = new int[0];
-
-        try {
-            learningTheseModules = new int[f.moduleCount(context)];
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        ArrayList<Integer> learningTheseModules = new ArrayList<>();
 
         String[] tempArray = new String[1];
 
@@ -503,18 +493,14 @@ public class User {
             String tempLearning = user.getString("Learning");
             tempLearning = tempLearning.replace("[", "").replace("]", "");
 
-            if(tempLearning.contains(",")) {
+            if (tempLearning.contains(",")) {
                 tempArray = tempLearning.split(",");
             } else {
                 tempArray[0] = tempLearning;
             }
 
-            if (tempArray.length == 1) {
-                learningTheseModules[0] = Integer.parseInt(tempArray[0]);
-            } else {
-                for (int i = 0; i < tempArray.length; i++) {
-                    learningTheseModules[i] = Integer.parseInt(tempArray[i]);
-                }
+            for (int i = 0; i < tempArray.length; i++) {
+                learningTheseModules.add(Integer.parseInt(tempArray[i]));
             }
 
         } catch (JSONException e) {
@@ -527,8 +513,8 @@ public class User {
     public boolean isLearning(Context context, JSONObject user, int moduleID) {
         boolean result = false;
 
-        for (int i = 0; i < getLearning(context, user).length; i++) {
-            if (getLearning(context, user)[i] == moduleID)
+        for (int i = 0; i < getLearning(context, user).size(); i++) {
+            if (getLearning(context, user).get(i) == moduleID)
                 result = true;
         }
 
