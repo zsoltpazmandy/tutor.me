@@ -119,8 +119,5 @@ public class AddSlide extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        return;
-    }
+
 }

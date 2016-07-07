@@ -19,6 +19,8 @@ import java.util.ArrayList;
 
 public class ProfileSetup extends AppCompatActivity {
 
+    JSONObject user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +37,7 @@ public class ProfileSetup extends AppCompatActivity {
 
         Intent userIntent = getIntent();
 
-        JSONObject user = new JSONObject();
+        this.user = new JSONObject();
 
         try {
 
@@ -286,5 +288,13 @@ public class ProfileSetup extends AppCompatActivity {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Toast.makeText(this, "Profile NOT updated.", Toast.LENGTH_SHORT).show();
+        Intent backHome = new Intent(ProfileSetup.this, Home.class);
+        backHome.putExtra("User", user.toString());
+        startActivity(backHome);
+        finish();
+    }
 }

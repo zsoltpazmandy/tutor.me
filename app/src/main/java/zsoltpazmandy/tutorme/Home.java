@@ -2,6 +2,7 @@ package zsoltpazmandy.tutorme;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -19,6 +20,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -97,6 +99,7 @@ public class Home extends AppCompatActivity {
 
         TextView username = (TextView) findViewById(R.id.profile_tab_textview_username);
         TextView rating = (TextView) findViewById(R.id.profile_tab_textview_rating);
+        TextView authored = (TextView) findViewById(R.id.profile_tab_textview_authored);
         TextView location = (TextView) findViewById(R.id.profile_tab_textview_location);
         TextView language1 = (TextView) findViewById(R.id.profile_tab_textview_language1);
         TextView language2 = (TextView) findViewById(R.id.profile_tab_textview_language2);
@@ -115,8 +118,10 @@ public class Home extends AppCompatActivity {
         CheckBox computersCheck = (CheckBox) findViewById(R.id.computers_check);
         EditText userEdit = (EditText) findViewById(R.id.profile_tab_edittext_username);
         userEdit.setMaxWidth(userEdit.getWidth());
-        EditText ratingEdit = (EditText) findViewById(R.id.profile_tab_edittext_rating);
-        ratingEdit.setMaxWidth(userEdit.getWidth());
+
+
+        EditText authoredEdit = (EditText) findViewById(R.id.profile_tab_edittext_authored);
+        authoredEdit.setMaxWidth(authoredEdit.getWidth());
         EditText locationEdit = (EditText) findViewById(R.id.profile_tab_edittext_location);
         locationEdit.setMaxWidth(userEdit.getWidth());
         EditText language1Edit = (EditText) findViewById(R.id.profile_tab_edittext_language1);
@@ -139,8 +144,7 @@ public class Home extends AppCompatActivity {
         healthCheck.setEnabled(false);
         computersCheck.setEnabled(false);
         userEdit.setEnabled(false);
-        ratingEdit.setText("5.0");
-        ratingEdit.setEnabled(false);
+        authoredEdit.setEnabled(false);
         locationEdit.setEnabled(false);
         language1Edit.setEnabled(false);
         language2Edit.setEnabled(false);
@@ -185,6 +189,32 @@ public class Home extends AppCompatActivity {
                 finish();
             }
         });
+
+        List<Integer> moduleIDs = new ArrayList<>();
+
+        try {
+            moduleIDs = f.getIDs(getApplicationContext());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        int counter = 0;
+
+        for (int id : moduleIDs) {
+
+            try {
+                if (user.getString("Username").equals(f.getModule(getApplicationContext(), id).getString("Author"))) {
+                    counter++;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        authoredEdit.setText("" + counter);
 
 
         try {
@@ -338,4 +368,22 @@ public class Home extends AppCompatActivity {
         });
     }
 
+    boolean wantsToQuit = false;
+
+    @Override
+    public void onBackPressed() {
+        if (wantsToQuit) {
+            super.onBackPressed();
+            return;
+        }
+
+        this.wantsToQuit = true;
+        Toast.makeText(this, "Press 'Back' once more to quit.", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                wantsToQuit = false;
+            }}, 1000);
+    }
 }

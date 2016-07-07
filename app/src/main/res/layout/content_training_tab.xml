@@ -4,23 +4,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="zsoltpazmandy.tutorme.TrainingTab"
     tools:showIn="@layout/activity_training_tab">
-
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="You will be able to view your current and past tutee's progress here"/>
 
     <Button
         android:id="@+id/createModButt"
         android:layout_marginTop="@dimen/activity_vertical_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:text="@string/create_mod_butt">
+        android:layout_alignParentEnd="true"
+        android:text="@string/create_mod_butt"
+        android:layout_alignParentRight="true">
     </Button>
+
+    <View
+        android:id="@+id/training_tab_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/createModButt"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:background="@android:color/darker_gray" />
+
+    <TextView
+        android:id="@+id/training_tab_top"
+        android:layout_below="@id/training_tab_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/profile_setup_text_size"
+        android:text="@string/training_tab_no_tutees_hint"/>
+
 
 </RelativeLayout>

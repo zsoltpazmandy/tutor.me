@@ -18,6 +18,7 @@ import java.io.IOException;
 public class CreateModActivity extends AppCompatActivity {
 
     JSONObject tempAuth2 = null;
+    JSONObject author;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,9 +34,8 @@ public class CreateModActivity extends AppCompatActivity {
 
         final Functions f = new Functions();
 
-        JSONObject author = null;
         try {
-            author = new JSONObject(getIntent().getStringExtra("User"));
+            this.author = new JSONObject(getIntent().getStringExtra("User"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -169,8 +169,11 @@ public class CreateModActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         Toast.makeText(this, "Module cancelled.", Toast.LENGTH_SHORT).show();
+        Intent backHome = new Intent(CreateModActivity.this, Home.class);
+        backHome.putExtra("User", author.toString());
+        startActivity(backHome);
         finish();
     }
-
 }

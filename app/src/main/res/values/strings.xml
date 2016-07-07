@@ -84,8 +84,10 @@
         completions."
     </string>
     <string name="logout_butt">Log out</string>
-    <string name="edit_profile_but">Edit Profile</string>
+    <string name="edit_profile_but">Profile Settings</string>
     <string name="account_settings_butt">Account settings</string>
     <string name="i_m_currently_learning">I\'m currently learning:</string>
-    <string name="no_module_taken_yet">No modules taken yet.</string>
+    <string name="no_module_taken_yet">You\'re not learning any module yet.</string>
+    <string name="training_tab_no_tutees_hint">You\'re not tutoring anyone yet, but once you do, their progress will show up here.</string>
+    <string name="modules_created">Modules created</string>
 </resources>
