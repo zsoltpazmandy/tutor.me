@@ -12,11 +12,15 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:launchMode="singleTop">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible"
+            >
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +31,8 @@
             android:name=".CreateModActivity"
             android:label="@string/title_activity_create_mod"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.MainActivity" />
@@ -36,7 +41,8 @@
             android:name=".AddSlide"
             android:label="@string/title_activity_config_slide"
             android:parentActivityName=".CreateModActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.CreateModActivity" />
@@ -45,7 +51,8 @@
             android:name=".MakeTableSlide"
             android:label="@string/title_activity_make_table_slide"
             android:parentActivityName=".CreateModActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.CreateModActivity" />
@@ -54,7 +61,8 @@
             android:name=".MakeTextSlide"
             android:label="@string/title_activity_make_text_slide"
             android:parentActivityName=".CreateModActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.CreateModActivity" />
@@ -63,7 +71,8 @@
             android:name=".ViewLibrary"
             android:label="@string/title_activity_view_library"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.MainActivity" />
@@ -74,13 +83,15 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="zsoltpazmandy.tutorme.ViewLibrary" />
+                android:value="zsoltpazmandy.tutorme.ViewLibrary"
+                android:windowSoftInputMode="stateHidden"/>
         </activity>
         <activity
             android:name=".ProfileSetup"
             android:label="@string/title_activity_profile_setup"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.MainActivity" />
@@ -89,7 +100,8 @@
             android:name=".Home"
             android:label="@string/title_activity_home"
             android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.MainActivity" />
@@ -97,15 +109,18 @@
         <activity
             android:name=".ProfileTab"
             android:label="@string/title_activity_profile_tab"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".LearningTab"
             android:label="@string/title_activity_learning_tab"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".TrainingTab"
             android:label="@string/title_activity_training_tab"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden"/>
     </application>
 
 </manifest>

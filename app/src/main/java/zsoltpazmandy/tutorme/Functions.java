@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Created by zsolt on 29/06/16.
- * <p/>
+ * <p>
  * All Module management functions are found here
  */
 public class Functions {
@@ -175,6 +175,38 @@ public class Functions {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public JSONObject getModule(Context context, int id) {
+        JSONObject theModule = null;
+
+        FileInputStream fileInput = null;
+
+        try {
+
+            fileInput = context.openFileInput("module" + id);
+
+            InputStreamReader streamReader = new InputStreamReader(fileInput);
+            char[] data = new char[100];
+            String moduleString = "";
+            int size;
+
+            while ((size = streamReader.read(data)) > 0) {
+                String read_data = String.copyValueOf(data, 0, size);
+                moduleString += read_data;
+                data = new char[100];
+            }
+
+            theModule = new JSONObject(moduleString);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        return theModule;
     }
 
     public void setModuleRecordsJSON(Context context, String moduleRecordsString) {

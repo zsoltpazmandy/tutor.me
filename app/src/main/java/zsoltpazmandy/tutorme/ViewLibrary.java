@@ -152,6 +152,16 @@ public class ViewLibrary extends AppCompatActivity {
             }
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent returnToHome = new Intent(ViewLibrary.this, Home.class);
+        returnToHome.putExtra("User", user.toString());
+        startActivity(returnToHome);
+        finish();
+    }
 }
 
 

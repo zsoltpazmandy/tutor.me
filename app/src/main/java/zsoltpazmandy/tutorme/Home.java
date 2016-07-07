@@ -5,10 +5,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,10 +19,13 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class Home extends AppCompatActivity {
 
     JSONObject user = new JSONObject();
     User u;
+    Functions f;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,8 @@ public class Home extends AppCompatActivity {
         }
 
         u = new User(getApplicationContext());
+        f = new Functions();
+
 
         setupTabs();
 
@@ -183,8 +191,8 @@ public class Home extends AppCompatActivity {
                 language3Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[3])));
             }
 
-            if(u.getAge(getApplicationContext(), user) != 0){
-                ageEdit.setText(""+u.getAge(getApplicationContext(), user));
+            if (u.getAge(getApplicationContext(), user) != 0) {
+                ageEdit.setText("" + u.getAge(getApplicationContext(), user));
             } else {
                 ageEdit.setText("?");
             }
@@ -236,8 +244,42 @@ public class Home extends AppCompatActivity {
     }
 
     public void setupLearningTab() {
-        Button browseAllButt = (Button) findViewById(R.id.viewLibButt);
 
+        TextView learningView = (TextView) findViewById(R.id.learning_tab_currently_learning_top);
+
+        if (u.getLearning(getApplicationContext(), user).length < 3 &&
+                u.getLearning(getApplicationContext(), user)[0] == 0 &&
+                u.getLearning(getApplicationContext(), user)[1] == 0) {
+            assert learningView != null;
+            learningView.setText(R.string.no_module_taken_yet);
+        } else {
+            assert learningView != null;
+            learningView.setText(R.string.i_m_currently_learning);
+
+            int[] currentModules = u.getLearning(getApplicationContext(), user);
+
+            ListView learningList = (ListView) findViewById(R.id.learning_tab_currently_learning_list);
+
+            ArrayList<String> learningModules = new ArrayList<>();
+
+
+            for (int i : currentModules) {
+                if (i == 0) break;
+                try {
+                    learningModules.add(f.getModule(getApplicationContext(), i).getString("Name"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            ListAdapter currentModulesAdapter = new ArrayAdapter<String>(this,
+                    android.R.layout.simple_list_item_1, learningModules);
+
+            assert learningList != null;
+            learningList.setAdapter(currentModulesAdapter);
+        }
+
+        Button browseAllButt = (Button) findViewById(R.id.viewLibButt);
         assert browseAllButt != null;
         browseAllButt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -245,8 +287,11 @@ public class Home extends AppCompatActivity {
                 Intent openLibrary = new Intent(Home.this, ViewLibrary.class);
                 openLibrary.putExtra("User String", user.toString());
                 startActivity(openLibrary);
+                finish();
             }
         });
+
+
     }
 
     public void setupTrainingTab() {

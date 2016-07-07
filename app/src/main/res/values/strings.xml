@@ -20,7 +20,7 @@
     <string name="next_slide_butt">Add new Slide</string>
     <string name="plaintext_image_tag">Plaintext</string>
     <string name="table_image_tag">Table</string>
-    <string name="view_lib_butt">Browse All</string>
+    <string name="view_lib_butt">Browse Library</string>
     <string name="title_activity_view_library">Browse Module Library</string>
     <string name="total_module_count">Total module count</string>
     <string name="title_activity_view_lib_pop_up_mod_display">View Module</string>
@@ -86,4 +86,6 @@
     <string name="logout_butt">Log out</string>
     <string name="edit_profile_but">Edit Profile</string>
     <string name="account_settings_butt">Account settings</string>
+    <string name="i_m_currently_learning">I\'m currently learning:</string>
+    <string name="no_module_taken_yet">No modules taken yet.</string>
 </resources>
