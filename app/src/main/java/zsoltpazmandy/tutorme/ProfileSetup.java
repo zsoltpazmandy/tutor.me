@@ -51,6 +51,10 @@ public class ProfileSetup extends AppCompatActivity {
         ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ages, android.R.layout.simple_spinner_dropdown_item);
         ageSpinner.setAdapter(ageSpinnerAdapter);
 
+        if (u.getAge(getApplicationContext(), user) != 0) {
+            ageSpinner.setSelection(u.getAge(getApplicationContext(), user));
+        }
+
 // LOCATION
         TextView locationLabel = (TextView) findViewById(R.id.location_label);
         final Spinner locationSpinner = (Spinner) findViewById(R.id.location_spinner);
@@ -118,8 +122,8 @@ public class ProfileSetup extends AppCompatActivity {
 
         int[] checkedInterests = u.getInterests(getApplicationContext(), user);
 
-        for(int i : checkedInterests){
-            switch (i){
+        for (int i : checkedInterests) {
+            switch (i) {
                 case 1:
                     languagesCheck.setChecked(true);
                     break;

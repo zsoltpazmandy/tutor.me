@@ -88,6 +88,7 @@ public class Home extends AppCompatActivity {
         TextView language1 = (TextView) findViewById(R.id.profile_tab_textview_language1);
         TextView language2 = (TextView) findViewById(R.id.profile_tab_textview_language2);
         TextView language3 = (TextView) findViewById(R.id.profile_tab_textview_language3);
+        TextView age = (TextView) findViewById(R.id.profile_tab_textview_age);
         TextView interests = (TextView) findViewById(R.id.profile_tab_textview_interest);
         CheckBox languagesCheck = (CheckBox) findViewById(R.id.language_check);
         CheckBox travelCheck = (CheckBox) findViewById(R.id.travel_check);
@@ -105,6 +106,7 @@ public class Home extends AppCompatActivity {
         final EditText language1Edit = (EditText) findViewById(R.id.profile_tab_edittext_language1);
         final EditText language2Edit = (EditText) findViewById(R.id.profile_tab_edittext_language2);
         final EditText language3Edit = (EditText) findViewById(R.id.profile_tab_edittext_language3);
+        final EditText ageEdit = (EditText) findViewById(R.id.profile_tab_edittext_age);
 
         languagesCheck.setEnabled(false);
         travelCheck.setEnabled(false);
@@ -123,6 +125,7 @@ public class Home extends AppCompatActivity {
         language1Edit.setEnabled(false);
         language2Edit.setEnabled(false);
         language3Edit.setEnabled(false);
+        ageEdit.setEnabled(false);
 
 
         assert avatar != null;
@@ -178,6 +181,12 @@ public class Home extends AppCompatActivity {
             if (tmp.length == 4) {
                 language2Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[2])));
                 language3Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[3])));
+            }
+
+            if(u.getAge(getApplicationContext(), user) != 0){
+                ageEdit.setText(""+u.getAge(getApplicationContext(), user));
+            } else {
+                ageEdit.setText("?");
             }
 
             int[] interestIDs = new int[0];
