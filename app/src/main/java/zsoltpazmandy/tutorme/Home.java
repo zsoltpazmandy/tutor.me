@@ -166,8 +166,8 @@ public class Home extends AppCompatActivity {
 
         try {
 
-            userEdit.setText(user.getString("Username"));
-            locationEdit.setText(u.decodeCountry(Integer.parseInt(user.getString("Location"))));
+            userEdit.setText(u.getUsername(getApplicationContext(), user));
+            locationEdit.setText(u.decodeCountry(u.getLocation(getApplicationContext(), user)));
             String[] tmp = user.getString("Languages").replace("[", "").replace("]", "").replace("\"", "").replace("\\", "").split(",");
             language1Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[1])));
 

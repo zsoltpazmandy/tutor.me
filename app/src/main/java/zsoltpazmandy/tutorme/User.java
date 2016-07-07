@@ -153,15 +153,15 @@ public class User {
             List<Integer> allIDs = getUserIDs(context);
 
             for (int i = 1; i < userCount(context); i++) {
-                if (getUser(context, allIDs.get(i)).getString("Username").equals(username)) {
-                    if (getUser(context, allIDs.get(i)).getString("Password").equals(password)) {
+                if (getUsername(context, getUser(context, allIDs.get(i))).equals(username)) {
+                    if (getPassword(context, getUser(context, allIDs.get(i))).equals(password)) {
                         userID = allIDs.get(i);
                         Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show();
                         found = true;
                         return userID;
                     } else {
-                        if (getUser(context, allIDs.get(i)).getString("Username").equals(username) &&
-                                !getUser(context, allIDs.get(i)).getString("Password").equals(password)) {
+                        if (getUsername(context, getUser(context, allIDs.get(i))).equals(username) &&
+                                !getPassword(context, getUser(context, allIDs.get(i))).equals(password)) {
                             Toast.makeText(context, "Password incorrect", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -239,57 +239,6 @@ public class User {
         }
 
         return isSuccessful;
-    }
-
-    public JSONObject loadUser(Context context, String id) throws JSONException {
-
-        JSONObject returnUser = new JSONObject();
-        FileInputStream fileInput = null;
-
-        try {
-
-            fileInput = context.openFileInput("user" + id);
-            InputStreamReader streamReader = new InputStreamReader(fileInput);
-            char[] data = new char[100];
-            String oneBigString = "";
-            int size;
-
-            while ((size = streamReader.read(data)) > 0) {
-                String read_data = String.copyValueOf(data, 0, size);
-                oneBigString += read_data;
-                data = new char[100];
-            }
-
-            returnUser = new JSONObject(oneBigString);
-
-        } catch (IOException e) {
-
-            JSONObject newUser = new JSONObject();
-            newUser.put("ID", id);
-            newUser.put("Username", "unknown");
-            newUser.put("Password", "unknown");
-
-            FileOutputStream fou = null;
-
-            try {
-
-                fou = context.openFileOutput("user" + id, Context.MODE_PRIVATE);
-                OutputStreamWriter osw = new OutputStreamWriter(fou);
-                osw.write(newUser.toString());
-                osw.flush();
-                osw.close();
-
-            } catch (FileNotFoundException e2) {
-                e.printStackTrace();
-            } catch (IOException e3) {
-                e.printStackTrace();
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return returnUser;
     }
 
     public JSONObject getUserRecords(Context context) throws JSONException {
@@ -424,28 +373,52 @@ public class User {
 
     }
 
-    public int getId() {
-        return id;
+    public int getId(Context context, JSONObject user) {
+        int foundID = 0;
+        try {
+            for (int id : getUserIDs(context)) {
+                if (getUsername(context, getUser(context, id)).equals(getUsername(context, user))) {
+                    foundID = id;
+                }
+            }
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+        return foundID;
     }
 
-    public String getUsername() {
+    public String getUsername(Context context, JSONObject user) {
+        String username = "";
+
+        try {
+            username = user.getString("Username");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         return username;
     }
 
-    public String getPassword() {
+    public String getPassword(Context context, JSONObject user) {
+        String password = "";
+        try {
+            password = user.getString("Password");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return password;
     }
 
-    public double getRating() {
-        return rating;
-    }
+    public int getLocation(Context context, JSONObject user) {
+        int location = 0;
 
-    public int[] getLearning() {
-        return learning;
-    }
+        try {
+            location = Integer.parseInt(user.getString("Location").replace("[", "").replace("]", ""));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-    public int[] getTraining() {
-        return training;
+        return location;
     }
 
     public int[] getLanguages(Context context, JSONObject user) {
@@ -470,12 +443,15 @@ public class User {
         return languages;
     }
 
-    public int getAge() {
-        return age;
-    }
+    public int getAge(Context context, JSONObject user) {
+        int age = 0;
 
-    public int getLocation() {
-        return location;
+        try{
+            age = Integer.parseInt(user.getString("Age"));
+        }catch (JSONException e){
+            e.printStackTrace();
+        }
+        return age;
     }
 
     public int[] getInterests(Context context, JSONObject user) {
@@ -501,6 +477,18 @@ public class User {
         }
 
         return interests;
+    }
+
+    public double getRating() {
+        return rating;
+    }
+
+    public int[] getLearning() {
+        return learning;
+    }
+
+    public int[] getTraining() {
+        return training;
     }
 
     public void setId(int id) {
