@@ -119,13 +119,22 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".ViewModule"
+            android:name=".ModuleProgress"
             android:label="@string/title_activity_view_module"
             android:parentActivityName=".Home"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.Home" />
+        </activity>
+        <activity
+            android:name=".ViewModule"
+            android:label="@string/title_activity_view_module"
+            android:parentActivityName=".ModuleProgress"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="zsoltpazmandy.tutorme.ModuleProgress" />
         </activity>
     </application>
 

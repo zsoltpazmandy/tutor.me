@@ -344,7 +344,7 @@ public class Home extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-                    Intent openModule = new Intent(Home.this, ViewModule.class);
+                    Intent openModule = new Intent(Home.this, ModuleProgress.class);
                     openModule.putExtra("User", user.toString());
                     openModule.putExtra("Module", module.toString());
                     startActivity(openModule);
