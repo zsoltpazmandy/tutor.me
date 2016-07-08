@@ -545,6 +545,7 @@ public class User {
 
         try {
             user.accumulate("Learning", newLearning);
+            user.accumulate("Progress" + newLearning, 0);
         } catch (JSONException e) {
             e.printStackTrace();
         }

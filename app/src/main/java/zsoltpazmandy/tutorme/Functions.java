@@ -292,6 +292,18 @@ public class Functions {
         return !currentModule.equals(null) && allModuleNames.contains(moduleName);
     }
 
+    public int getSlideCount (Context context, int moduleID){
+        int slideCount = 0;
+
+        try {
+            slideCount = getModule(context, moduleID).getInt("No. of Slides");
+        } catch (JSONException e){
+            e.printStackTrace();
+        }
+
+        return slideCount;
+    }
+
     public void purgeLibrary(Context context) throws IOException, JSONException {
 
         List<Integer> IDs = getIDs(context);

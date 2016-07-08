@@ -89,7 +89,6 @@ public class Home extends AppCompatActivity {
         tabHost.addTab(trainingTab);
     }
 
-
     public void setupProfileTab() {
 
         ImageView avatar = (ImageView) findViewById(R.id.avatar);
@@ -313,7 +312,10 @@ public class Home extends AppCompatActivity {
 
             for (int i : currentModules) {
                 try {
-                    learningModules.add(f.getModule(getApplicationContext(), i).getString("Name"));
+                    int progress = Integer.parseInt(user.getString("Progress" + i));
+                    int totalSlides = f.getSlideCount(getApplicationContext(), i);
+                    int percentCompleted = (progress / totalSlides) * 100;
+                    learningModules.add(f.getModule(getApplicationContext(), i).getString("Name")+"\n[ Progress: " + percentCompleted + "% ]");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -384,6 +386,7 @@ public class Home extends AppCompatActivity {
             @Override
             public void run() {
                 wantsToQuit = false;
-            }}, 1000);
+            }
+        }, 1000);
     }
 }
