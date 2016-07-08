@@ -88,7 +88,7 @@ public class ViewLibrary extends AppCompatActivity {
 
                 try {
 
-                    JSONObject moduleSelectedJSON = f.getModuleJSON(getApplicationContext(), moduleSelected);
+                    JSONObject moduleSelectedJSON = f.getModuleByName(getApplicationContext(), moduleSelected);
 
                     ArrayList<String> moduleInfo = new ArrayList<String>();
 

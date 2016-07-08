@@ -6,6 +6,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -204,7 +205,7 @@ public class Home extends AppCompatActivity {
         for (int id : moduleIDs) {
 
             try {
-                if (user.getString("Username").equals(f.getModule(getApplicationContext(), id).getString("Author"))) {
+                if (user.getString("Username").equals(f.getModuleByID(getApplicationContext(), id).getString("Author"))) {
                     counter++;
                 }
             } catch (JSONException e) {
@@ -306,7 +307,7 @@ public class Home extends AppCompatActivity {
 
             List<Integer> currentModules = u.getLearning(getApplicationContext(), user);
 
-            ListView learningList = (ListView) findViewById(R.id.learning_tab_currently_learning_list);
+            final ListView learningList = (ListView) findViewById(R.id.learning_tab_currently_learning_list);
 
             ArrayList<String> learningModules = new ArrayList<>();
 
@@ -315,17 +316,41 @@ public class Home extends AppCompatActivity {
                     int progress = Integer.parseInt(user.getString("Progress" + i));
                     int totalSlides = f.getSlideCount(getApplicationContext(), i);
                     int percentCompleted = (progress / totalSlides) * 100;
-                    learningModules.add(f.getModule(getApplicationContext(), i).getString("Name")+"\n[ Progress: " + percentCompleted + "% ]");
+                    learningModules.add(f.getModuleByID(getApplicationContext(), i).getString("Name") + "\n[ Progress: " + percentCompleted + "% ]");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
-            ListAdapter currentModulesAdapter = new ArrayAdapter<String>(this,
+            final ListAdapter currentModulesAdapter = new ArrayAdapter<String>(this,
                     android.R.layout.simple_list_item_1, learningModules);
 
             assert learningList != null;
             learningList.setAdapter(currentModulesAdapter);
+
+            learningList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    String selectedModule = String.valueOf(currentModulesAdapter.getItem(position));
+                    selectedModule = selectedModule.split("\n")[0]; // get rid of progress tag
+
+                    JSONObject module = null;
+
+                    try {
+                        module = f.getModuleByName(getApplicationContext(), selectedModule);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Intent openModule = new Intent(Home.this, ViewModule.class);
+                    openModule.putExtra("User", user.toString());
+                    openModule.putExtra("Module", module.toString());
+                    startActivity(openModule);
+                    finish();
+                }
+            });
         }
 
         Button browseAllButt = (Button) findViewById(R.id.viewLibButt);

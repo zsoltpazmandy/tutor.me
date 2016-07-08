@@ -11,16 +11,14 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:launchMode="singleTop"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:launchMode="singleTop">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateVisible"
-            >
-
+            android:windowSoftInputMode="stateVisible">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -83,7 +81,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.ViewLibrary"
-                android:windowSoftInputMode="stateHidden"/>
+                android:windowSoftInputMode="stateHidden" />
         </activity>
         <activity
             android:name=".ProfileSetup"
@@ -109,17 +107,26 @@
             android:name=".ProfileTab"
             android:label="@string/title_activity_profile_tab"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".LearningTab"
             android:label="@string/title_activity_learning_tab"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
         <activity
             android:name=".TrainingTab"
             android:label="@string/title_activity_training_tab"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden"/>
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ViewModule"
+            android:label="@string/title_activity_view_module"
+            android:parentActivityName=".Home"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="zsoltpazmandy.tutorme.Home" />
+        </activity>
     </application>
 
 </manifest>

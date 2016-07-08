@@ -90,4 +90,7 @@
     <string name="no_module_taken_yet">You\'re not learning any module yet.</string>
     <string name="training_tab_no_tutees_hint">You\'re not tutoring anyone yet, but once you do, their progress will show up here.</string>
     <string name="modules_created">Modules created</string>
+    <string name="title_activity_view_module">ViewModule</string>
+    <string name="view_module_your_progress">Your progress:</string>
+    <string name="view_module_description_of_module">Description of module</string>
 </resources>

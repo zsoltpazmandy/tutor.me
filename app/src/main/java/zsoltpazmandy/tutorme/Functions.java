@@ -67,7 +67,39 @@ public class Functions {
         return moduleRecordsJSON;
     }
 
-    public JSONObject getModuleJSON(Context context, String name) throws IOException, JSONException {
+    public JSONObject getModuleByID(Context context, int id) {
+        JSONObject theModule = null;
+
+        FileInputStream fileInput = null;
+
+        try {
+
+            fileInput = context.openFileInput("module" + id);
+
+            InputStreamReader streamReader = new InputStreamReader(fileInput);
+            char[] data = new char[100];
+            String moduleString = "";
+            int size;
+
+            while ((size = streamReader.read(data)) > 0) {
+                String read_data = String.copyValueOf(data, 0, size);
+                moduleString += read_data;
+                data = new char[100];
+            }
+
+            theModule = new JSONObject(moduleString);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        return theModule;
+    }
+
+    public JSONObject getModuleByName(Context context, String name) throws IOException, JSONException {
         JSONObject returnObject = new JSONObject();
 
         FileInputStream fileInput = null;
@@ -177,38 +209,6 @@ public class Functions {
         }
     }
 
-    public JSONObject getModule(Context context, int id) {
-        JSONObject theModule = null;
-
-        FileInputStream fileInput = null;
-
-        try {
-
-            fileInput = context.openFileInput("module" + id);
-
-            InputStreamReader streamReader = new InputStreamReader(fileInput);
-            char[] data = new char[100];
-            String moduleString = "";
-            int size;
-
-            while ((size = streamReader.read(data)) > 0) {
-                String read_data = String.copyValueOf(data, 0, size);
-                moduleString += read_data;
-                data = new char[100];
-            }
-
-            theModule = new JSONObject(moduleString);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-
-        return theModule;
-    }
-
     public void setModuleRecordsJSON(Context context, String moduleRecordsString) {
 
         try {
@@ -296,7 +296,7 @@ public class Functions {
         int slideCount = 0;
 
         try {
-            slideCount = getModule(context, moduleID).getInt("No. of Slides");
+            slideCount = getModuleByID(context, moduleID).getInt("No. of Slides");
         } catch (JSONException e){
             e.printStackTrace();
         }
