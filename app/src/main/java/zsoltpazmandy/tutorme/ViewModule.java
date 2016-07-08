@@ -1,6 +1,8 @@
 package zsoltpazmandy.tutorme;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -14,6 +16,9 @@ import org.json.JSONObject;
 
 public class ViewModule extends AppCompatActivity {
 
+    JSONObject user = null;
+    JSONObject module = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -21,12 +26,10 @@ public class ViewModule extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        JSONObject user = null;
-        JSONObject module = null;
 
         try {
-            user = new JSONObject(getIntent().getStringExtra("User"));
-            module = new JSONObject(getIntent().getStringExtra("Module"));
+            this.user = new JSONObject(getIntent().getStringExtra("User"));
+            this.module = new JSONObject(getIntent().getStringExtra("Module"));
             this.setTitle(module.getString("Name"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -97,4 +100,27 @@ public class ViewModule extends AppCompatActivity {
 
     }
 
+    boolean wantsToQuitLearning = false;
+
+    @Override
+    public void onBackPressed() {
+        if (wantsToQuitLearning) {
+
+            Intent returnHome = new Intent(ViewModule.this, Home.class);
+            returnHome.putExtra("User", this.user.toString());
+            startActivity(returnHome);
+            finish();
+
+        }
+
+        this.wantsToQuitLearning = true;
+        Toast.makeText(this, "Press 'Back' once more to quit learning this module.", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                wantsToQuitLearning = false;
+            }
+        }, 1000);
+    }
 }
