@@ -79,9 +79,32 @@ public class MainActivity extends AppCompatActivity {
 
                 try {
 
-                    if (validateInput(username, password)) {
-                        returnVal = user.register(getApplicationContext(), username, password);
+                    if (!username.trim().matches("^[\\w_-]+")) {
+                        usernameField.setError("Username format incorrect.\n" +
+                                "Use: A-Z, a-z, 0-9, _, -");
+                        return;
                     }
+
+                    if (!(username.trim().length() > 2 && username.trim().length() < 11)) {
+                        usernameField.setError("Username must be 3-10 characters long.");
+                        return;
+                    }
+
+                    if (!password.trim().matches("^[\\w_-]+")) {
+                        passwordField.setError("Password format incorrect.\n" +
+                                "Use: A-Z, a-z, 0-9, _, -");
+                        return;
+                    }
+
+                    if (!(password.trim().length() > 5 && password.trim().length() < 11)) {
+                        passwordField.setError("Password must be 6-10 characters long.");
+                        return;
+                    }
+
+
+//                    if (validateInput(username, password)) {
+                        returnVal = user.register(getApplicationContext(), username, password);
+//                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
