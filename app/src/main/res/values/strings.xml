@@ -93,4 +93,11 @@
     <string name="title_activity_view_module">ViewModule</string>
     <string name="view_module_your_progress">Your progress:</string>
     <string name="view_module_description_of_module">Description of module</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="view_module_next_butt">Next</string>
+    <string name="view_module_prev_butt">Previous</string>
+    <string name="view_module_ask_tutor_butt">Ask tutor</string>
+    <string name="view_module_save_amp_quit"><![CDATA[Save & Quit]]></string>
 </resources>

@@ -8,7 +8,7 @@ A community-based, extensible tutoring platform for Android.
 
 `Brief demo of current state of the app`
 
-![A brief demo of the current state of the app](readme_res/2016_07_08_01_00_37_01_06_38.gif)
+![A brief demo of the current state of the app](readme_res/2016_07_09_00_14_10_00_19_23.gif)
 
 ## Introduction
 

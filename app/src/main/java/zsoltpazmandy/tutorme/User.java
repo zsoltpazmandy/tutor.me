@@ -553,6 +553,22 @@ public class User {
         saveUser(context, user);
     }
 
+    public void updateProgress(Context context, JSONObject user, JSONObject module, int lastSlide) {
+
+        boolean changed = false;
+
+            try {
+                if (lastSlide > Integer.parseInt(user.getString("Progress" + module.getInt("ID")))){
+                    user.put("Progress" + module.getInt("ID"), lastSlide);
+                    changed = true;
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        if(changed)saveUser(context, user);
+    }
+
     public void setTraining(int[] training) {
         this.training = training;
     }

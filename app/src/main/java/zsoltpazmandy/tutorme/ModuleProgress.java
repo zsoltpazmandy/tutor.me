@@ -44,7 +44,7 @@ public class ModuleProgress extends AppCompatActivity {
         TextView progressHeader = (TextView) findViewById(R.id.view_module_progress_header);
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.view_module_progressbar);
         TextView progressText = (TextView) findViewById(R.id.view_module_progress_text);
-        TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
+        final TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
         Button reviewButt = (Button) findViewById(R.id.view_module_review_butt);
         final Button startButt = (Button) findViewById(R.id.view_module_start_butt);
 
@@ -85,7 +85,16 @@ public class ModuleProgress extends AppCompatActivity {
                     Intent startModule = new Intent(ModuleProgress.this, ViewModule.class);
                     startModule.putExtra("User", user.toString());
                     startModule.putExtra("Module", module.toString());
-                    startActivityForResult(startModule, 1);
+                    try {
+
+                        int lastSlideOpened = Integer.parseInt(user.getString("Progress" + module.getString("ID")));
+
+                        startModule.putExtra("Slide Number", "" + lastSlideOpened);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    startActivity(startModule);
+                    finish();
 
                 }
             });
@@ -106,21 +115,32 @@ public class ModuleProgress extends AppCompatActivity {
 
     }
 
+
     boolean wantsToQuitLearning = false;
 
     @Override
     public void onBackPressed() {
         if (wantsToQuitLearning) {
 
+            User u = new User(getApplicationContext());
+
+            JSONObject userUpdate = null;
+
+            try {
+                userUpdate = u.getUser(getApplicationContext(), Integer.parseInt(this.user.getString("ID")));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
             Intent returnHome = new Intent(ModuleProgress.this, Home.class);
-            returnHome.putExtra("User", this.user.toString());
+            returnHome.putExtra("User", userUpdate.toString());
             startActivity(returnHome);
             finish();
 
         }
 
         this.wantsToQuitLearning = true;
-        Toast.makeText(this, "Press 'Back' once more to quit learning this module.", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "Press 'Back' once more to quit this module.", Toast.LENGTH_SHORT).show();
 
         new Handler().postDelayed(new Runnable() {
             @Override

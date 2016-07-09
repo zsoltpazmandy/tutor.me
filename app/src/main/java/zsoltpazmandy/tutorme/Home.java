@@ -22,6 +22,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class Home extends AppCompatActivity {
         }
 
         try {
-            user = new JSONObject(super.getIntent().getStringExtra("User"));
+            this.user = new JSONObject(getIntent().getStringExtra("User"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -118,7 +119,6 @@ public class Home extends AppCompatActivity {
         CheckBox computersCheck = (CheckBox) findViewById(R.id.computers_check);
         EditText userEdit = (EditText) findViewById(R.id.profile_tab_edittext_username);
         userEdit.setMaxWidth(userEdit.getWidth());
-
 
         EditText authoredEdit = (EditText) findViewById(R.id.profile_tab_edittext_authored);
         authoredEdit.setMaxWidth(authoredEdit.getWidth());
@@ -294,7 +294,6 @@ public class Home extends AppCompatActivity {
         for (int i : u.getLearning(getApplicationContext(), user)) {
             if (i != 0) {
                 learningIDs.add(i);
-                System.out.println(i);
             }
         }
 
@@ -307,20 +306,27 @@ public class Home extends AppCompatActivity {
 
             List<Integer> currentModules = u.getLearning(getApplicationContext(), user);
 
-            final ListView learningList = (ListView) findViewById(R.id.learning_tab_currently_learning_list);
+            ListView learningList = (ListView) findViewById(R.id.learning_tab_currently_learning_list);
 
             ArrayList<String> learningModules = new ArrayList<>();
 
             for (int i : currentModules) {
+                System.out.println(i);
                 try {
-                    int progress = Integer.parseInt(user.getString("Progress" + i));
-                    int totalSlides = f.getSlideCount(getApplicationContext(), i);
-                    int percentCompleted = (progress / totalSlides) * 100;
-                    learningModules.add(f.getModuleByID(getApplicationContext(), i).getString("Name") + "\n[ Progress: " + percentCompleted + "% ]");
+                    double progress = user.getInt("Progress" + i);
+                    System.out.println(progress);
+                    double totalSlides = f.getSlideCount(getApplicationContext(), i);
+                    System.out.println(totalSlides);
+                    double percentCompleted = (progress / totalSlides) * 100;
+                    percentCompleted = round(percentCompleted);
+                    System.out.println(percentCompleted);
+                    learningModules.add(f.getModuleByID(getApplicationContext(), i).getString("Name") + "\n\nProgress: " + percentCompleted + "%");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
+
+
 
             final ListAdapter currentModulesAdapter = new ArrayAdapter<String>(this,
                     android.R.layout.simple_list_item_1, learningModules);
@@ -366,6 +372,11 @@ public class Home extends AppCompatActivity {
         });
 
 
+    }
+
+    public double round(double unrounded) {
+        DecimalFormat rounded = new DecimalFormat("#.##");
+        return Double.valueOf(rounded.format(unrounded));
     }
 
     public void setupTrainingTab() {

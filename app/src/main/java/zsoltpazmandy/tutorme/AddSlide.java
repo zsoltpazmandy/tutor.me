@@ -72,7 +72,7 @@ public class AddSlide extends AppCompatActivity {
                 assert module != null;
 
                 try {
-                    module.accumulate("Types of Slides", "2");
+                    module.accumulate("Types of Slides", 2);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
