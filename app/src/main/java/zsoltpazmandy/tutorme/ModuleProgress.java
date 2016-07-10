@@ -26,6 +26,7 @@ public class ModuleProgress extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final Functions f = new Functions();
 
         try {
             this.user = new JSONObject(getIntent().getStringExtra("User"));
@@ -46,7 +47,7 @@ public class ModuleProgress extends AppCompatActivity {
         TextView progressText = (TextView) findViewById(R.id.view_module_progress_text);
         final TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
         Button reviewButt = (Button) findViewById(R.id.view_module_review_butt);
-        final Button startButt = (Button) findViewById(R.id.view_module_start_butt);
+        Button startButt = (Button) findViewById(R.id.view_module_start_butt);
 
         try {
             nameOfModule.setText(module.getString("Name"));
@@ -62,7 +63,7 @@ public class ModuleProgress extends AppCompatActivity {
 
             reviewButt.setText("Review");
 
-            if (user.getInt("Progress" + module.getString("ID")) != module.getInt("No. of Slides")) {
+            if (user.getInt("Progress" + module.getString("ID")) < module.getInt("No. of Slides")) {
                 if (user.getInt("Progress" + module.getString("ID")) == 0) {
                     reviewButt.setEnabled(false);
                     startButt.setText("Start");
@@ -82,7 +83,28 @@ public class ModuleProgress extends AppCompatActivity {
                 public void onClick(View v) {
                     Toast.makeText(ModuleProgress.this, "Opening Module", Toast.LENGTH_SHORT).show();
 
-                    Intent startModule = new Intent(ModuleProgress.this, ViewModule.class);
+                    int type = 0;
+
+                    try {
+                        type = f.getSlideType(getApplicationContext(),
+                                module,
+                                Integer.parseInt(user.getString("Progress" + module.getString("ID"))));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Intent startModule = null;
+                    switch (type) {
+                        case 0:
+                            return;
+                        case 1:
+                            startModule = new Intent(ModuleProgress.this, ViewTextSlide.class);
+                            break;
+                        case 2:
+                            startModule = new Intent(ModuleProgress.this, ViewTableSlide.class);
+                            break;
+                    }
+
                     startModule.putExtra("User", user.toString());
                     startModule.putExtra("Module", module.toString());
                     try {
@@ -114,7 +136,6 @@ public class ModuleProgress extends AppCompatActivity {
 
 
     }
-
 
     boolean wantsToQuitLearning = false;
 

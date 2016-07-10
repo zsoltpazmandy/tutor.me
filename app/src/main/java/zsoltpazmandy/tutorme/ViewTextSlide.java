@@ -13,7 +13,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class ViewModule extends AppCompatActivity {
+public class ViewTextSlide extends AppCompatActivity {
 
     JSONObject user = null;
     JSONObject module = null;
@@ -24,7 +24,7 @@ public class ViewModule extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_view_module);
+        setContentView(R.layout.activity_view_text_slide);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -35,7 +35,7 @@ public class ViewModule extends AppCompatActivity {
         TextView slideCountText = (TextView) findViewById(R.id.view_module_slide_count_text);
         Button saveQuit = (Button) findViewById(R.id.view_module_quit_butt);
         Button askTutor = (Button) findViewById(R.id.view_module_message_tutor_butt);
-        Button prevButt = (Button) findViewById(R.id.view_module_prev_butt);
+        final Button prevButt = (Button) findViewById(R.id.view_module_prev_butt);
         Button nextButt = (Button) findViewById(R.id.view_module_next_butt);
 
         try {
@@ -75,7 +75,7 @@ public class ViewModule extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                Intent returnHome = new Intent(ViewModule.this, Home.class);
+                Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
                 returnHome.putExtra("User", userUpdate.toString());
                 startActivity(returnHome);
                 finish();
@@ -85,8 +85,22 @@ public class ViewModule extends AppCompatActivity {
         prevButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 slideNumber--;
-                Intent prevSlide = new Intent(ViewModule.this, ViewModule.class);
+                int type = f.getSlideType(getApplicationContext(), module, slideNumber);
+
+                Intent prevSlide = null;
+                switch (type) {
+                    case 0:
+                        return;
+                    case 1:
+                        prevSlide = new Intent(ViewTextSlide.this, ViewTextSlide.class);
+                        break;
+                    case 2:
+                        prevSlide = new Intent(ViewTextSlide.this, ViewTableSlide.class);
+                        break;
+                }
+
                 prevSlide.putExtra("User", user.toString());
                 prevSlide.putExtra("Module", module.toString());
                 prevSlide.putExtra("Slide Number", "" + slideNumber);
@@ -98,7 +112,7 @@ public class ViewModule extends AppCompatActivity {
         askTutor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ViewModule.this, "Messaging tutor operation not yet implemented", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ViewTextSlide.this, "Messaging tutor operation not yet implemented", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -107,7 +121,20 @@ public class ViewModule extends AppCompatActivity {
             public void onClick(View v) {
 
                 slideNumber++;
-                Intent nextSlide = new Intent(ViewModule.this, ViewModule.class);
+                int type = f.getSlideType(getApplicationContext(), module, slideNumber);
+
+                Intent nextSlide = null;
+                switch (type) {
+                    case 0:
+                        return;
+                    case 1:
+                        nextSlide = new Intent(ViewTextSlide.this, ViewTextSlide.class);
+                        break;
+                    case 2:
+                        nextSlide = new Intent(ViewTextSlide.this, ViewTableSlide.class);
+                        break;
+                }
+
                 nextSlide.putExtra("User", user.toString());
                 nextSlide.putExtra("Module", module.toString());
                 nextSlide.putExtra("Slide Number", "" + slideNumber);
@@ -129,46 +156,18 @@ public class ViewModule extends AppCompatActivity {
             nextButt.setEnabled(true);
         }
 
-
-        String typesTemp = "";
-        String[] typesTempArray = new String[1];
+        String slideText = "";
 
         try {
-            typesTemp = module.getString("Types of Slides");
-            typesTemp = typesTemp.replace("[", "").replace("]", "");
-            if (typesTemp.contains(",")) {
-                typesTempArray = typesTemp.split(",");
-            } else {
-                typesTempArray[0] = typesTemp;
-            }
+
+            slideText = module.getString("Slide " + slideNumber);
+            TextView slideTextView = (TextView) findViewById(R.id.view_module_slide_text_view);
+            assert slideTextView != null;
+            slideTextView.setText(slideText);
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        int typeOfSlide = Integer.parseInt(typesTempArray[slideNumber - 1]);
-
-        switch (typeOfSlide) {
-            case 1:
-
-                String slideText = "";
-
-                try {
-
-                    slideText = module.getString("Slide " + slideNumber);
-                    TextView slideTextView = (TextView) findViewById(R.id.view_module_slide_text_view);
-                    assert slideTextView != null;
-                    slideTextView.setText(slideText);
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                break;
-            case 2:
-                break;
-        }
-
 
     }
 
@@ -188,7 +187,7 @@ public class ViewModule extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Intent returnHome = new Intent(ViewModule.this, Home.class);
+            Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
             returnHome.putExtra("User", userUpdate.toString());
             startActivity(returnHome);
             finish();
@@ -206,3 +205,212 @@ public class ViewModule extends AppCompatActivity {
         }, 1000);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -17,7 +17,7 @@ import java.util.List;
 
 /**
  * Created by zsolt on 29/06/16.
- * <p>
+ * <p/>
  * All Module management functions are found here
  */
 public class Functions {
@@ -292,16 +292,40 @@ public class Functions {
         return !currentModule.equals(null) && allModuleNames.contains(moduleName);
     }
 
-    public int getSlideCount (Context context, int moduleID){
+    public int getSlideCount(Context context, int moduleID) {
         int slideCount = 0;
 
         try {
             slideCount = getModuleByID(context, moduleID).getInt("No. of Slides");
-        } catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
 
         return slideCount;
+    }
+
+    public int getSlideType(Context context, JSONObject module, int slideNumber) {
+
+        int slideType = 0;
+        if (slideNumber > 0) {
+            slideNumber--;
+        }
+
+        try {
+
+            String[] temp = new String[1];
+            temp[0] = module.getString("Types of Slides").replace("[", "").replace("]", "");
+            if (temp[0].contains(",")) {
+                temp = temp[0].split(",");
+                slideType = Integer.parseInt(temp[slideNumber]);
+            } else {
+                slideType = Integer.parseInt(temp[0]);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return slideType;
+
     }
 
     public void purgeLibrary(Context context) throws IOException, JSONException {

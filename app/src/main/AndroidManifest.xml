@@ -128,8 +128,17 @@
                 android:value="zsoltpazmandy.tutorme.Home" />
         </activity>
         <activity
-            android:name=".ViewModule"
+            android:name=".ViewTextSlide"
             android:label="@string/title_activity_view_module"
+            android:parentActivityName=".ModuleProgress"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="zsoltpazmandy.tutorme.ModuleProgress" />
+        </activity>
+        <activity
+            android:name=".ViewTableSlide"
+            android:label="@string/title_activity_view_table_slide"
             android:parentActivityName=".ModuleProgress"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data

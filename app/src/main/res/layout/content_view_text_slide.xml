@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="zsoltpazmandy.tutorme.ViewModule"
-    tools:showIn="@layout/activity_view_module">
+    tools:context=".ViewTextSlide"
+    tools:showIn="@layout/activity_view_text_slide">
 
     <LinearLayout
         android:id="@+id/view_module_linear_layout"
@@ -26,7 +26,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginTop="1dp"
             android:background="@android:color/darker_gray" />
 
         <RelativeLayout
@@ -54,7 +54,7 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:layout_marginTop="1dp"
             android:background="@android:color/darker_gray" />
 
         <TextView

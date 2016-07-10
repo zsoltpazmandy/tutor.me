@@ -100,4 +100,5 @@
     <string name="view_module_prev_butt">Previous</string>
     <string name="view_module_ask_tutor_butt">Ask tutor</string>
     <string name="view_module_save_amp_quit"><![CDATA[Save & Quit]]></string>
+    <string name="title_activity_view_table_slide">ViewTableSlide</string>
 </resources>

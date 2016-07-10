@@ -1,10 +1,10 @@
 package zsoltpazmandy.tutorme;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,20 +25,20 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NavigableSet;
+import java.util.TreeSet;
 
 public class Home extends AppCompatActivity {
 
     JSONObject user = new JSONObject();
     User u;
     Functions f;
+    TabHost tabHost = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        toolbar.showOverflowMenu();
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
@@ -68,7 +68,7 @@ public class Home extends AppCompatActivity {
     }
 
     public void setupTabs() {
-        TabHost tabHost = (TabHost) findViewById(R.id.home_tabhost);
+        tabHost = (TabHost) findViewById(R.id.home_tabhost);
 
         tabHost.setup();
 
@@ -89,6 +89,46 @@ public class Home extends AppCompatActivity {
         trainingTab.setContent(R.id.home_training_tab);
 
         tabHost.addTab(trainingTab);
+
+        for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
+            TextView tv = (TextView) tabHost.getTabWidget().getChildAt(i).findViewById(android.R.id.title);
+            tv.setTextColor(Color.parseColor("#FFFFFF"));
+        }
+
+//        tabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener(){
+//            @Override
+//            public void onTabChanged(String tabId) {
+//                int tab = tabHost.getCurrentTab();
+//
+//                View tab1 = tabHost.getTabWidget().getChildAt(0);
+//                View tab2 = tabHost.getTabWidget().getChildAt(1);
+//                View tab3 = tabHost.getTabWidget().getChildAt(2);
+//
+//                if(tabHost.getTabWidget().getChildAt(tab).equals(tab1)){
+//                    tab1.setBackgroundColor(Color.parseColor("#303F9F"));
+//                    tab2.setBackgroundColor(Color.parseColor("#3F51B5"));
+//                    tab3.setBackgroundColor(Color.parseColor("#3F51B5"));
+//                }
+//
+//                if(tabHost.getTabWidget().getChildAt(tab).equals(tab2)){
+//                    tab1.setBackgroundColor(Color.parseColor("#3F51B5"));
+//                    tab2.setBackgroundColor(Color.parseColor("#303F9F"));
+//                    tab3.setBackgroundColor(Color.parseColor("#3F51B5"));
+//                }
+//
+//                if(tabHost.getTabWidget().getChildAt(tab).equals(tab3)){
+//                    tab1.setBackgroundColor(Color.parseColor("#3F51B5"));
+//                    tab2.setBackgroundColor(Color.parseColor("#3F51B5"));
+//                    tab3.setBackgroundColor(Color.parseColor("#303F9F"));
+//                }
+//            }
+//
+//
+//        });
+
+
+
+
     }
 
     public void setupProfileTab() {
@@ -157,6 +197,7 @@ public class Home extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(Home.this, "Change avatar operation not implemented yet", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -311,21 +352,18 @@ public class Home extends AppCompatActivity {
             ArrayList<String> learningModules = new ArrayList<>();
 
             for (int i : currentModules) {
-                System.out.println(i);
                 try {
                     double progress = user.getInt("Progress" + i);
-                    System.out.println(progress);
                     double totalSlides = f.getSlideCount(getApplicationContext(), i);
-                    System.out.println(totalSlides);
-                    double percentCompleted = (progress / totalSlides) * 100;
-                    percentCompleted = round(percentCompleted);
-                    System.out.println(percentCompleted);
-                    learningModules.add(f.getModuleByID(getApplicationContext(), i).getString("Name") + "\n\nProgress: " + percentCompleted + "%");
+                    double tempDouble = (progress / totalSlides) * 100;
+                    long percentCompleted = Math.round(tempDouble);
+                    learningModules.add(f.getModuleByID(getApplicationContext(), i).getString("Name") + "\n(" + percentCompleted + "%)");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
 
+            learningModules = modulesTakenDesc(learningModules);
 
 
             final ListAdapter currentModulesAdapter = new ArrayAdapter<String>(this,
@@ -375,7 +413,7 @@ public class Home extends AppCompatActivity {
     }
 
     public double round(double unrounded) {
-        DecimalFormat rounded = new DecimalFormat("#.##");
+        DecimalFormat rounded = new DecimalFormat("#");
         return Double.valueOf(rounded.format(unrounded));
     }
 
@@ -404,6 +442,33 @@ public class Home extends AppCompatActivity {
                 finish();
             }
         });
+    }
+
+    public ArrayList<String> modulesTakenDesc(ArrayList<String> modules) {
+
+        ArrayList<String> orderedAsc = new ArrayList<>();
+
+        TreeSet<Integer> tempTree = new TreeSet<>();
+
+        for (String s : modules) {
+
+            String temp = s.substring(s.length() - 5, s.length() - 2).replace("(", "").replace(")", "").replace("%", "").replace("\n", "");
+            int i = Integer.parseInt(temp);
+            tempTree.add(i);
+        }
+
+        NavigableSet<Integer> result = tempTree.descendingSet();
+
+        for (int i : result) {
+            for (int j = 0; j < modules.size(); j++) {
+                String temp2 = modules.get(j).substring(modules.get(j).length() - 5, modules.get(j).length() - 2).replace("(", "").replace(")", "").replace("%", "").replace("\n", "");
+                if (Integer.parseInt(temp2) == i) {
+                    orderedAsc.add(modules.get(j));
+                }
+            }
+        }
+
+        return orderedAsc;
     }
 
     boolean wantsToQuit = false;
