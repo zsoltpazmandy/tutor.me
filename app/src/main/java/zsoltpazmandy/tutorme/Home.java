@@ -22,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableSet;
@@ -53,7 +52,6 @@ public class Home extends AppCompatActivity {
 
         u = new User(getApplicationContext());
         f = new Functions();
-
 
         setupTabs();
 
@@ -365,7 +363,6 @@ public class Home extends AppCompatActivity {
 
             learningModules = modulesTakenDesc(learningModules);
 
-
             final ListAdapter currentModulesAdapter = new ArrayAdapter<String>(this,
                     android.R.layout.simple_list_item_1, learningModules);
 
@@ -412,15 +409,9 @@ public class Home extends AppCompatActivity {
 
     }
 
-    public double round(double unrounded) {
-        DecimalFormat rounded = new DecimalFormat("#");
-        return Double.valueOf(rounded.format(unrounded));
-    }
-
     public void setupTrainingTab() {
 
         Button createButt = (Button) findViewById(R.id.createModButt);
-
 
         JSONObject user = new JSONObject();
 
@@ -446,7 +437,7 @@ public class Home extends AppCompatActivity {
 
     public ArrayList<String> modulesTakenDesc(ArrayList<String> modules) {
 
-        ArrayList<String> orderedAsc = new ArrayList<>();
+        ArrayList<String> orderedDesc = new ArrayList<>();
 
         TreeSet<Integer> tempTree = new TreeSet<>();
 
@@ -463,12 +454,12 @@ public class Home extends AppCompatActivity {
             for (int j = 0; j < modules.size(); j++) {
                 String temp2 = modules.get(j).substring(modules.get(j).length() - 5, modules.get(j).length() - 2).replace("(", "").replace(")", "").replace("%", "").replace("\n", "");
                 if (Integer.parseInt(temp2) == i) {
-                    orderedAsc.add(modules.get(j));
+                    orderedDesc.add(modules.get(j));
                 }
             }
         }
 
-        return orderedAsc;
+        return orderedDesc;
     }
 
     boolean wantsToQuit = false;

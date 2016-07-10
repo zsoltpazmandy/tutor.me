@@ -200,27 +200,26 @@ public class MakeTableSlide extends AppCompatActivity {
                 }
 
                 ArrayList<String> temp = new ArrayList<>();
-
-                temp.add(row1col1.getText().toString().trim());
-                temp.add(row1col2.getText().toString().trim());
-                temp.add(row2col1.getText().toString().trim());
-                temp.add(row2col2.getText().toString().trim());
-                temp.add(row3col1.getText().toString().trim());
-                temp.add(row3col2.getText().toString().trim());
-                temp.add(row4col1.getText().toString().trim());
-                temp.add(row4col2.getText().toString().trim());
-                temp.add(row5col1.getText().toString().trim());
-                temp.add(row5col2.getText().toString().trim());
-                temp.add(row6col1.getText().toString().trim());
-                temp.add(row6col2.getText().toString().trim());
-                temp.add(row7col1.getText().toString().trim());
-                temp.add(row7col2.getText().toString().trim());
-                temp.add(row8col1.getText().toString().trim());
-                temp.add(row8col2.getText().toString().trim());
-                temp.add(row9col1.getText().toString().trim());
-                temp.add(row9col2.getText().toString().trim());
-                temp.add(row0col1.getText().toString().trim());
-                temp.add(row0col2.getText().toString().trim());
+                temp.add(row1col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row1col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row2col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row2col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row3col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row3col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row4col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row4col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row5col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row5col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row6col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row6col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row7col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row7col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row8col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row8col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row9col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row9col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row0col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row0col2.getText().toString().trim().replace(",", "##comma##"));
 
                 int amountOfSlides = 0;
 
@@ -328,27 +327,26 @@ public class MakeTableSlide extends AppCompatActivity {
                 }
 
                 ArrayList<String> temp = new ArrayList<>();
-
-                temp.add(row1col1.getText().toString().trim());
-                temp.add(row1col2.getText().toString().trim());
-                temp.add(row2col1.getText().toString().trim());
-                temp.add(row2col2.getText().toString().trim());
-                temp.add(row3col1.getText().toString().trim());
-                temp.add(row3col2.getText().toString().trim());
-                temp.add(row4col1.getText().toString().trim());
-                temp.add(row4col2.getText().toString().trim());
-                temp.add(row5col1.getText().toString().trim());
-                temp.add(row5col2.getText().toString().trim());
-                temp.add(row6col1.getText().toString().trim());
-                temp.add(row6col2.getText().toString().trim());
-                temp.add(row7col1.getText().toString().trim());
-                temp.add(row7col2.getText().toString().trim());
-                temp.add(row8col1.getText().toString().trim());
-                temp.add(row8col2.getText().toString().trim());
-                temp.add(row9col1.getText().toString().trim());
-                temp.add(row9col2.getText().toString().trim());
-                temp.add(row0col1.getText().toString().trim());
-                temp.add(row0col2.getText().toString().trim());
+                temp.add(row1col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row1col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row2col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row2col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row3col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row3col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row4col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row4col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row5col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row5col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row6col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row6col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row7col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row7col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row8col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row8col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row9col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row9col2.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row0col1.getText().toString().trim().replace(",", "##comma##"));
+                temp.add(row0col2.getText().toString().trim().replace(",", "##comma##"));
 
                 int amountOfSlides = 0;
 

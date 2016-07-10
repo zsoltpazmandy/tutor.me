@@ -159,23 +159,24 @@ public class ViewTableSlide extends AppCompatActivity {
         String tableRaw = "";
         ArrayList<String> tableSlide = new ArrayList<>();
 
-        try {
-
-            tableRaw = module.getString("Slide " + slideNumber);
-            tableRaw = tableRaw.replace("[", "").replace("]", "");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String[] temp = new String[20];
-        temp = tableRaw.split(",");
-
         for (int i = 0; i < 20; i++) {
             tableSlide.add(i, "");
         }
 
+        try {
+
+            tableRaw = module.getString("Slide " + slideNumber);
+            tableRaw = tableRaw.replace("[", "").replace("]", "").replace("\"", "");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String[] temp = new String[20];
+        temp = tableRaw.split(",");
+
         for (int i = 0; i < temp.length; i++) {
-            tableSlide.add(i, temp[i]);
+            tableSlide.add(i, temp[i].replace("##comma##", ","));
         }
 
         TextView row1col1 = (TextView) findViewById(R.id.view_module_tableSlideRow1Col1);
