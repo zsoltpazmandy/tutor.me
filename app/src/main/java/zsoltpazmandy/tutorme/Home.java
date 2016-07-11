@@ -463,6 +463,16 @@ public class Home extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                JSONObject updatedUser = null;
+                try {
+                    updatedUser = u.getUser(getApplicationContext(), finalUser.getInt("ID"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                Intent restart = new Intent(Home.this, Home.class);
+                restart.putExtra("User", updatedUser.toString());
+                startActivity(restart);
+                finish();
             }
         });
     }

@@ -1,5 +1,6 @@
 package zsoltpazmandy.tutorme;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -9,11 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class EditModules extends AppCompatActivity {
@@ -64,24 +65,26 @@ public class EditModules extends AppCompatActivity {
         modulesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                String nameOfModuleSelected = String.valueOf(modulesListAdapter.getItem(position));
-//                JSONObject moduleToEdit = null;
-//                try {
-//                    moduleToEdit = f.getModuleByName(getApplicationContext(),nameOfModuleSelected);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                Intent editThisModule = new Intent(EditModules.this, EditSelectedModule.class);
-//                editThisModule.putExtra("User String", user.toString());
-//                editThisModule.putExtra("Module", moduleToEdit.toString());
-                Toast.makeText(EditModules.this, "Edit module operation not implemented yet", Toast.LENGTH_SHORT).show();
+                String nameOfModuleSelected = String.valueOf(modulesListAdapter.getItem(position));
+                JSONObject moduleToEdit = null;
+                try {
+                    moduleToEdit = f.getModuleByName(getApplicationContext(),nameOfModuleSelected);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Intent editThisModule = new Intent(EditModules.this, EditSelectedModule.class);
+                editThisModule.putExtra("User String", user.toString());
+                editThisModule.putExtra("Module", moduleToEdit.toString());
+                startActivityForResult(editThisModule, 1);
             }
         });
-
-
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

@@ -102,6 +102,8 @@
     <string name="view_module_save_amp_quit"><![CDATA[Save & Quit]]></string>
     <string name="title_activity_view_table_slide">ViewTableSlide</string>
     <string name="training_tab_edit_modules">Edit Modules</string>
-    <string name="title_activity_edit_modules">EditModules</string>
+    <string name="title_activity_edit_modules">Edit Module</string>
     <string name="edit_modules_top_hint">Here are the modules you\'ve authored. Select the one you\'d like to edit.</string>
+    <string name="title_activity_edit_this_module">Edit Module</string>
+    <string name="edit_module_select_slide_to_edit_hint">Select the slide you wish to edit by LONG PRESSING it, then press one of the buttons above.</string>
 </resources>
