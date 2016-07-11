@@ -19,7 +19,7 @@ import java.util.ArrayList;
 
 public class ViewLibrary extends AppCompatActivity {
 
-    final Functions f = new Functions();
+    final Module f = new Module();
 
     JSONObject user = null;
 

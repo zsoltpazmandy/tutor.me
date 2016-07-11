@@ -21,7 +21,7 @@ public class ViewTableSlide extends AppCompatActivity {
     JSONObject module = null;
     int slideNumber = 0;
     int totalslides = 0;
-    Functions f = new Functions();
+    Module f = new Module();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

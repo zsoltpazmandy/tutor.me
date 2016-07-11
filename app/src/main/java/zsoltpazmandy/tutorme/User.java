@@ -286,6 +286,66 @@ public class User {
         return userRecords;
     }
 
+    public ArrayList<Integer> getModulesAuthoredBy(Context context, JSONObject user){
+        ArrayList<Integer> modulesAuthoredByUser = new ArrayList<>();
+        JSONObject moduleRecords = null;
+        Module f = new Module();
+
+        // grab User's ID
+        int currentUserID = 0;
+        try {
+            currentUserID = user.getInt("ID");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println("current user id: "+ currentUserID);
+
+        // check all module IDs
+        try {
+            moduleRecords = f.getModuleRecordsJSON(context);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        String temp = "";
+        String[] tempArray = new String[1];
+        try {
+            temp = moduleRecords.getString("IDs");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        temp = temp.replace("[", "").replace("]", "");
+        if (temp.contains(",")) {
+            tempArray = temp.split(",");
+        }else{
+            tempArray[0] = temp;
+        }
+        if(tempArray[0].equals("")){
+            return modulesAuthoredByUser;
+        }
+
+        ArrayList<Integer> allModuleIDs = new ArrayList<>();
+        for (int i = 0; i < tempArray.length; i++) {
+            allModuleIDs.add(Integer.parseInt(tempArray[i]));
+        }
+        System.out.println("all module ids: " + allModuleIDs);
+
+        // from all the module IDS, select the ones where Author's username == current user's Username
+        JSONObject currentModule = null;
+        for (int i = 0; i < allModuleIDs.size(); i++) {
+            currentModule = f.getModuleByID(context, allModuleIDs.get(i));
+            try {
+                if (currentModule.getString("Author").equals(getUsername(context, user))) {
+                    modulesAuthoredByUser.add(allModuleIDs.get(i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        System.out.println("users own modules " + modulesAuthoredByUser);
+
+        return modulesAuthoredByUser;
+    }
+
     public int userCount(Context context) throws JSONException {
 
         JSONObject userRecordsJSON = getUserRecords(context);

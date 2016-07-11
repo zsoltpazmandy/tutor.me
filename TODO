@@ -1,0 +1,25 @@
+## FEATURES TO ADD
+### 2. IM capability between users
+    -   compare viability of non-instant messaging VS IM using concurrent server-client comm
+    -   design contact list and message log concept & data storage
+    -   link Tutoring Tab with Messenger
+    -   link "Ask Tutor" button with Messenger on every ViewXSlide
+    
+### 3. possibility of editing Modules (and only those) the user has authored
+    -   adding slides
+    -   removing slides
+    -   editing slides
+    -   reordering slides
+    
+### 4. Possibility of signing up for tutoring modules which the users DID NOT author
+    -   populate Module record with tutor ID info
+    -   enable user to choose their tutor at Enrollment OR starting the module (?)
+    -   disallow User choosing Modules they authored themselves &
+        disallow User choosing themselves to be their own tutors
+
+## BUGS
+### 1. Strings containing "/" between MakeTableSlide and ViewTableSlide register as escape slashes, which in turn automatically prefixes the "/" with a "\"
+    -   "/" needs to be .replaced with something on addition to the arraylist
+
+## ISSUES
+### 1. Module - Author connections are now stored based on Author's Username: many functions may need to determine who authored what module, and as long as they decide that by comparing Module.Author String vs User.Username String, this means that every time a User changes their Username (not implemented yet) Module records will also have to be updated, otherwise many other functionality will break (eg. EditModules collects current user's authored modules by comparing their Username vs each Module's Username). This needs to be rationalised.

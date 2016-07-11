@@ -31,7 +31,7 @@ public class Home extends AppCompatActivity {
 
     JSONObject user = new JSONObject();
     User u;
-    Functions f;
+    Module f;
     TabHost tabHost = null;
 
     @Override
@@ -51,7 +51,7 @@ public class Home extends AppCompatActivity {
         }
 
         u = new User(getApplicationContext());
-        f = new Functions();
+        f = new Module();
 
         setupTabs();
 
@@ -123,8 +123,6 @@ public class Home extends AppCompatActivity {
 //
 //
 //        });
-
-
 
 
     }
@@ -412,6 +410,11 @@ public class Home extends AppCompatActivity {
     public void setupTrainingTab() {
 
         Button createButt = (Button) findViewById(R.id.createModButt);
+        assert createButt != null;
+        Button editModButt = (Button) findViewById(R.id.training_tab_edit_module_butt);
+        assert editModButt != null;
+        Button populateFake = (Button) findViewById(R.id.training_tab_populate_library_butt);
+        assert populateFake != null;
 
         JSONObject user = new JSONObject();
 
@@ -423,7 +426,6 @@ public class Home extends AppCompatActivity {
 
         final JSONObject forwardUser = user;
 
-        assert createButt != null;
         createButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -431,6 +433,36 @@ public class Home extends AppCompatActivity {
                 createModule.putExtra("User", forwardUser.toString());
                 startActivity(createModule);
                 finish();
+            }
+        });
+
+        // disable button if the user has not authored any modules
+        if (u.getModulesAuthoredBy(getApplicationContext(), user).size() == 0) {
+            editModButt.setEnabled(false);
+        }
+
+
+        final JSONObject finalUser = user;
+        editModButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent editModIntent = new Intent(Home.this, EditModules.class);
+                editModIntent.putExtra("User String", finalUser.toString());
+                startActivity(editModIntent);
+            }
+        });
+
+        populateFake.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    f.populateLibrary(getApplicationContext(), finalUser);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

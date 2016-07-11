@@ -26,7 +26,7 @@ public class ModuleProgress extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final Functions f = new Functions();
+        final Module f = new Module();
 
         try {
             this.user = new JSONObject(getIntent().getStringExtra("User"));

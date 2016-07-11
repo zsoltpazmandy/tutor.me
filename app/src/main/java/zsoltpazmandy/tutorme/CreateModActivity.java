@@ -32,7 +32,7 @@ public class CreateModActivity extends AppCompatActivity {
             return;
         }
 
-        final Functions f = new Functions();
+        final Module f = new Module();
 
         try {
             this.author = new JSONObject(getIntent().getStringExtra("User"));
@@ -127,7 +127,7 @@ public class CreateModActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        Functions f = new Functions();
+        Module f = new Module();
 
         if (resultCode == 1) {
 

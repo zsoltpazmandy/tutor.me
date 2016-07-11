@@ -101,4 +101,7 @@
     <string name="view_module_ask_tutor_butt">Ask tutor</string>
     <string name="view_module_save_amp_quit"><![CDATA[Save & Quit]]></string>
     <string name="title_activity_view_table_slide">ViewTableSlide</string>
+    <string name="training_tab_edit_modules">Edit Modules</string>
+    <string name="title_activity_edit_modules">EditModules</string>
+    <string name="edit_modules_top_hint">Here are the modules you\'ve authored. Select the one you\'d like to edit.</string>
 </resources>

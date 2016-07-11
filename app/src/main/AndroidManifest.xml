@@ -145,6 +145,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="zsoltpazmandy.tutorme.ModuleProgress" />
         </activity>
+        <activity
+            android:name=".EditModules"
+            android:label="@string/title_activity_edit_modules"
+            android:parentActivityName=".Home"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="zsoltpazmandy.tutorme.Home" />
+        </activity>
     </application>
 
 </manifest>
