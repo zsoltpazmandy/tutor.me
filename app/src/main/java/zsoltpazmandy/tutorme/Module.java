@@ -258,6 +258,28 @@ public class Module {
         }
     }
 
+    public void updateModule(Context context, JSONObject module){
+
+        try {
+
+            FileOutputStream fou = context.openFileOutput("module" + module.get("ID").toString(), Context.MODE_PRIVATE);
+            OutputStreamWriter osw = new OutputStreamWriter(fou);
+            osw.write(module.toString());
+            osw.flush();
+            osw.close();
+            Toast.makeText(context, "Module successfully updated.", Toast.LENGTH_SHORT).show();
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
     public boolean isNameTaken(Context context, String moduleName) throws IOException, JSONException {
 
         FileInputStream fileInput = null;
