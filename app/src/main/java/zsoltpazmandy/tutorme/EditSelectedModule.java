@@ -1,13 +1,18 @@
 package zsoltpazmandy.tutorme;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +20,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class EditSelectedModule extends AppCompatActivity {
@@ -39,17 +45,168 @@ public class EditSelectedModule extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        TextView topText = (TextView) findViewById(R.id.edit_selected_module_top_hint);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        int screenWidth = displayMetrics.widthPixels;
+
+        final TextView topText = (TextView) findViewById(R.id.edit_selected_module_top_hint);
+        topText.setWidth((int) (screenWidth * 0.8));
+
+        Button changeName = (Button) findViewById(R.id.edit_selected_change_module_name_butt);
+        assert changeName != null;
+        changeName.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
+                alert.setTitle("Change the name of the module");
+                final String current = topText.getText().toString();
+                final EditText newName = new EditText(getApplicationContext());
+                newName.setMaxLines(4);
+                newName.setTextColor(Color.BLACK);
+                newName.setText(current);
+                alert.setView(newName);
+
+                alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        try {
+
+                            if (newName.getText().toString().length() >= 100) {
+                                Toast.makeText(EditSelectedModule.this, "Name must be max 100 characters!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            if (newName.getText().toString().equals(current)) {
+                                Toast.makeText(EditSelectedModule.this, "Original name kept.", Toast.LENGTH_SHORT).show();
+                            }
+
+                            if (newName.getText().toString().length() == 0) {
+                                Toast.makeText(EditSelectedModule.this, "Name cannot be empty!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            if (!f.isNameTaken(getApplicationContext(), newName.getText().toString())) {
+                                module.remove("Name");
+                                f.updateModule(getApplicationContext(), module.put("Name", newName.getText().toString()));
+                                topText.setText(newName.getText().toString());
+
+                            } else {
+                                Toast.makeText(EditSelectedModule.this, "A module with that name already exists. Please choose a different name!", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+                alert.show();
+            }
+        });
+        final TextView descText = (TextView) findViewById(R.id.edit_selected_module_desc);
+        assert descText != null;
+        descText.setWidth((int) (screenWidth * 0.8));
+
+        Button editDescButt = (Button) findViewById(R.id.edit_selected_change_module_desc_butt);
+        assert editDescButt != null;
+        editDescButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
+                alert.setTitle("Edit description of the module");
+                final String current = descText.getText().toString();
+                final EditText newDesc = new EditText(getApplicationContext());
+                newDesc.setMaxLines(4);
+                newDesc.setTextColor(Color.BLACK);
+                newDesc.setText(current);
+                alert.setView(newDesc);
+
+                final boolean[] failed = {false};
+
+                alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        try {
+
+                            if (newDesc.getText().toString().length() >= 1000) {
+                                failed[0] = true;
+                                Toast.makeText(EditSelectedModule.this, "Description must be max 1000 characters!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            if (newDesc.getText().toString().equals(current)) {
+                                failed[0] = true;
+                                Toast.makeText(EditSelectedModule.this, "Original description kept.", Toast.LENGTH_SHORT).show();
+                            }
+
+                            if (newDesc.getText().toString().length() == 0) {
+                                failed[0] = true;
+                                Toast.makeText(EditSelectedModule.this, "Description cannot be empty!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            if (!failed[0]) {
+                                module.remove("Description");
+                                f.updateModule(getApplicationContext(), module.put("Description", newDesc.getText().toString()));
+                                descText.setText(newDesc.getText().toString());
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+                alert.show();
+            }
+        });
+
+
         TextView slideHint = (TextView) findViewById(R.id.edit_selected_module_slides_hint);
         final Button addSlideButt = (Button) findViewById(R.id.edit_selected_module_add_slide_butt);
         final Button editSlideButt = (Button) findViewById(R.id.edit_selected_module_edit_slides_butt);
         final Button moveSlideButt = (Button) findViewById(R.id.edit_selected_module_move_slides_butt);
         final Button deleteSlideButt = (Button) findViewById(R.id.edit_selected_module_del_slide_butt);
         ListView slidesOfModuleListView = (ListView) findViewById(R.id.edit_selected_module_slideslist_view);
+        Button doneButt = (Button) findViewById(R.id.edit_selected_save_butt);
+        assert doneButt != null;
+        doneButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                setResult(RESULT_OK);
+                finish();
+            }
+        });
+
+        Button discardButt = (Button) findViewById(R.id.edit_selected_discard_butt);
+
 
         try {
             assert topText != null;
-            topText.setText(module.getString("Name"));
+            if (module.getString("Name").length() >= 57) {
+                topText.setText(module.getString("Name") + "...");
+            } else {
+                topText.setText(module.getString("Name"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            assert descText != null;
+            if (module.getString("Description").length() >= 77) {
+                descText.setText(module.getString("Description").substring(0, 77) + "...");
+            } else {
+                descText.setText(module.getString("Description"));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -239,5 +396,9 @@ public class EditSelectedModule extends AppCompatActivity {
                 finish();
                 break;
         }
+    }
+
+    public void openDialog(final TextView nameView, final String currentName) {
+
     }
 }

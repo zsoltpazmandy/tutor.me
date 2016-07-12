@@ -7,9 +7,11 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +41,17 @@ public class EditModules extends AppCompatActivity {
         }
 
         TextView topHint = (TextView) findViewById(R.id.edit_modules_top_hint_textview);
+        Button doneButt = (Button) findViewById(R.id.edit_modules_butt);
+        assert doneButt != null;
+        doneButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent backHome = new Intent(EditModules.this, Home.class);
+                backHome.putExtra("User", user.toString());
+                startActivity(backHome);
+                finish();
+            }
+        });
 
         ArrayList<Integer> usersOwnModules = u.getModulesAuthoredBy(getApplicationContext(), user);
 
@@ -68,7 +81,7 @@ public class EditModules extends AppCompatActivity {
                 String nameOfModuleSelected = String.valueOf(modulesListAdapter.getItem(position));
                 JSONObject moduleToEdit = null;
                 try {
-                    moduleToEdit = f.getModuleByName(getApplicationContext(),nameOfModuleSelected);
+                    moduleToEdit = f.getModuleByName(getApplicationContext(), nameOfModuleSelected);
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (JSONException e) {
@@ -86,5 +99,16 @@ public class EditModules extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        switch (resultCode) {
+            case RESULT_OK:
+                Toast.makeText(EditModules.this, "Finished editing module", Toast.LENGTH_SHORT).show();
+                Intent restartThis = new Intent(EditModules.this, EditModules.class);
+                restartThis.putExtra("User String", user.toString());
+                startActivity(restartThis);
+                finish();
+                break;
+
+        }
+
     }
 }

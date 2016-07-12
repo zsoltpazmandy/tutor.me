@@ -450,6 +450,7 @@ public class Home extends AppCompatActivity {
                 Intent editModIntent = new Intent(Home.this, EditModules.class);
                 editModIntent.putExtra("User String", finalUser.toString());
                 startActivity(editModIntent);
+                finish();
             }
         });
 

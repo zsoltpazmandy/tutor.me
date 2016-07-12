@@ -9,23 +9,49 @@
     tools:showIn="@layout/activity_edit_modules">
 
     <LinearLayout
+        android:id="@+id/edit_module_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:id="@+id/edit_module_ll"
-        android:padding="@dimen/activity_horizontal_margin">
+        android:orientation="vertical">
 
         <TextView
+            android:id="@+id/edit_modules_top_hint_textview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/edit_modules_top_hint"
-            android:id="@+id/edit_modules_top_hint_textview"/>
+            android:padding="@dimen/activity_horizontal_margin"
+            android:textStyle="bold"/>
 
-        <ListView
+        <View
+            android:id="@+id/learning_tab_horizontal"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/edit_module_listview">
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray" />
 
-        </ListView>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/edit_modules_butt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Done" />
+
+    <View
+        android:id="@+id/edit_modules_button_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/edit_modules_butt"
+        android:background="@android:color/darker_gray" />
+
+    <ListView
+        android:id="@+id/edit_module_listview"
+        android:layout_below="@id/edit_module_ll"
+        android:layout_above="@id/edit_modules_button_divider"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="false">
+
+    </ListView>
 </RelativeLayout>
