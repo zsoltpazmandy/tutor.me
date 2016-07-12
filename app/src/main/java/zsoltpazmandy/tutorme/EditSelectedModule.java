@@ -60,13 +60,19 @@ public class EditSelectedModule extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
                 alert.setTitle("Change the name of the module");
-                final String current = topText.getText().toString();
+                String current = "";
+                try {
+                    current = module.getString("Name").toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 final EditText newName = new EditText(getApplicationContext());
                 newName.setMaxLines(4);
                 newName.setTextColor(Color.BLACK);
                 newName.setText(current);
                 alert.setView(newName);
 
+                final String finalCurrent = current;
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         try {
@@ -75,7 +81,7 @@ public class EditSelectedModule extends AppCompatActivity {
                                 Toast.makeText(EditSelectedModule.this, "Name must be max 100 characters!", Toast.LENGTH_SHORT).show();
                             }
 
-                            if (newName.getText().toString().equals(current)) {
+                            if (newName.getText().toString().equals(finalCurrent)) {
                                 Toast.makeText(EditSelectedModule.this, "Original name kept.", Toast.LENGTH_SHORT).show();
                             }
 
@@ -119,7 +125,12 @@ public class EditSelectedModule extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
                 alert.setTitle("Edit description of the module");
-                final String current = descText.getText().toString();
+                String current = "";
+                try {
+                    current = module.getString("Description").toString();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 final EditText newDesc = new EditText(getApplicationContext());
                 newDesc.setMaxLines(4);
                 newDesc.setTextColor(Color.BLACK);
@@ -128,6 +139,7 @@ public class EditSelectedModule extends AppCompatActivity {
 
                 final boolean[] failed = {false};
 
+                final String finalCurrent = current;
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         try {
@@ -137,7 +149,7 @@ public class EditSelectedModule extends AppCompatActivity {
                                 Toast.makeText(EditSelectedModule.this, "Description must be max 1000 characters!", Toast.LENGTH_SHORT).show();
                             }
 
-                            if (newDesc.getText().toString().equals(current)) {
+                            if (newDesc.getText().toString().equals(finalCurrent)) {
                                 failed[0] = true;
                                 Toast.makeText(EditSelectedModule.this, "Original description kept.", Toast.LENGTH_SHORT).show();
                             }
@@ -174,7 +186,9 @@ public class EditSelectedModule extends AppCompatActivity {
         final Button editSlideButt = (Button) findViewById(R.id.edit_selected_module_edit_slides_butt);
         final Button moveSlideButt = (Button) findViewById(R.id.edit_selected_module_move_slides_butt);
         final Button deleteSlideButt = (Button) findViewById(R.id.edit_selected_module_del_slide_butt);
-        ListView slidesOfModuleListView = (ListView) findViewById(R.id.edit_selected_module_slideslist_view);
+        final TextView selectedSlide = (TextView) findViewById(R.id.edit_selected_selected_slide_text);
+        selectedSlide.setText("Select slide to edit");
+        final ListView slidesOfModuleListView = (ListView) findViewById(R.id.edit_selected_module_slideslist_view);
         Button doneButt = (Button) findViewById(R.id.edit_selected_save_butt);
         assert doneButt != null;
         doneButt.setOnClickListener(new View.OnClickListener() {
@@ -289,16 +303,35 @@ public class EditSelectedModule extends AppCompatActivity {
             }
         }
 
-        final ArrayAdapter slidesNamesAdapter = new ArrayAdapter<String>(this,
-                R.layout.slide_select_custom_listview_layout, R.id.list_item, slidesNames);
+        final ArrayAdapter slidesNamesAdapter = new SlideArrayAdapter(this, slidesNames);
 
         assert slidesOfModuleListView != null;
         slidesOfModuleListView.setAdapter(slidesNamesAdapter);
 
-        slidesOfModuleListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        slidesOfModuleListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                view.setSelected(true);
+            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                String tempString = "";
+                String[] tempArray = new String[1];
+                try {
+                    tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
+                    if (tempString.contains(",")) {
+                        tempArray = tempString.split(",");
+                    } else {
+                        tempArray[0] = tempString;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                final int slideNumber = position + 1;
+
+                String[] type = {"Text Slide", "Table Slide"};
+
+                selectedSlide.setText("Selected slide " + slideNumber + ": " + type[Integer.parseInt(tempArray[position])-1]);
+
+                final String[] finalTempArray = tempArray;
 
                 addSlideButt.setEnabled(false);
                 editSlideButt.setEnabled(true);
@@ -306,22 +339,9 @@ public class EditSelectedModule extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         // start editing selected slide
-                        String tempString = "";
-                        String[] tempArray = new String[1];
-                        try {
-                            tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
-                            if (tempString.contains(",")) {
-                                tempArray = tempString.split(",");
-                            } else {
-                                tempArray[0] = tempString;
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
 
-                        int slideNumber = position + 1;
 
-                        switch (Integer.parseInt(tempArray[position])) {
+                        switch (Integer.parseInt(finalTempArray[position])) {
                             case 1:
 
                                 Intent editTextSlide = new Intent(EditSelectedModule.this, MakeTextSlide.class);
@@ -340,7 +360,7 @@ public class EditSelectedModule extends AppCompatActivity {
                         }
 
 
-                        Toast.makeText(EditSelectedModule.this, "Editing slide type:" + tempArray[position], Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EditSelectedModule.this, "Editing slide type:" + finalTempArray[position], Toast.LENGTH_SHORT).show();
                     }
                 });
                 moveSlideButt.setEnabled(true);
@@ -357,7 +377,6 @@ public class EditSelectedModule extends AppCompatActivity {
                         Toast.makeText(EditSelectedModule.this, "Deleting slide number" + position, Toast.LENGTH_SHORT).show();
                     }
                 });
-                return false;
             }
         });
 

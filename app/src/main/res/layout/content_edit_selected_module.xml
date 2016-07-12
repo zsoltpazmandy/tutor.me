@@ -23,27 +23,29 @@
                 android:id="@+id/edit_selected_module_top_hint"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:maxLength="60"
                 android:padding="@dimen/activity_vertical_margin"
                 android:text="Name of module"
-                android:maxLength="60"
-                android:layout_alignParentStart="true"
-                android:textStyle="bold"
-                android:layout_alignParentLeft="true" />
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/edit_selected_change_module_name_butt"
                 android:layout_width="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:layout_height="wrap_content"
-                android:text="Change"
-                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:layout_alignParentRight="true" />
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
+                android:text="Change" />
         </RelativeLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -53,22 +55,22 @@
                 android:id="@+id/edit_selected_module_desc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
                 android:maxLength="80"
                 android:padding="@dimen/activity_vertical_margin"
                 android:text="Description of module"
-                android:layout_alignParentStart="true"
-                android:textStyle="italic"
-                android:layout_alignParentLeft="true" />
+                android:textStyle="italic" />
 
             <Button
                 android:id="@+id/edit_selected_change_module_desc_butt"
                 android:layout_width="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:text="Edit"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:layout_alignParentRight="true" />
+                android:text="Edit" />
         </RelativeLayout>
 
         <View
@@ -76,22 +78,13 @@
             android:layout_height="1dp"
             android:background="@android:color/darker_gray" />
 
-        <TextView
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:paddingLeft="@dimen/activity_horizontal_margin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:text="Slides"/>
 
         <LinearLayout
             android:id="@+id/edit_selected_module_buttons_ll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingTop="@dimen/activity_vertical_margin"
             android:orientation="horizontal">
-
 
 
             <Button
@@ -120,12 +113,15 @@
         </LinearLayout>
 
         <TextView
-            android:id="@+id/edit_selected_module_slides_hint"
+            android:id="@+id/edit_selected_selected_slide_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/activity_vertical_margin"
-            android:text="@string/edit_module_select_slide_to_edit_hint"
-            android:textStyle="italic" />
+            android:gravity="center"
+            android:maxLines="1"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:textSize="@dimen/profile_setup_text_size"
+            android:textStyle="bold" />
+
     </LinearLayout>
 
     <Button
@@ -133,20 +129,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_alignParentEnd="true"
-        android:text="Save"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:text="Save" />
 
     <Button
         android:id="@+id/edit_selected_discard_butt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:layout_alignParentBottom="true"
-        android:text="Discard"
-        android:layout_alignParentLeft="true" />
+        android:text="Discard" />
 
     <View
         android:id="@+id/button_divider"
