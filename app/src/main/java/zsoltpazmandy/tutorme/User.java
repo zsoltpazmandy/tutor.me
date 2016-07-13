@@ -46,7 +46,6 @@ public class User {
             user = getUser(context, id);
 
         } catch (JSONException e) {
-            System.out.println("Cannot find username in database");
             Toast.makeText(context, "Cannot find username in database", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
         }
@@ -298,7 +297,6 @@ public class User {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        System.out.println("current user id: "+ currentUserID);
 
         // check all module IDs
         try {

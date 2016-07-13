@@ -156,7 +156,6 @@ public class CreateModActivity extends AppCompatActivity {
             }
 
             f.saveModule(getApplicationContext(), module);
-            System.out.println(module);
             Toast.makeText(getApplicationContext(), "Module added to the library", Toast.LENGTH_SHORT).show();
 
             Intent returnHome = new Intent(CreateModActivity.this, Home.class);

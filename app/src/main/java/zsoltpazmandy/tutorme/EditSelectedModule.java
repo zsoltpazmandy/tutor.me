@@ -329,7 +329,7 @@ public class EditSelectedModule extends AppCompatActivity {
 
                 String[] type = {"Text Slide", "Table Slide"};
 
-                selectedSlide.setText("Selected slide " + slideNumber + ": " + type[Integer.parseInt(tempArray[position])-1]);
+                selectedSlide.setText("Selected slide " + slideNumber + ": " + type[Integer.parseInt(tempArray[position]) - 1]);
 
                 final String[] finalTempArray = tempArray;
 
@@ -359,63 +359,214 @@ public class EditSelectedModule extends AppCompatActivity {
                                 break;
                         }
 
-
-                        Toast.makeText(EditSelectedModule.this, "Editing slide type:" + finalTempArray[position], Toast.LENGTH_SHORT).show();
                     }
                 });
                 moveSlideButt.setEnabled(true);
                 moveSlideButt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(EditSelectedModule.this, "Moving slide number" + position, Toast.LENGTH_SHORT).show();
+                        final int number = position + 1;
+                        AlertDialog.Builder b = new AlertDialog.Builder(EditSelectedModule.this);
+                        b.setTitle("Move Slide " + number + " in the place of...");
+                        String[] slides = new String[slidesNames.size()];
+
+                        for (int i = 0; i < slidesNames.size(); i++) {
+                            int no = i + 1;
+                            slides[i] = "Slide " + no + ": " + slidesNames.get(i);
+                        }
+
+                        b.setItems(slides, new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int index) {
+
+                                /*
+                                The following algorithm is used to reorder the slides in the module.
+                                */
+
+                                //Add all slide strings & their respective slide types
+                                //to 2 ArrayLists
+                                ArrayList<String> allSlidesString = new ArrayList<String>();
+                                ArrayList<Integer> newTypesArray = new ArrayList<Integer>();
+
+                                // ID of the module
+                                int id = 0;
+                                try {
+                                    id = module.getInt("ID");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                // Amount of slides in the module
+                                int count = f.getSlideCount(getApplicationContext(), id);
+
+                                // Slides copied to the ArrayList
+                                for (int i = 1; i <= count; i++) {
+                                    try {
+                                        allSlidesString.add(module.getString("Slide " + i));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                // Retrieving slide type information
+                                String tempString = "";
+                                String[] tempArray = new String[1];
+                                try {
+                                    tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
+                                    if (tempString.contains(",")) {
+                                        tempArray = tempString.split(",");
+                                    } else {
+                                        tempArray[0] = tempString;
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
+                                // Copying slide types in the ArrayList
+                                for(int i = 0; i < count; i++){
+                                    newTypesArray.add(Integer.parseInt(tempArray[i]));
+                                }
+
+
+                                // Store the String we want to move and its type separately
+                                String tempContent = allSlidesString.get(position);
+                                int tempType = newTypesArray.get(position);
+
+                                // Remove that element and its type from both ArrayLists
+                                allSlidesString.remove(position);
+                                newTypesArray.remove(position);
+
+                                boolean toolong = false;
+                                if(index == allSlidesString.size()){
+                                    allSlidesString.add("");
+                                    newTypesArray.add(0);
+                                    toolong = true;
+                                }
+
+                                // Store the String which is in the position we're moving the
+                                // Slide to and its respective slide type
+                                String temp = allSlidesString.get(index);
+                                int typeOfSlideAtTarget = newTypesArray.get(index);
+
+                                // Create 2 new temporary ArrayLists where up to the target index
+                                // everything is as in the original list
+                                ArrayList<String> tempList = new ArrayList<String>();
+                                ArrayList<Integer> tempTypeList = new ArrayList<Integer>();
+                                for (int i = 0; i < index; i++) {
+                                    tempList.add(allSlidesString.get(i));
+                                    tempTypeList.add(newTypesArray.get(i));
+                                }
+
+                                // Add the slide String we're moving after the first part in the temp list
+                                // along with the slide's type
+                                tempList.add(tempContent);
+                                tempTypeList.add(tempType);
+
+                                // Add the slide String which was originally at the position we're
+                                // moving to along with its type
+                                tempList.add(temp);
+                                tempTypeList.add(typeOfSlideAtTarget);
+
+
+                                // Copy the rest of the elements from the original list
+                                // to the temporary list after the position we've just
+                                // inserted the new element and the original element at that position
+                                // along with all the slides' respective types
+                                for (int i = index + 1; i < allSlidesString.size(); i++) {
+                                    tempList.add(allSlidesString.get(i));
+                                    tempTypeList.add(newTypesArray.get(i));
+                                }
+
+                                // Remove old Slide Type information
+                                module.remove("Types of Slides");
+
+                                // Insert new Slide data & Slide Type information in Module
+                                for (int i = 0; i < tempList.size(); i++) {
+                                    int no = i+1;
+                                    try {
+                                        module.put("Slide " + no, tempList.get(i));
+                                        module.accumulate("Types of Slides", tempTypeList.get(i));
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                // Update module in the database
+                                f.updateModule(getApplicationContext(), module);
+
+                                Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
+                                restartAct.putExtra("User String", user.toString());
+                                restartAct.putExtra("Module", module.toString());
+                                startActivity(restartAct);
+                                dialog.dismiss();
+                                finish();
+                            }
+
+                            }
+
+                            );
+                            b.show();
+                        }
                     }
-                });
-                deleteSlideButt.setEnabled(true);
-                deleteSlideButt.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+
+                    );
+                    deleteSlideButt.setEnabled(true);
+                    deleteSlideButt.setOnClickListener(new View.OnClickListener()
+
+                    {
+                        @Override
+                        public void onClick (View v){
                         Toast.makeText(EditSelectedModule.this, "Deleting slide number" + position, Toast.LENGTH_SHORT).show();
                     }
-                });
-            }
-        });
+                    }
 
-        assert addSlideButt != null;
-        addSlideButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+                    );
+                }
+            }
+
+            );
+
+            assert addSlideButt!=null;
+            addSlideButt.setOnClickListener(new View.OnClickListener()
+
+            {
+                @Override
+                public void onClick (View v){
                 // start adding slide activity
             }
-        });
+            }
+
+            );
 
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case RESULT_CANCELED:
-                Toast.makeText(EditSelectedModule.this, "Editing slide cancelled", Toast.LENGTH_SHORT).show();
-                break;
-            case RESULT_OK:
-                Toast.makeText(EditSelectedModule.this, "Slide updated.", Toast.LENGTH_SHORT).show();
-
-                try {
-                    module = new JSONObject(data.getStringExtra("Module edited"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                f.updateModule(getApplicationContext(), module);
-                Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
-                restartAct.putExtra("User String", user.toString());
-                restartAct.putExtra("Module", module.toString());
-                startActivityForResult(restartAct, 1);
-                finish();
-                break;
         }
-    }
+
+        @Override
+        protected void onActivityResult ( int requestCode, int resultCode, Intent data){
+            super.onActivityResult(requestCode, resultCode, data);
+            switch (resultCode) {
+                case RESULT_CANCELED:
+                    Toast.makeText(EditSelectedModule.this, "Editing slide cancelled", Toast.LENGTH_SHORT).show();
+                    break;
+                case RESULT_OK:
+                    Toast.makeText(EditSelectedModule.this, "Slide updated.", Toast.LENGTH_SHORT).show();
+
+                    try {
+                        module = new JSONObject(data.getStringExtra("Module edited"));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    f.updateModule(getApplicationContext(), module);
+                    Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
+                    restartAct.putExtra("User String", user.toString());
+                    restartAct.putExtra("Module", module.toString());
+                    startActivityForResult(restartAct, 1);
+                    finish();
+                    break;
+            }
+        }
 
     public void openDialog(final TextView nameView, final String currentName) {
 
