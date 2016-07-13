@@ -91,8 +91,15 @@ public class ViewLibPopUpModDisplay extends Activity {
                     Intent returnResult = new Intent(ViewLibPopUpModDisplay.this, ViewLibrary.class);
                     assert userUpdated != null;
                     returnResult.putExtra("User String", userUpdated.toString());
+
+                    Module f = new Module();
+                    JSONObject module = f.getModuleByID(getApplicationContext(), Integer.parseInt(infoToShow.get(0)));
+
+                    returnResult.putExtra("Module", module.toString());
+
                     setResult(1, returnResult);
                     finish();
+
                 } else {
                     Toast.makeText(ViewLibPopUpModDisplay.this, "You've already started this module.", Toast.LENGTH_SHORT).show();
                 }

@@ -1,5 +1,7 @@
 package zsoltpazmandy.tutorme;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -144,12 +146,41 @@ public class ViewLibrary extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode == 1){
+        if (resultCode == 1) {
+
+            JSONObject module = null;
+
+            // updating current user
             try {
                 this.user = new JSONObject(data.getStringExtra("User String"));
+                module = new JSONObject(data.getStringExtra("Module"));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+
+            // asking if user wants to begin the newly added module
+            AlertDialog.Builder alert = new AlertDialog.Builder(ViewLibrary.this);
+            alert.setTitle("Begin new module now?");
+            final JSONObject finalModule = module;
+            alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    Intent startLearning = new Intent(ViewLibrary.this, ModuleProgress.class);
+                    startLearning.putExtra("User", user.toString());
+                    startLearning.putExtra("Module", finalModule.toString());
+                    startActivity(startLearning);
+                    finish();
+                    dialog.dismiss();
+                }
+            });
+
+            alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int whichButton) {
+                    dialog.dismiss();
+                }
+            });
+            alert.show();
+
+
         }
     }
 
@@ -168,7 +199,7 @@ public class ViewLibrary extends AppCompatActivity {
         }
 
         try {
-            returnToHome.putExtra("User",  u.getUser(getApplicationContext(), Integer.parseInt(user.getString("ID"))).toString());
+            returnToHome.putExtra("User", u.getUser(getApplicationContext(), Integer.parseInt(user.getString("ID"))).toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

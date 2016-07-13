@@ -8,8 +8,8 @@
 ### 3. possibility of editing Modules (and only those) the user has authored
     -   adding slides
     -   removing slides
-    -   editing slides
-    -   reordering slides
+####DONE    -   editing slides
+####DONE    -   reordering slides
     
 ### 4. Possibility of signing up for tutoring modules which the users DID NOT author
     -   populate Module record with tutor ID info
@@ -23,3 +23,5 @@
 
 ## ISSUES
 ### 1. Module - Author connections are now stored based on Author's Username: many functions may need to determine who authored what module, and as long as they decide that by comparing Module.Author String vs User.Username String, this means that every time a User changes their Username (not implemented yet) Module records will also have to be updated, otherwise many other functionality will break (eg. EditModules collects current user's authored modules by comparing their Username vs each Module's Username). This needs to be rationalised.
+### 2. User should be able to start viewing a module they've just enrolled on from the pop-up window in view library
+### 3. Module editing UI needs to be easier to use, needs to use space better (add ScrollView)
