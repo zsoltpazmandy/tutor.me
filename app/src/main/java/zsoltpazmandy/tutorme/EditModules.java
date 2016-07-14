@@ -11,7 +11,6 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -42,6 +41,7 @@ public class EditModules extends AppCompatActivity {
 
         TextView topHint = (TextView) findViewById(R.id.edit_modules_top_hint_textview);
         Button doneButt = (Button) findViewById(R.id.edit_modules_butt);
+        doneButt.setText("Cancel");
         assert doneButt != null;
         doneButt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,24 +91,10 @@ public class EditModules extends AppCompatActivity {
                 Intent editThisModule = new Intent(EditModules.this, EditSelectedModule.class);
                 editThisModule.putExtra("User String", user.toString());
                 editThisModule.putExtra("Module", moduleToEdit.toString());
-                startActivityForResult(editThisModule, 1);
+                startActivity(editThisModule);
+                finish();
             }
         });
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (resultCode) {
-            case RESULT_OK:
-                Toast.makeText(EditModules.this, "Finished editing module", Toast.LENGTH_SHORT).show();
-                Intent restartThis = new Intent(EditModules.this, EditModules.class);
-                restartThis.putExtra("User String", user.toString());
-                startActivity(restartThis);
-                finish();
-                break;
-
-        }
-
-    }
 }

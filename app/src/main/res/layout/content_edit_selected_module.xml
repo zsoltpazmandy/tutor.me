@@ -172,7 +172,7 @@
                             android:layout_marginLeft="@dimen/activity_horizontal_margin"
                             android:layout_marginRight="@dimen/activity_horizontal_margin"
                             android:gravity="center"
-                            android:text="(LONG PRESS to select)"
+                            android:text="LONG press to select a slide, then use the buttons on the right. SHORT press to de-select."
                             android:textStyle="italic" />
                     </LinearLayout>
 
@@ -233,20 +233,11 @@
                         android:background="@color/default_color">
 
                         <Button
-                            android:id="@+id/edit_selected_discard_butt"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_alignParentLeft="true"
-                            android:layout_alignParentStart="true"
-                            android:text="Cancel" />
-
-                        <Button
                             android:id="@+id/edit_selected_save_butt"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
-                            android:layout_alignParentRight="true"
-                            android:text="Save" />
+                            android:layout_centerHorizontal="true"
+                            android:text="Save Module" />
                     </RelativeLayout>
 
                     <LinearLayout

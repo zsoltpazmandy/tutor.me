@@ -88,8 +88,16 @@ public class AddSlide extends AppCompatActivity {
                 Intent addPlaintextSlide = new Intent(AddSlide.this, MakeTableSlide.class);
                 addPlaintextSlide.putExtra("Module frame ready", module.toString());
                 Toast.makeText(AddSlide.this, "Adding Table slide to module", Toast.LENGTH_SHORT).show();
-                startActivityForResult(addPlaintextSlide, 10);
 
+                if (getIntent().hasExtra("Index of new slide")) {
+                    addPlaintextSlide.putExtra("Index of new slide", getIntent().getStringExtra("Index of new slide"));
+                    startActivityForResult(addPlaintextSlide, 3);
+                    System.out.println("text slide selected, realised that there's 'Index of new slide' extra which is this: " + getIntent().getStringExtra("Index of new slide"));
+                } else {
+
+
+                    startActivityForResult(addPlaintextSlide, 10);
+                }
             }
         });
 

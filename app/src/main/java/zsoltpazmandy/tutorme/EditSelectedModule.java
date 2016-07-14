@@ -1,11 +1,11 @@
 package zsoltpazmandy.tutorme;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MotionEvent;
@@ -27,33 +27,20 @@ import java.util.ArrayList;
 public class EditSelectedModule extends AppCompatActivity {
 
     JSONObject user = null;
+    JSONObject userBackup = null;
     JSONObject module = null;
     Module f = new Module();
-
-    static JSONObject staticModule = null;
-    static Context staticClass = null;
-    static int staticCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_selected_module);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        staticClass = getApplicationContext();
 
         try {
             user = new JSONObject(getIntent().getStringExtra("User String"));
             module = new JSONObject(getIntent().getStringExtra("Module"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        staticModule = module;
-
-        try {
-            staticCount = f.getSlideCount(getApplicationContext(), module.getInt("ID"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -96,10 +83,6 @@ public class EditSelectedModule extends AppCompatActivity {
 
         Button saveButt = (Button) findViewById(R.id.edit_selected_save_butt);
         assert saveButt != null;
-
-        Button discardButt = (Button) findViewById(R.id.edit_selected_discard_butt);
-        assert discardButt != null;
-
 
         editNameButt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -233,8 +216,11 @@ public class EditSelectedModule extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                setResult(RESULT_OK);
+                Intent backHome = new Intent(EditSelectedModule.this, Home.class);
+                backHome.putExtra("User", user.toString());
+                startActivity(backHome);
                 finish();
+
             }
         });
 
@@ -482,6 +468,7 @@ public class EditSelectedModule extends AppCompatActivity {
                                                             allSlidesString.remove(position);
                                                             newTypesArray.remove(position);
 
+
                                                             if (index == allSlidesString.size()) {
                                                                 allSlidesString.add("");
                                                                 newTypesArray.add(0);
@@ -529,11 +516,13 @@ public class EditSelectedModule extends AppCompatActivity {
                                                                 int no = i + 1;
                                                                 try {
                                                                     module.put("Slide " + no, tempList.get(i));
-                                                                    module.accumulate("Types of Slides", tempTypeList.get(i));
+                                                                    if (tempTypeList.get(i) != 0)
+                                                                        module.accumulate("Types of Slides", tempTypeList.get(i));
                                                                 } catch (JSONException e) {
                                                                     e.printStackTrace();
                                                                 }
                                                             }
+
 
                                                             // Update module in the database
                                                             f.updateModule(getApplicationContext(), module);
@@ -555,14 +544,50 @@ public class EditSelectedModule extends AppCompatActivity {
 
                             );
                             deleteSlideButt.setEnabled(true);
-                            deleteSlideButt.setOnClickListener(new View.OnClickListener()
+                            deleteSlideButt.setOnClickListener(
+                                    new View.OnClickListener()
 
-                                                               {
-                                                                   @Override
-                                                                   public void onClick(View v) {
-                                                                       Toast.makeText(EditSelectedModule.this, "Deleting slide number" + position, Toast.LENGTH_SHORT).show();
-                                                                   }
-                                                               }
+                                    {
+                                        @Override
+                                        public void onClick(View v) {
+                                            int indexToDelete = position;
+                                            final int filenameNumber = indexToDelete + 1;
+
+                                            AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
+                                            alert.setTitle("Are you sure you want to delete Slide " + filenameNumber);
+                                            alert.setPositiveButton("Yes, delete", new DialogInterface.OnClickListener() {
+                                                        public void onClick(DialogInterface dialog, int whichButton) {
+
+                                                            try {
+                                                                f.removeSlide(getApplicationContext(), module, position);
+                                                            } catch (JSONException e) {
+                                                                e.printStackTrace();
+                                                            }
+
+                                                            Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
+                                                            restartAct.putExtra("User String", user.toString());
+                                                            restartAct.putExtra("Module", module.toString());
+                                                            startActivity(restartAct);
+                                                            dialog.dismiss();
+                                                            finish();
+                                                        }
+                                                    }
+
+                                            );
+
+                                            alert.setNegativeButton("No", new DialogInterface.OnClickListener()
+
+                                                    {
+                                                        public void onClick(DialogInterface dialog,
+                                                                            int whichButton) {
+                                                            dialog.dismiss();
+                                                        }
+                                                    }
+
+                                            );
+                                            alert.show();
+                                        }
+                                    }
 
                             );
                         }
@@ -622,25 +647,6 @@ public class EditSelectedModule extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                int amountOfSlides = 0;
-
-                String temp;
-
-                try {
-                    temp = module.getString("Types of Slides");
-                    temp = temp.replace("[", "").replace("]", "");
-
-                    amountOfSlides = temp.split(",").length;
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                try {
-                    module.put("No. of Slides", amountOfSlides);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
                 System.out.println("It's back at the edit window, here's the upped mod" + module.toString());
 
@@ -652,6 +658,30 @@ public class EditSelectedModule extends AppCompatActivity {
                 finish();
                 break;
         }
+    }
+
+    boolean wantsToQuit = false;
+
+    @Override
+    public void onBackPressed() {
+        if (wantsToQuit) {
+
+            Intent backHome = new Intent(EditSelectedModule.this, Home.class);
+            backHome.putExtra("User", user.toString());
+            startActivity(backHome);
+            finish();
+            return;
+        }
+
+        this.wantsToQuit = true;
+        Toast.makeText(this, "Press 'Back' once more to quit editing this module.", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                wantsToQuit = false;
+            }
+        }, 1000);
     }
 
 }

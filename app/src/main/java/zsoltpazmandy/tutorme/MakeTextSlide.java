@@ -35,8 +35,10 @@ public class MakeTextSlide extends AppCompatActivity {
         final EditText slideStringEdit = (EditText) findViewById(R.id.textSlideString);
 
         Button addSlideButt = (Button) findViewById(R.id.nextSlide);
+        addSlideButt.setText("Save & Add slide");
         assert addSlideButt != null;
         final Button finishButt = (Button) findViewById(R.id.textSlideFinishButt);
+        finishButt.setText("Save & Exit");
         assert finishButt != null;
 
         try {
@@ -74,7 +76,7 @@ public class MakeTextSlide extends AppCompatActivity {
                         return;
                     } else {
 
-                        String userInput = slideStringEdit.getText().toString();
+                        String userInput = slideStringEdit.getText().toString().trim();
 
                         try {
                             module.put("Slide " + getIntent().getStringExtra("Slide to edit"), userInput);
@@ -116,7 +118,7 @@ public class MakeTextSlide extends AppCompatActivity {
                         Toast.makeText(MakeTextSlide.this, "You can't make an empty slide", Toast.LENGTH_SHORT).show();
                         return;
                     } else {
-                        String userInput = slideStringEdit.getText().toString();
+                        String userInput = slideStringEdit.getText().toString().trim();
 
                         try {
                             module.put("Slide " + getIntent().getStringExtra("Index of new slide"), userInput);
@@ -124,6 +126,28 @@ public class MakeTextSlide extends AppCompatActivity {
                             e.printStackTrace();
                         }
                         System.out.println("we've added the new slide content, here's the updated module" + module.toString());
+
+                        int amountOfSlides = 0;
+
+                        String temp;
+
+                        try {
+                            temp = module.getString("Types of Slides");
+                            temp = temp.replace("[", "").replace("]", "");
+
+                            amountOfSlides = temp.split(",").length;
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        try {
+                            module.put("No. of Slides", amountOfSlides);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
                         Intent addedSlide = new Intent();
                         addedSlide.putExtra("Module edited", module.toString());
                         setResult(3, addedSlide);
@@ -143,7 +167,7 @@ public class MakeTextSlide extends AppCompatActivity {
                         return;
                     }
 
-                    String userInput = slideStringEdit.getText().toString();
+                    String userInput = slideStringEdit.getText().toString().trim();
 
                     int amountOfSlides = 0;
 
@@ -176,7 +200,7 @@ public class MakeTextSlide extends AppCompatActivity {
                         return;
                     }
 
-                    String userInput = slideStringEdit.getText().toString();
+                    String userInput = slideStringEdit.getText().toString().trim();
 
                     int amountOfSlides = 0;
 

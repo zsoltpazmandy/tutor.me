@@ -258,7 +258,52 @@ public class Module {
         }
     }
 
-    public void updateModule(Context context, JSONObject module){
+    public void removeSlide(Context context, JSONObject module, int indexOfSlideToRemove) throws JSONException {
+
+        ArrayList<String> allSlides = new ArrayList<>();
+        ArrayList<Integer> allTypes = new ArrayList<>();
+        int slideCount = getSlideCount(context, module.getInt("ID"));
+
+        if(slideCount == 1 || slideCount == 0){
+            return;
+        }
+
+        String typesString = module.getString("Types of Slides");
+        String[] typesStringArray = new String[1];
+        typesString = typesString.replace("[", "").replace("]", "");
+        if(typesString.contains(",")){
+            typesStringArray = typesString.split(",");
+        } else {
+            typesStringArray[0] = typesString;
+        }
+
+        for (int i = 1; i <= slideCount; i++) {
+            allSlides.add(module.getString("Slide " + i));
+            allTypes.add(Integer.parseInt(typesStringArray[i-1]));
+        }
+
+        for (int i = 1; i <= slideCount; i++) {
+            module.remove("Slide " + i);
+        }
+        module.remove("Types of Slides");
+
+
+        allSlides.remove(indexOfSlideToRemove);
+        allTypes.remove(indexOfSlideToRemove);
+
+        for (int i = 1; i <= slideCount - 1; i++) {
+            module.put("Slide " + i, allSlides.get(i - 1));
+            module.accumulate("Types of Slides", allTypes.get(i - 1));
+        }
+
+        slideCount--;
+        module.put("No. of Slides", slideCount);
+
+        updateModule(context, module);
+
+    }
+
+    public void updateModule(Context context, JSONObject module) {
 
         try {
 
