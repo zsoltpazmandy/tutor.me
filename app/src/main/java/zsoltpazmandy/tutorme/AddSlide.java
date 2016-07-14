@@ -55,7 +55,15 @@ public class AddSlide extends AppCompatActivity {
                 Intent addPlaintextSlide = new Intent(AddSlide.this, MakeTextSlide.class);
                 addPlaintextSlide.putExtra("Module frame ready", module.toString());
                 Toast.makeText(AddSlide.this, "Adding Plaintext slide to module", Toast.LENGTH_SHORT).show();
-                startActivityForResult(addPlaintextSlide, 10);
+
+                if (getIntent().hasExtra("Index of new slide")) {
+                    addPlaintextSlide.putExtra("Index of new slide", getIntent().getStringExtra("Index of new slide"));
+                    startActivityForResult(addPlaintextSlide, 3);
+                    System.out.println("text slide selected, realised that there's 'Index of new slide' extra which is this: " + getIntent().getStringExtra("Index of new slide"));
+                } else {
+
+                    startActivityForResult(addPlaintextSlide, 10);
+                }
 
             }
         });
@@ -116,6 +124,24 @@ public class AddSlide extends AppCompatActivity {
                 moduleComplete.putExtra("Module complete", module.toString());
                 setResult(1, moduleComplete);
                 finish();
+                break;
+            case 3:
+                try {
+                    module = new JSONObject(data.getStringExtra("Module edited"));
+                    Intent slideAddedToMod = new Intent(AddSlide.this, EditSelectedModule.class);
+                    slideAddedToMod.putExtra("Module edited", module.toString());
+                    System.out.println("we're in addslide, sending the new things back. here's the module here: " + module.toString());
+                    setResult(RESULT_OK, slideAddedToMod);
+                    finish();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case 4:
+
+                setResult(RESULT_CANCELED);
+                finish();
+                break;
         }
     }
 

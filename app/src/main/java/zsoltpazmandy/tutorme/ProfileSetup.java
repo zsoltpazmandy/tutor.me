@@ -74,7 +74,8 @@ public class ProfileSetup extends AppCompatActivity {
 // LANGUAGES
         TextView languages1Label = (TextView) findViewById(R.id.languages1_label);
         final Spinner languages1Spinner = (Spinner) findViewById(R.id.languages1_spinner);
-        ArrayAdapter<CharSequence> languages1SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> languages1SpinnerAdapter = null;
+        languages1SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
         languages1SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages1Spinner.setAdapter(languages1SpinnerAdapter);
 

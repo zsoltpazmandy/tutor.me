@@ -1,166 +1,289 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".EditSelectedModule"
     tools:showIn="@layout/activity_edit_selected_module">
 
     <LinearLayout
-        android:id="@+id/edit_selected_module_ll"
+        android:id="@+id/edit_selected_main_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/edit_selected_module_top_hint"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/edit_selected_name_ll"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:maxLength="60"
-                android:padding="@dimen/activity_vertical_margin"
-                android:text="Name of module"
-                android:textStyle="bold" />
-
-            <Button
-                android:id="@+id/edit_selected_change_module_name_butt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:text="Change" />
-        </RelativeLayout>
+                android:orientation="horizontal">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
+                <RelativeLayout
+                    android:id="@+id/edit_selected_name_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+                    <TextView
+                        android:id="@+id/edit_selected_name_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="Name: "
+                        android:textSize="@dimen/profile_setup_text_size"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/edit_selected_module_desc"
-                android:layout_width="wrap_content"
+                    <Button
+                        android:id="@+id/edit_selected_change_module_name_butt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:text="Edit" />
+
+                    <TextView
+                        android:id="@+id/edit_selected_module_top_hint"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@+id/edit_selected_change_module_name_butt"
+                        android:layout_toRightOf="@id/edit_selected_name_label"
+                        android:gravity="center_horizontal"
+                        android:maxLength="80"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        android:text="Name of module"
+                        android:textStyle="bold" />
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/edit_selected_name_under_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/edit_selected_name_ll"
+                android:background="@android:color/darker_gray" />
+
+            <LinearLayout
+                android:id="@+id/edit_selected_desc_ll"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:maxLength="80"
-                android:padding="@dimen/activity_vertical_margin"
-                android:text="Description of module"
-                android:textStyle="italic" />
-
-            <Button
-                android:id="@+id/edit_selected_change_module_desc_butt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
+                android:layout_below="@id/edit_selected_name_under_divider"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:text="Edit" />
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:id="@+id/edit_selected_desc_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:id="@+id/edit_selected_desc_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:layout_centerVertical="true"
+                        android:text="Description:"
+                        android:textSize="@dimen/profile_setup_text_size"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/edit_selected_change_module_desc_butt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:text="Edit" />
+
+                    <TextView
+                        android:id="@+id/edit_selected_module_desc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@id/edit_selected_change_module_desc_butt"
+                        android:layout_toRightOf="@id/edit_selected_desc_label"
+                        android:gravity="center_horizontal"
+                        android:maxLength="100"
+                        android:paddingLeft="@dimen/activity_horizontal_margin"
+                        android:paddingRight="@dimen/activity_horizontal_margin"
+                        android:text="Description of module"
+                        android:textStyle="italic" />
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/edit_selected_under_desc_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_below="@id/edit_selected_desc_ll"
+                android:background="@android:color/darker_gray" />
+
+            <LinearLayout
+                android:id="@+id/edit_selected_slides_ll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/edit_selected_under_desc_divider"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/edit_selected_slides_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:id="@+id/edit_selected_slide_name_ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:paddingBottom="@dimen/activity_vertical_margin"
+                        android:paddingTop="@dimen/activity_vertical_margin">
+
+                        <TextView
+                            android:id="@+id/edit_selected_slide_label"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:gravity="center"
+                            android:text="Slides"
+                            android:textSize="@dimen/profile_setup_text_size"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/edit_selected_slide_hint"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                            android:layout_marginRight="@dimen/activity_horizontal_margin"
+                            android:gravity="center"
+                            android:text="(LONG PRESS to select)"
+                            android:textStyle="italic" />
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:id="@+id/edit_selected_slides_butts"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_below="@id/edit_selected_slide_name_ll"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_marginRight="@dimen/activity_horizontal_margin"
+                        android:orientation="vertical">
+
+                        <Button
+                            android:id="@+id/edit_selected_module_add_slide_butt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:text="Add" />
+
+                        <Button
+                            android:id="@+id/edit_selected_module_edit_slides_butt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:text="Edit" />
+
+                        <Button
+                            android:id="@+id/edit_selected_module_move_slides_butt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:text="Move" />
+
+                        <Button
+                            android:id="@+id/edit_selected_module_del_slide_butt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/activity_vertical_margin"
+                            android:text="Delete" />
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/button_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_above="@id/edit_selected_bottom_butts_rl"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:background="@android:color/darker_gray" />
+
+                    <RelativeLayout
+                        android:id="@+id/edit_selected_bottom_butts_rl"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/default_color">
+
+                        <Button
+                            android:id="@+id/edit_selected_discard_butt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:text="Cancel" />
+
+                        <Button
+                            android:id="@+id/edit_selected_save_butt"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_alignParentRight="true"
+                            android:text="Save" />
+                    </RelativeLayout>
+
+                    <LinearLayout
+                        android:id="@+id/edit_selected_slideslist_ll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@id/edit_selected_bottom_butts_rl"
+                        android:layout_below="@id/edit_selected_slide_name_ll"
+                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                        android:layout_toLeftOf="@id/edit_selected_slides_butts"
+                        android:background="@android:color/darker_gray"
+                        android:orientation="vertical"
+                        android:padding="1dp">
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:background="@color/default_color"
+                            android:orientation="vertical">
+
+                            <ListView
+                                android:id="@+id/edit_selected_module_slideslist_view"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/selector"
+                                android:drawSelectorOnTop="false">
+
+                            </ListView>
+                        </LinearLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
         </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray" />
-
-
-        <LinearLayout
-            android:id="@+id/edit_selected_module_buttons_ll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-
-            <Button
-                android:id="@+id/edit_selected_module_add_slide_butt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Add" />
-
-            <Button
-                android:id="@+id/edit_selected_module_edit_slides_butt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit" />
-
-            <Button
-                android:id="@+id/edit_selected_module_move_slides_butt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Move" />
-
-            <Button
-                android:id="@+id/edit_selected_module_del_slide_butt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Delete" />
-        </LinearLayout>
-
-        <TextView
-            android:id="@+id/edit_selected_selected_slide_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:maxLines="1"
-            android:paddingTop="@dimen/activity_vertical_margin"
-            android:textSize="@dimen/profile_setup_text_size"
-            android:textStyle="bold" />
-
     </LinearLayout>
-
-    <Button
-        android:id="@+id/edit_selected_save_butt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
-        android:text="Save" />
-
-    <Button
-        android:id="@+id/edit_selected_discard_butt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="@dimen/activity_horizontal_margin"
-        android:text="Discard" />
-
-    <View
-        android:id="@+id/button_divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_above="@id/edit_selected_save_butt"
-        android:background="@android:color/darker_gray" />
-
-    <ListView
-        android:id="@+id/edit_selected_module_slideslist_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/button_divider"
-        android:layout_below="@id/edit_selected_module_ll"
-        android:background="@drawable/selector"
-        android:drawSelectorOnTop="false">
-
-    </ListView>
-
-
-</RelativeLayout>
+</ScrollView>

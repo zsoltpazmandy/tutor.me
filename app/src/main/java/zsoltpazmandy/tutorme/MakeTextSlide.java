@@ -95,6 +95,43 @@ public class MakeTextSlide extends AppCompatActivity {
                 }
             });
 
+        } else if ((getIntent().hasExtra("Index of new slide"))) {
+            System.out.println("we're in maketextslide, we notice there's the extra: 'Index of new slide'");
+            setTitle("Adding Text Slide");
+            finishButt.setText("Cancel");
+            addSlideButt.setText("Save slide");
+
+            finishButt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    setResult(4);
+                    finish();
+                }
+            });
+
+            addSlideButt.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (slideStringEdit.getText().length() == 0) {
+                        Toast.makeText(MakeTextSlide.this, "You can't make an empty slide", Toast.LENGTH_SHORT).show();
+                        return;
+                    } else {
+                        String userInput = slideStringEdit.getText().toString();
+
+                        try {
+                            module.put("Slide " + getIntent().getStringExtra("Index of new slide"), userInput);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("we've added the new slide content, here's the updated module" + module.toString());
+                        Intent addedSlide = new Intent();
+                        addedSlide.putExtra("Module edited", module.toString());
+                        setResult(3, addedSlide);
+                        finish();
+                    }
+                }
+            });
+
         } else {
 
             addSlideButt.setOnClickListener(new View.OnClickListener() {
