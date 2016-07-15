@@ -4,96 +4,138 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".ViewTextSlide"
     tools:showIn="@layout/activity_view_text_slide">
 
     <LinearLayout
-        android:id="@+id/view_module_linear_layout"
+        android:id="@+id/view_text_slide_outer_ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="@dimen/activity_horizontal_margin">
-
-        <TextView
-            android:id="@+id/view_module_slide_count_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/profile_setup_text_size"
-            android:textStyle="bold" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="1dp"
-            android:background="@android:color/darker_gray" />
+        android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/view_text_slide_outer_rl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+            <!--TOP ROW BEGINS HERE-->
 
-            <Button
-                android:id="@+id/view_module_quit_butt"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:id="@+id/view_text_slide_top_row_ll"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:text="@string/view_module_save_amp_quit" />
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/view_module_message_tutor_butt"
-                android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:id="@+id/view_text_slide_top_row_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <Button
+                        android:id="@+id/view_text_slide_savenquit_butt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:text="@string/view_module_save_amp_quit" />
+
+                    <Button
+                        android:id="@+id/view_text_slide_asktutor_butt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:text="@string/view_module_ask_tutor_butt" />
+
+                    <TextView
+                        android:id="@+id/view_text_slide_top_slidecounttext"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_toLeftOf="@id/view_text_slide_asktutor_butt"
+                        android:layout_toRightOf="@id/view_text_slide_savenquit_butt"
+                        android:gravity="center_horizontal"
+                        android:text="Slide 4/7"
+                        android:textSize="@dimen/profile_setup_text_size"
+                        android:textStyle="bold" />
+
+
+                    <View
+                        android:id="@+id/view_text_slide_top_divder"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_below="@id/view_text_slide_asktutor_butt"
+                        android:background="@android:color/darker_gray" />
+                </RelativeLayout>
+            </LinearLayout>
+            <!--TOP ROW ENDS HERE-->
+            <!--BOTTOM ROW BEGINS HERE-->
+
+            <LinearLayout
+                android:id="@+id/view_text_bottom_ll"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:text="@string/view_module_ask_tutor_butt" />
-        </RelativeLayout>
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="1dp"
-            android:background="@android:color/darker_gray" />
+                <RelativeLayout
+                    android:id="@+id/view_text_bottom_rl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:background="@color/default_color">
 
-        <TextView
-            android:id="@+id/view_module_slide_text_view"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp" />
+                    <Button
+                        android:id="@+id/view_text_bottom_prev_butt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentLeft="true"
+                        android:layout_alignParentStart="true"
+                        android:text="@string/view_module_prev_butt" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="@android:color/darker_gray" />
+                    <Button
+                        android:id="@+id/view_text_bottom_next_butt"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:text="@string/view_module_next_butt" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+                    <View
+                        android:id="@+id/view_text_slide_bottom_divder"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_alignParentTop="true"
+                        android:background="@android:color/darker_gray" />
 
 
-            <Button
-                android:id="@+id/view_module_prev_butt"
-                android:layout_width="wrap_content"
+                </RelativeLayout>
+            </LinearLayout>
+            <!--BOTTOM ROW ENDS HERE-->
+            <!--MIDDLE ROW BEGINS HERE-->
+
+            <ScrollView
+                android:id="@+id/view_text_sl"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:text="@string/view_module_prev_butt" />
+                android:layout_above="@+id/view_text_bottom_ll"
+                android:layout_below="@id/view_text_slide_top_row_ll"
+                android:fillViewport="true"
+                android:orientation="horizontal">
 
+                <TextView
+                    android:id="@+id/view_text_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="vertical"
+                    android:text="text goes here"
+                    android:textSize="16sp" />
 
-            <Button
-                android:id="@+id/view_module_next_butt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:text="@string/view_module_next_butt" />
+            </ScrollView>
 
+            <!--MIDDLE ROW ENDS HERE-->
 
         </RelativeLayout>
     </LinearLayout>
-
 </ScrollView>

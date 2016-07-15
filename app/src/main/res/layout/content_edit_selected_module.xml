@@ -217,13 +217,7 @@
                             android:text="Delete" />
                     </LinearLayout>
 
-                    <View
-                        android:id="@+id/button_divider"
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_above="@id/edit_selected_bottom_butts_rl"
-                        android:layout_marginTop="@dimen/activity_vertical_margin"
-                        android:background="@android:color/darker_gray" />
+
 
                     <RelativeLayout
                         android:id="@+id/edit_selected_bottom_butts_rl"
@@ -239,6 +233,14 @@
                             android:layout_centerHorizontal="true"
                             android:text="Save Module" />
                     </RelativeLayout>
+
+                    <View
+                        android:id="@+id/button_divider"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_above="@id/edit_selected_bottom_butts_rl"
+                        android:layout_marginTop="@dimen/activity_vertical_margin"
+                        android:background="@android:color/darker_gray" />
 
                     <LinearLayout
                         android:id="@+id/edit_selected_slideslist_ll"
@@ -270,11 +272,9 @@
                             </ListView>
                         </LinearLayout>
                     </LinearLayout>
+
                 </RelativeLayout>
-
             </LinearLayout>
-
-
         </RelativeLayout>
     </LinearLayout>
 </ScrollView>

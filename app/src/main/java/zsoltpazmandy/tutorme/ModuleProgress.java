@@ -46,7 +46,6 @@ public class ModuleProgress extends AppCompatActivity {
         ProgressBar progressBar = (ProgressBar) findViewById(R.id.view_module_progressbar);
         TextView progressText = (TextView) findViewById(R.id.view_module_progress_text);
         final TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
-        Button reviewButt = (Button) findViewById(R.id.view_module_review_butt);
         Button startButt = (Button) findViewById(R.id.view_module_start_butt);
 
         try {
@@ -61,23 +60,23 @@ public class ModuleProgress extends AppCompatActivity {
             progressText.setText("" + user.getInt("Progress" + module.getString("ID")) + " of " + module.getInt("No. of Slides") + " slides.");
             moduleDesc.setText(module.getString("Description"));
 
-            reviewButt.setText("Review");
+            boolean review = false;
 
             if (user.getInt("Progress" + module.getString("ID")) < module.getInt("No. of Slides")) {
                 if (user.getInt("Progress" + module.getString("ID")) == 0) {
-                    reviewButt.setEnabled(false);
                     startButt.setText("Start");
                     startButt.setEnabled(true);
                 } else {
-                    reviewButt.setEnabled(true);
                     startButt.setText("Continue");
                     startButt.setEnabled(true);
                 }
             } else {
-                //module completed
+                startButt.setText("Review");
+                review = true;
             }
 
             assert startButt != null;
+            final boolean finalReview = review;
             startButt.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -111,20 +110,16 @@ public class ModuleProgress extends AppCompatActivity {
 
                         int lastSlideOpened = Integer.parseInt(user.getString("Progress" + module.getString("ID")));
 
-                        startModule.putExtra("Slide Number", "" + lastSlideOpened);
+                        if (finalReview) {
+                            startModule.putExtra("Slide Number", "" + 0);
+                        } else {
+                            startModule.putExtra("Slide Number", "" + lastSlideOpened);
+                        }
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                     startActivity(startModule);
                     finish();
-
-                }
-            });
-
-            reviewButt.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(ModuleProgress.this, "Reviewing Module", Toast.LENGTH_SHORT).show();
 
                 }
             });

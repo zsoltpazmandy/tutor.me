@@ -68,8 +68,8 @@ public class CreateModActivity extends AppCompatActivity {
         tempAuth2 = author;
 
         Button nextButt = (Button) findViewById(R.id.moduleBeginButton);
-        nextButt.setText("Next");
         assert nextButt != null;
+        nextButt.setText("Next");
         nextButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

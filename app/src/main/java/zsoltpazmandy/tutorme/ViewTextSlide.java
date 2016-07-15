@@ -32,11 +32,11 @@ public class ViewTextSlide extends AppCompatActivity {
 
         User u = new User(getApplicationContext());
 
-        TextView slideCountText = (TextView) findViewById(R.id.view_module_slide_count_text);
-        Button saveQuit = (Button) findViewById(R.id.view_module_quit_butt);
-        Button askTutor = (Button) findViewById(R.id.view_module_message_tutor_butt);
-        final Button prevButt = (Button) findViewById(R.id.view_module_prev_butt);
-        Button nextButt = (Button) findViewById(R.id.view_module_next_butt);
+        TextView slideCountText = (TextView) findViewById(R.id.view_text_slide_top_slidecounttext);
+        Button saveQuit = (Button) findViewById(R.id.view_text_slide_savenquit_butt);
+        Button askTutor = (Button) findViewById(R.id.view_text_slide_asktutor_butt);
+        final Button prevButt = (Button) findViewById(R.id.view_text_bottom_prev_butt);
+        Button nextButt = (Button) findViewById(R.id.view_text_bottom_next_butt);
 
         try {
             this.user = new JSONObject(getIntent().getStringExtra("User"));
@@ -161,7 +161,7 @@ public class ViewTextSlide extends AppCompatActivity {
         try {
 
             slideText = module.getString("Slide " + slideNumber);
-            TextView slideTextView = (TextView) findViewById(R.id.view_module_slide_text_view);
+            TextView slideTextView = (TextView) findViewById(R.id.view_text_view);
             assert slideTextView != null;
             slideTextView.setText(slideText);
 
