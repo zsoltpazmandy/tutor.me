@@ -112,7 +112,9 @@ public class ViewTextSlide extends AppCompatActivity {
         askTutor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ViewTextSlide.this, "Messaging tutor operation not yet implemented", Toast.LENGTH_SHORT).show();
+                Intent startChat = new Intent(ViewTextSlide.this, Chat.class);
+                startChat.putExtra("User", user.toString());
+                startActivity(startChat);
             }
         });
 

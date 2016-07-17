@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="zsoltpazmandy.tutorme.Chat"
+    tools:showIn="@layout/activity_chat">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Messages will appear here"
+        android:id="@+id/chat_messagebox_text"
+        android:textSize="@dimen/profile_setup_text_size"
+        android:layout_alignParentTop="true"
+        android:minLines="10"
+        android:maxLines="10"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_insert_comment_blue_900_18dp"
+        android:id="@+id/chat_send_button"
+        android:layout_alignBottom="@+id/chat_enter_message"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/chat_enter_message" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_below="@id/chat_messagebox_text"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/chat_send_button"
+        android:maxLines="1"
+        android:minLines="1"
+        android:hint="enter your message here"
+        android:id="@+id/chat_enter_message"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
+
+
+
+
+</RelativeLayout>

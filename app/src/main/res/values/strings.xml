@@ -106,4 +106,5 @@
     <string name="edit_modules_top_hint">Here are the modules you\'ve authored. Select the one you\'d like to edit.</string>
     <string name="title_activity_edit_this_module">Edit Module</string>
     <string name="edit_module_select_slide_to_edit_hint">Select the slide you wish to edit by LONG PRESSING it, then press one of the buttons above.</string>
+    <string name="title_activity_chat">Chat</string>
 </resources>
