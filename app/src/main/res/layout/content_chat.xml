@@ -8,42 +8,65 @@
     tools:context="zsoltpazmandy.tutorme.Chat"
     tools:showIn="@layout/activity_chat">
 
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Messages will appear here"
-        android:id="@+id/chat_messagebox_text"
-        android:textSize="@dimen/profile_setup_text_size"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/chat_enter_message_ll"
+        android:weightSum="1">
+
+        <EditText
+            android:id="@+id/chat_enter_message"
+            android:layout_width="wrap_content"
+            android:layout_weight=".9"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:hint="enter your message here"
+            android:maxLines="1"
+            android:minLines="1" />
+
+        <ImageButton
+            android:id="@+id/chat_send_button"
+            android:layout_width="wrap_content"
+            android:layout_weight=".1"
+            android:layout_height="match_parent"
+            android:layout_alignBottom="@+id/chat_enter_message"
+            android:layout_alignTop="@+id/chat_enter_message"
+            android:src="@drawable/ic_insert_comment_blue_900_18dp" />
+
+    </LinearLayout>
+
+    <View
+        android:id="@+id/chat_divder"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_above="@id/chat_enter_message_ll"
+        android:background="@android:color/darker_gray" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/chat_divder"
+        android:id="@+id/chat_messagebox_sv"
         android:layout_alignParentTop="true"
-        android:minLines="10"
-        android:maxLines="10"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:fillViewport="true">
 
-    <ImageButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_insert_comment_blue_900_18dp"
-        android:id="@+id/chat_send_button"
-        android:layout_alignBottom="@+id/chat_enter_message"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/chat_enter_message" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_below="@id/chat_messagebox_text"
-        android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/chat_send_button"
-        android:maxLines="1"
-        android:minLines="1"
-        android:hint="enter your message here"
-        android:id="@+id/chat_enter_message"
-        android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        <TextView
+            android:id="@+id/chat_messagebox_text"
+            android:layout_width="match_parent"
+            android:gravity="bottom"
+            android:maxLines="10"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:scrollbars="vertical"
+            android:textSize="@dimen/profile_setup_text_size" />
+    </ScrollView>
 
 
 

@@ -3,9 +3,12 @@ package zsoltpazmandy.tutorme;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -16,7 +19,9 @@ import java.io.BufferedWriter;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Chat extends AppCompatActivity {
 
@@ -31,8 +36,7 @@ public class Chat extends AppCompatActivity {
     ImageButton sendButton;
     TextView messageBox;
 
-
-    ArrayList<String> messages;
+    static ArrayList<String> messages;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,22 +63,23 @@ public class Chat extends AppCompatActivity {
         new Thread() {
             @Override
             public void run() {
+                BufferedWriter output = null;
 
                 try {
                     clientSocket = new Socket(host, port);
                     BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                    output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+                    output.write(user.getString("Username") + " is now online.");
+                    output.newLine();
+                    output.flush();
 
-                    String line;
 
-                    while ((line = input.readLine()) != null) {
-                        System.out.println(line);
-                        final String finalLine = line;
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                messageBox.setText(messageBox.getText().toString() + "\n" + finalLine);
-                            }
-                        });
+
+                    String message;
+
+                    while ((message = input.readLine()) != null) {
+
+                        updateMessageBox(messageBox, message);
                     }
 
                 } catch (Exception e) {
@@ -89,15 +94,58 @@ public class Chat extends AppCompatActivity {
                 sendMessage(v);
             }
         });
+
+
+        messageBox.addTextChangedListener(new TextWatcher() {
+            ScrollView messageBoxSV = (ScrollView) findViewById(R.id.chat_messagebox_sv);
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                messageBoxSV.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                messageBoxSV.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                messageBoxSV.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
+
+
     }
+
+    public void updateMessageBox(final TextView messageBox, final String message) {
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+
+                messageBox.setText(messageBox.getText() + "\n" + message);
+
+            }
+        });
+    }
+
 
     public void sendMessage(View v) {
 
         BufferedWriter output = null;
 
+        String name = null;
+        try {
+            name = user.getString("Username");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
         try {
             output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            output.write(enterMessage.getText().toString());
+            output.write(name + " [" + getTimeStamp() + "] : " + enterMessage.getText().toString());
             output.newLine();
             output.flush();
         } catch (Exception e) {
@@ -105,5 +153,20 @@ public class Chat extends AppCompatActivity {
         }
 
         enterMessage.setText("");
+    }
+
+    public static String getTimeStamp() {
+        try {
+
+            SimpleDateFormat date = new SimpleDateFormat("HH:mm");
+            String timeStamp = date.format(new Date());
+
+            return timeStamp;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
     }
 }
