@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -48,6 +49,9 @@ public class Chat extends AppCompatActivity {
         enterMessage = (EditText) findViewById(R.id.chat_enter_message);
         sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         messageBox = (TextView) findViewById(R.id.chat_messagebox_text);
+        messageBox.setMovementMethod(new ScrollingMovementMethod());
+
+
 
         messages = new ArrayList<>();
 
@@ -132,6 +136,12 @@ public class Chat extends AppCompatActivity {
 
 
     public void sendMessage(View v) {
+
+        // disallow empties
+        if(enterMessage.getText().toString().trim().equals("")) {
+            enterMessage.setError("You can't send an empty message");
+            return;
+        }
 
         BufferedWriter output = null;
 

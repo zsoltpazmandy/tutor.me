@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:hint="enter your message here"
-            android:maxLines="1"
+            android:maxLines="4"
             android:minLines="1" />
 
         <ImageButton
@@ -51,6 +51,7 @@
         android:layout_above="@id/chat_divder"
         android:id="@+id/chat_messagebox_sv"
         android:layout_alignParentTop="true"
+        android:scrollbars="vertical"
         android:fillViewport="true">
 
         <TextView
