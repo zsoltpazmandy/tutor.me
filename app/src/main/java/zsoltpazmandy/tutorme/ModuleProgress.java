@@ -53,7 +53,15 @@ public class ModuleProgress extends AppCompatActivity {
             nameOfAuth.setText("written by " + module.getString("Author"));
             moduleRating.setText("Module *****");
             authRating.setText("Author *****");
-            tutorName.setText("Your tutor: " + module.getString("Author"));
+
+            int IDofTutor = 0;
+
+            System.out.println(user.toString());
+            User u = new User(getApplicationContext());
+            IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, module.getInt("ID"));
+            String nameOfTutor = u.getUser(getApplicationContext(), IDofTutor).getString("Username");
+
+            tutorName.setText("Your tutor: " + nameOfTutor);
             tutorRating.setText("Tutor *****");
             progressBar.setMax(module.getInt("No. of Slides"));
             progressBar.setProgress(user.getInt("Progress" + module.getString("ID")));

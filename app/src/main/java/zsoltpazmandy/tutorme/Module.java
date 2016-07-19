@@ -264,14 +264,14 @@ public class Module {
         ArrayList<Integer> allTypes = new ArrayList<>();
         int slideCount = getSlideCount(context, module.getInt("ID"));
 
-        if(slideCount == 1 || slideCount == 0){
+        if (slideCount == 1 || slideCount == 0) {
             return;
         }
 
         String typesString = module.getString("Types of Slides");
         String[] typesStringArray = new String[1];
         typesString = typesString.replace("[", "").replace("]", "");
-        if(typesString.contains(",")){
+        if (typesString.contains(",")) {
             typesStringArray = typesString.split(",");
         } else {
             typesStringArray[0] = typesString;
@@ -279,7 +279,7 @@ public class Module {
 
         for (int i = 1; i <= slideCount; i++) {
             allSlides.add(module.getString("Slide " + i));
-            allTypes.add(Integer.parseInt(typesStringArray[i-1]));
+            allTypes.add(Integer.parseInt(typesStringArray[i - 1]));
         }
 
         for (int i = 1; i <= slideCount; i++) {
@@ -357,6 +357,33 @@ public class Module {
         }
 
         return !currentModule.equals(null) && allModuleNames.contains(moduleName);
+    }
+
+    public ArrayList<Integer> getTrainers(Context context, JSONObject module) {
+        ArrayList<Integer> IDsOfTrainers = new ArrayList<>();
+
+        String temp;
+        String[] tempArray = new String[1];
+
+        try {
+            temp = module.getString("Trainers").replace("[", "").replace("]", "");
+
+            if (temp.contains(",")) {
+                tempArray = temp.split(",");
+            } else {
+                tempArray[0] = temp;
+                System.out.println("trainers of module" + module.toString() + "\n" +tempArray[0]);
+            }
+
+            for (int i = 0; i < tempArray.length; i++) {
+                IDsOfTrainers.add(Integer.parseInt(tempArray[i]));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return IDsOfTrainers;
     }
 
     public int getSlideCount(Context context, int moduleID) {

@@ -108,7 +108,8 @@ public class CreateModActivity extends AppCompatActivity {
                     module.put("Author", tempAuth.get("Username"));
                     // populating Rev & Trainer arrays, with fake IDs for now
                     module.accumulate("Reviews", 1);
-                    module.accumulate("Trainers", 1);
+                    int authID = author.getInt("ID");
+                    module.accumulate("Trainers", authID);
 
 
                 } catch (JSONException e) {

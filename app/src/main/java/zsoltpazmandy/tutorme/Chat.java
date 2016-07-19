@@ -51,8 +51,6 @@ public class Chat extends AppCompatActivity {
         messageBox = (TextView) findViewById(R.id.chat_messagebox_text);
         messageBox.setMovementMethod(new ScrollingMovementMethod());
 
-
-
         messages = new ArrayList<>();
 
         try {

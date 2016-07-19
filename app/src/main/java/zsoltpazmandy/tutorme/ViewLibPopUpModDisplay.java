@@ -87,6 +87,10 @@ public class ViewLibPopUpModDisplay extends Activity {
                 if (!enrolledAlready) {
 
                     u.addToLearning(getApplicationContext(), userUpdated, Integer.parseInt(infoToShow.get(0)));
+
+                    // for now, this method assigns the first available tutor (== Author) of a module
+                    u.assignTutor(getApplicationContext(), userUpdated, Integer.parseInt(infoToShow.get(0)));
+
                     Toast.makeText(ViewLibPopUpModDisplay.this, "Enrolled! You can view your progress on the Learning Tab.", Toast.LENGTH_SHORT).show();
                     Intent returnResult = new Intent(ViewLibPopUpModDisplay.this, ViewLibrary.class);
                     assert userUpdated != null;

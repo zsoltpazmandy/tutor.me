@@ -1,10 +1,13 @@
 ## FEATURES TO ADD
-##### 2. IM capability between users
+##### IM capability between users
 - IM service:
     - 1. design & implement Client - Server connectivity testable on 1 phone as client and a laptop as server
 - link Tutoring Tab with Messenger
 - link "Ask Tutor" button with Messenger on every ViewXSlide
-    
+##### Tutor ID for each Learner's enrollment
+- as of now, no Tutor - Learner connection is recorded anywhere, Learners are supposed to be linked with a Tutor from the pool of Trainers of the
+module they're enrolling on
+
 ##### - DONE: 3. possibility of editing Modules (and only those) the user has authored
 - DONE: adding slides
 - DONE: removing slides
@@ -17,11 +20,14 @@
 - disallow User choosing themselves to be their own tutors
 
 ## BUGS
-1. Strings containing "/" between MakeTableSlide and ViewTableSlide register as escape slashes, which in turn automatically prefixes the "/" with a "\". "/" needs to be .replaced with something on addition to the arraylist
-2. When editing a Table Slide that is not completely filled, adding to rows which were originally not filled results in losing data: add functionality to have extra rows added to Module Data automatically
+1. Strings containing "/" between MakeTableSlide and ViewTableSlide register as escape slashes, which in turn automatically prefixes the "/" with a
+"\". "/" needs to be .replaced with something on addition to the arraylist
+2. When editing a Table Slide that is not completely filled, adding to rows which were originally not filled results in losing data: add functionality
+to have extra rows added to Module Data automatically
 
 ## ISSUES
-- Module - Author connections are now stored based on Author's Username: many functions may need to determine who authored what module, and as long as they decide that by comparing Module.Author String vs User.Username String, this means that every time a User changes their Username (not implemented yet) Module records will also have to be updated, otherwise many other functionality will break (eg. EditModules collects current user's authored modules by comparing their Username vs each Module's Username). This needs to be rationalised.
+- Module - Author connections are now stored based on Author's Username: many functions may need to determine who authored what module, and as long as
+they decide that by comparing Module.Author String vs User.Username String, this means that every time a User changes their Username (not implemented yet) Module records will also have to be updated, otherwise many other functionality will break (eg. EditModules collects current user's authored modules by comparing their Username vs each Module's Username). This needs to be rationalised.
 - DONE: User should be able to start viewing a module they've just enrolled on from the pop-up window in view library
 - DONE: Module editing UI needs to be easier to use, needs to use space better (add ScrollView)
 

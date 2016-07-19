@@ -74,8 +74,7 @@ public class ProfileSetup extends AppCompatActivity {
 // LANGUAGES
         TextView languages1Label = (TextView) findViewById(R.id.languages1_label);
         final Spinner languages1Spinner = (Spinner) findViewById(R.id.languages1_spinner);
-        ArrayAdapter<CharSequence> languages1SpinnerAdapter = null;
-        languages1SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
+        ArrayAdapter<CharSequence> languages1SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
         languages1SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages1Spinner.setAdapter(languages1SpinnerAdapter);
 
@@ -83,7 +82,7 @@ public class ProfileSetup extends AppCompatActivity {
         boolean lang2exists = false;
         boolean lang3exists = false;
 
-        if (!("" + u.getLanguages(getApplicationContext(), user)[0]).equals("")) {
+        if (!u.getLanguages(getApplicationContext(), user).equals(null)) {
             lang1exists = true;
             languages1Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[0]);
         }
@@ -94,7 +93,8 @@ public class ProfileSetup extends AppCompatActivity {
         languages2SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages2Spinner.setAdapter(languages2SpinnerAdapter);
 
-        if (!("" + u.getLanguages(getApplicationContext(), user)[1]).equals("")) {
+        if(!u.getLanguages(getApplicationContext(), user).equals(null)&&
+                !("" + u.getLanguages(getApplicationContext(), user)[1]).equals("")) {
             lang2exists = true;
             languages2Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[1]);
         }
@@ -105,7 +105,8 @@ public class ProfileSetup extends AppCompatActivity {
         languages3SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages3Spinner.setAdapter(languages3SpinnerAdapter);
 
-        if (!("" + u.getLanguages(getApplicationContext(), user)[2]).equals("")) {
+        if(!u.getLanguages(getApplicationContext(), user).equals(null)&&
+                !("" + u.getLanguages(getApplicationContext(), user)[2]).equals("")) {
             lang3exists = true;
             languages3Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[2]);
         }
@@ -181,38 +182,6 @@ public class ProfileSetup extends AppCompatActivity {
                                                        try {
                                                            userUpdate.put("Age", ageSpinner.getSelectedItemPosition());
                                                            userUpdate.put("Location", locationSpinner.getSelectedItemPosition());
-                                                           userUpdate.accumulate("Languages", "x"); // padding from beginning with "x", so it's always a JSONArray
-                                                           if (finalLang1exists) {
-                                                               userUpdate.remove("Languages");
-                                                               userUpdate.accumulate("Languages", "x");
-                                                               userUpdate.accumulate("Languages", languages1Spinner.getSelectedItemPosition());
-                                                           } else {
-                                                               userUpdate.accumulate("Languages", languages1Spinner.getSelectedItemPosition());
-                                                           }
-
-                                                           if (finalLang2exists) {
-                                                               String lang1backup = userUpdate.getString("Languages");
-                                                               userUpdate.remove("Languages");
-                                                               userUpdate.put("Languages", lang1backup);
-                                                               userUpdate.accumulate("Languages", languages2Spinner.getSelectedItemPosition());
-                                                           } else {
-
-                                                               if (languages2Spinner.getSelectedItemPosition() != 0) {
-                                                                   userUpdate.accumulate("Languages", languages2Spinner.getSelectedItemPosition());
-                                                               }
-                                                           }
-
-                                                           if (finalLang3exists) {
-                                                               String lang1_2backup = userUpdate.getString("Languages");
-                                                               userUpdate.remove("Languages");
-                                                               userUpdate.put("Languages", lang1_2backup);
-                                                               userUpdate.accumulate("Languages", languages3Spinner.getSelectedItemPosition());
-                                                           } else {
-                                                               if (languages3Spinner.getSelectedItemPosition() != 0) {
-                                                                   userUpdate.accumulate("Languages", languages3Spinner.getSelectedItemPosition());
-                                                               }
-                                                           }
-
                                                            ArrayList<String> interests = new ArrayList<>();
 
                                                            if (languagesCheck.isChecked()) {
@@ -270,6 +239,9 @@ public class ProfileSetup extends AppCompatActivity {
                                                        User u = new User(getApplicationContext());
 
                                                        if (u.saveUser(getApplicationContext(), userUpdate)) {
+
+                                                           // storing languages information is handled from within the User class
+                                                           u.setLanguages(getApplicationContext(), userUpdate, languages1Spinner.getSelectedItemPosition(), languages2Spinner.getSelectedItemPosition(), languages3Spinner.getSelectedItemPosition());
                                                            Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
                                                            Intent homeStart = new Intent(ProfileSetup.this, Home.class);
                                                            homeStart.putExtra("User", userUpdate.toString());

@@ -254,71 +254,67 @@ public class Home extends AppCompatActivity {
         authoredEdit.setText("" + counter);
 
 
-        try {
+        userEdit.setText(u.getUsername(getApplicationContext(), user));
+        locationEdit.setText(u.decodeCountry(u.getLocation(getApplicationContext(), user)));
+        int[] languages;
 
-            userEdit.setText(u.getUsername(getApplicationContext(), user));
-            locationEdit.setText(u.decodeCountry(u.getLocation(getApplicationContext(), user)));
-            String[] tmp = user.getString("Languages").replace("[", "").replace("]", "").replace("\"", "").replace("\\", "").split(",");
-            language1Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[1])));
+        languages = u.getLanguages(getApplicationContext(), user);
+        System.out.println(languages[0] + ", " + languages[1] + ", " + languages[2] + ", ");
 
-            if (tmp.length == 3) {
-                language2Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[2])));
-            }
+        language1Edit.setText(u.decodeLanguage(languages[0]));
 
-            if (tmp.length == 4) {
-                language2Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[2])));
-                language3Edit.setText(u.decodeLanguage(Integer.parseInt(tmp[3])));
-            }
-
-            if (u.getAge(getApplicationContext(), user) != 0) {
-                ageEdit.setText("" + u.getAge(getApplicationContext(), user));
-            } else {
-                ageEdit.setText("?");
-            }
-
-            int[] interestIDs = new int[0];
-
-            interestIDs = u.getInterests(getApplicationContext(), user);
-
-            if (!("" + interestIDs[0]).equals(""))
-                for (int interestID : interestIDs) {
-                    switch (interestID) {
-                        case 1:
-                            languagesCheck.setChecked(true);
-                            break;
-                        case 2:
-                            travelCheck.setChecked(true);
-                            break;
-                        case 3:
-                            sportsCheck.setChecked(true);
-                            break;
-                        case 4:
-                            historyCheck.setChecked(true);
-                            break;
-                        case 5:
-                            musicCheck.setChecked(true);
-                            break;
-                        case 6:
-                            scienceCheck.setChecked(true);
-                            break;
-                        case 7:
-                            artsCheck.setChecked(true);
-                            break;
-                        case 8:
-                            foodCheck.setChecked(true);
-                            break;
-                        case 9:
-                            healthCheck.setChecked(true);
-                            break;
-                        case 10:
-                            computersCheck.setChecked(true);
-                            break;
-                    }
-                }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (languages[1] != 0) {
+            language2Edit.setText(u.decodeLanguage(languages[1]));
         }
+        if (languages[2] != 0) {
+            language3Edit.setText(u.decodeLanguage(languages[2]));
+        }
+
+        if (u.getAge(getApplicationContext(), user) != 0) {
+            ageEdit.setText("" + u.getAge(getApplicationContext(), user));
+        } else {
+            ageEdit.setText("?");
+        }
+
+        int[] interestIDs = new int[0];
+
+        interestIDs = u.getInterests(getApplicationContext(), user);
+
+        if (!("" + interestIDs[0]).equals(""))
+            for (int interestID : interestIDs) {
+                switch (interestID) {
+                    case 1:
+                        languagesCheck.setChecked(true);
+                        break;
+                    case 2:
+                        travelCheck.setChecked(true);
+                        break;
+                    case 3:
+                        sportsCheck.setChecked(true);
+                        break;
+                    case 4:
+                        historyCheck.setChecked(true);
+                        break;
+                    case 5:
+                        musicCheck.setChecked(true);
+                        break;
+                    case 6:
+                        scienceCheck.setChecked(true);
+                        break;
+                    case 7:
+                        artsCheck.setChecked(true);
+                        break;
+                    case 8:
+                        foodCheck.setChecked(true);
+                        break;
+                    case 9:
+                        healthCheck.setChecked(true);
+                        break;
+                    case 10:
+                        computersCheck.setChecked(true);
+                        break;
+                }
+            }
 
     }
 

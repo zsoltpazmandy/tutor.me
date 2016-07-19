@@ -285,7 +285,7 @@ public class User {
         return userRecords;
     }
 
-    public ArrayList<Integer> getModulesAuthoredBy(Context context, JSONObject user){
+    public ArrayList<Integer> getModulesAuthoredBy(Context context, JSONObject user) {
         ArrayList<Integer> modulesAuthoredByUser = new ArrayList<>();
         JSONObject moduleRecords = null;
         Module f = new Module();
@@ -314,10 +314,10 @@ public class User {
         temp = temp.replace("[", "").replace("]", "");
         if (temp.contains(",")) {
             tempArray = temp.split(",");
-        }else{
+        } else {
             tempArray[0] = temp;
         }
-        if(tempArray[0].equals("")){
+        if (tempArray[0].equals("")) {
             return modulesAuthoredByUser;
         }
 
@@ -479,27 +479,106 @@ public class User {
         return location;
     }
 
+    /**
+     * Retrieve languages spoken by the user. If none have been registered, all three slots are
+     * set to zero (at initial user profile setup)
+     *
+     * @param context
+     * @param user
+     * @return
+     */
     public int[] getLanguages(Context context, JSONObject user) {
-        int[] languages = new int[3];
 
-        String[] tempLanguages = new String[0];
+        // setting all three languages to zero
+        int[] languages = {0, 0, 0};
 
+        String[] tempLanguages = new String[1];
+
+        // reading "Languages" string from user's JSON object record
         try {
 
-            String tempString = user.getString("Languages").replace("[", "").replace("]", "").replace("\\", "").substring(3);
-            tempLanguages = tempString.split(",");
+            String tempString = user.getString("Languages").replace("[", "").replace("]", "");
+
+            if (tempString.contains(",")) {
+                tempLanguages = tempString.split(",");
+            } else {
+                tempLanguages[0] = tempString;
+            }
 
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-
-        for (int i = 1; i < tempLanguages.length; i++) {
-            languages[i - 1] = Integer.parseInt(tempLanguages[i].replace("\"", ""));
+        // if no languages were parsed from the JSON, returns the initial 0,0,0
+        try {
+            tempLanguages[0].equals(null);
+        } catch (NullPointerException e) {
+            return languages;
         }
 
+        // otherwise write languages codes in array & return them
+        for (int i = 0; i < tempLanguages.length; i++) {
+            languages[i] = Integer.parseInt(tempLanguages[i]);
+        }
         return languages;
     }
+
+
+    /**
+     * Retrieves all modules the user is currently enrolled on checks the index of moduleID among
+     * those, then retrieves all of the user's currently assigned trainers & returns the ID of the
+     * Trainer who is assigned to be Training the module whose ID is moduleID;
+     *
+     * @param context
+     * @param user
+     * @param moduleID
+     * @return
+     */
+    public int getWhoTrainsMeThis(Context context, JSONObject user, int moduleID){
+        int trainerID = 0;
+
+        String allLearning = "";
+        String[] allLearningArray = new String[1];
+
+        try {
+            allLearning = user.getString("Learning").replace("[","").replace("]","");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(allLearning.contains(",")){
+            allLearningArray = allLearning.split(",");
+        } else {
+            allLearningArray[0] = allLearning;
+        }
+
+        int index = 0;
+
+        for(int i = 0; i < allLearningArray.length; i++){
+            if(Integer.parseInt(allLearningArray[i]) == moduleID){
+                index = i;
+            }
+        }
+
+        String allTrainers = "";
+        String[] allTrainersArray = new String[1];
+
+        try {
+            allTrainers = user.getString("Trained by").replace("]","").replace("[","");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(allTrainers.contains(",")){
+             allTrainersArray= allTrainers.split(",");
+        } else {
+            allTrainersArray[0] = allTrainers;
+        }
+
+        trainerID = Integer.parseInt(allTrainersArray[index]);
+        return trainerID;
+    }
+
 
     public int getAge(Context context, JSONObject user) {
         int age = 0;
@@ -529,7 +608,6 @@ public class User {
             e.printStackTrace();
         }
 
-//        if (!("" + tempInterests[0]).equals("\"\""))
         for (int i = 1; i < tempInterests.length; i++) {
             interests[i - 1] = Integer.parseInt(tempInterests[i].replace("\"", "")) + 1;
         }
@@ -611,28 +689,96 @@ public class User {
         saveUser(context, user);
     }
 
+    /**
+     * At the moment the class assigns the first Trainer found on the list of trainers of the module
+     * <p/>
+     * This class is supposed to perform the algorithmic matching of Learner & Trainer based on
+     * - languages spoken
+     * - geographic location
+     * - interests
+     *
+     * @param context
+     * @param user     the user enrolling on a Module
+     * @param moduleID the module the user is starting to learn
+     */
+    public void assignTutor(Context context, JSONObject user, int moduleID) {
+
+        int IDofAssignedTrainer = 0;
+
+        JSONObject module = null;
+        Module f = new Module();
+        ArrayList<Integer> trainers = new ArrayList<>();
+
+        module = f.getModuleByID(context, moduleID);
+        trainers = f.getTrainers(context, module);
+
+        // Algorithm that matches the Learner with a Trainer goes here
+
+        // Now, it only picks the first available Trainer:
+        IDofAssignedTrainer = trainers.get(0);
+        System.out.println("moduleID " + moduleID + " has been assigned tutor: " + IDofAssignedTrainer);
+
+        //
+        try {
+            user.accumulate("Trained by", IDofAssignedTrainer);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        saveUser(context, user);
+    }
+
     public void updateProgress(Context context, JSONObject user, JSONObject module, int lastSlide) {
 
         boolean changed = false;
 
-            try {
-                if (lastSlide > Integer.parseInt(user.getString("Progress" + module.getInt("ID")))){
-                    user.put("Progress" + module.getInt("ID"), lastSlide);
-                    changed = true;
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+        try {
+            if (lastSlide > Integer.parseInt(user.getString("Progress" + module.getInt("ID")))) {
+                user.put("Progress" + module.getInt("ID"), lastSlide);
+                changed = true;
             }
-        if(changed)saveUser(context, user);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        if (changed) saveUser(context, user);
     }
 
     public void setTraining(int[] training) {
         this.training = training;
     }
 
-    public void setLanguages(int[] languages) {
-        this.languages = languages;
+
+    /**
+     * Updates user's stored languages in the database.
+     * At least language1 (mother-tongue) must be non-zero.
+     *
+     * @param context
+     * @param user      the user object that is being updated
+     * @param language1 the user's 1st language
+     * @param language2 the user's 2nd language
+     * @param language3 the user's 3rd language
+     */
+    public void setLanguages(Context context, JSONObject user, int language1, int language2, int language3) {
+
+        if (language1 == 0) {
+            return;
+        } else {
+
+            user.remove("Languages");
+
+            try {
+                user.accumulate("Languages", language1);
+                user.accumulate("Languages", language2);
+                user.accumulate("Languages", language3);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        saveUser(context, user);
+
     }
 
     public void setAge(int age) {

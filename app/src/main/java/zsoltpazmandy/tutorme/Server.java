@@ -15,11 +15,6 @@ public class Server extends Thread {
     static int clientCounter = 1;
     static ArrayList<Socket> users = new ArrayList<>();
 
-
-    // this class needs a thread per client
-    // make it constantly wait for clients & instantiate a connection
-    // each time, so testing from two clients can begin
-
     public static void main(String[] args) {
 
         ServerSocket serverSocket = null;
