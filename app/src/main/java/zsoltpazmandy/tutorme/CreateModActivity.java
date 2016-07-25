@@ -27,6 +27,8 @@ public class CreateModActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final User u = new User(getApplicationContext());
+
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
@@ -105,7 +107,7 @@ public class CreateModActivity extends AppCompatActivity {
                     moduleDescEdit.setEnabled(false);
                     module.put("PRO", 0);
 
-                    module.put("Author", tempAuth.get("Username"));
+                    module.put("Author", u.getUsername(getApplicationContext(), tempAuth));
                     // populating Rev & Trainer arrays, with fake IDs for now
                     module.accumulate("Reviews", 1);
                     int authID = author.getInt("ID");

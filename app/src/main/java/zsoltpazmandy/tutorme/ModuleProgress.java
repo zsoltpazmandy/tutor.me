@@ -17,6 +17,7 @@ import org.json.JSONObject;
 public class ModuleProgress extends AppCompatActivity {
 
     JSONObject user = null;
+    JSONObject tutor = null;
     JSONObject module = null;
 
     @Override
@@ -54,12 +55,11 @@ public class ModuleProgress extends AppCompatActivity {
             moduleRating.setText("Module *****");
             authRating.setText("Author *****");
 
-            int IDofTutor = 0;
-
-            System.out.println(user.toString());
             User u = new User(getApplicationContext());
+            int IDofTutor = 0;
             IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, module.getInt("ID"));
-            String nameOfTutor = u.getUser(getApplicationContext(), IDofTutor).getString("Username");
+            tutor = u.getUser(getApplicationContext(), IDofTutor);
+            String nameOfTutor = u.getUsername(getApplicationContext(), tutor);
 
             tutorName.setText("Your tutor: " + nameOfTutor);
             tutorRating.setText("Tutor *****");

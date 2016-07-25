@@ -112,8 +112,29 @@ public class ViewTextSlide extends AppCompatActivity {
         askTutor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                User u = new User(getApplicationContext());
+
+                int IDofTutor = 0;
+
+                try {
+                    IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, module.getInt("ID"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
+                JSONObject tutor = null;
+
+                try {
+                    tutor = u.getUser(getApplicationContext(), IDofTutor);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 Intent startChat = new Intent(ViewTextSlide.this, Chat.class);
                 startChat.putExtra("User", user.toString());
+                startChat.putExtra("Tutor", tutor.toString());
                 startActivity(startChat);
             }
         });

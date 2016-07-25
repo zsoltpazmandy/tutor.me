@@ -27,7 +27,7 @@ import java.util.Date;
 public class Chat extends AppCompatActivity {
 
     JSONObject user;
-    String tutor;
+    JSONObject tutor;
 
     Socket clientSocket = null;
     String host = "192.168.1.72";
@@ -46,6 +46,8 @@ public class Chat extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        final User u = new User(getApplicationContext());
+
         enterMessage = (EditText) findViewById(R.id.chat_enter_message);
         sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         messageBox = (TextView) findViewById(R.id.chat_messagebox_text);
@@ -55,12 +57,11 @@ public class Chat extends AppCompatActivity {
 
         try {
             user = new JSONObject(getIntent().getStringExtra("User"));
-            tutor = getIntent().getStringExtra("Tutor");
+            tutor = new JSONObject(getIntent().getStringExtra("Tutor"));
+            setTitle("Chatting with " + u.getUsername(getApplicationContext(), tutor));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        setTitle("Chatting with " + tutor);
-
 
         new Thread() {
             @Override
@@ -71,7 +72,7 @@ public class Chat extends AppCompatActivity {
                     clientSocket = new Socket(host, port);
                     BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
                     output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                    output.write(user.getString("Username") + " is now online.");
+                    output.write(u.getUsername(getApplicationContext(), tutor) + " is now online.");
                     output.newLine();
                     output.flush();
 

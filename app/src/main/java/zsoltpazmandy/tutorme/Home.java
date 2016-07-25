@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -33,6 +34,8 @@ public class Home extends AppCompatActivity {
     User u;
     Module f;
     TabHost tabHost = null;
+    int notificationID = 10;
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +58,7 @@ public class Home extends AppCompatActivity {
 
         setupTabs();
 
+
         setupProfileTab();
         try {
             setupLearningTab();
@@ -64,6 +68,7 @@ public class Home extends AppCompatActivity {
         setupTrainingTab();
 
     }
+
 
     public void setupTabs() {
         tabHost = (TabHost) findViewById(R.id.home_tabhost);
@@ -242,7 +247,7 @@ public class Home extends AppCompatActivity {
         for (int id : moduleIDs) {
 
             try {
-                if (user.getString("Username").equals(f.getModuleByID(getApplicationContext(), id).getString("Author"))) {
+                if (u.getUsername(getApplicationContext(), user).equals(f.getModuleByID(getApplicationContext(), id).getString("Author"))) {
                     counter++;
                 }
             } catch (JSONException e) {
@@ -259,7 +264,6 @@ public class Home extends AppCompatActivity {
         int[] languages;
 
         languages = u.getLanguages(getApplicationContext(), user);
-        System.out.println(languages[0] + ", " + languages[1] + ", " + languages[2] + ", ");
 
         language1Edit.setText(u.decodeLanguage(languages[0]));
 

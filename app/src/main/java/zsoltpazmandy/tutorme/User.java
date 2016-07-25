@@ -16,73 +16,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Functions related to User Records, updater functions, user records management
+ * <p/>
  * Created by zsolt on 30/06/16.
  */
 public class User {
 
-    private int id;
-
-    private String username;
-    private String password;
-    private double rating;
-    private int[] learning;
-    private int[] training;
-    private int[] languages;
-    private int age;
-    private int location;
-    private int[] interests;
-
     public User(Context context) {
     }
 
-    public User(Context context, int id) {
+    /*
+    USER LOGIN, REGISTRATION, USER RECORDS MANAGEMENT FUNCTIONS
+     */
 
-        this.id = id;
-
-        JSONObject user = new JSONObject();
-
-        try {
-
-            user = getUser(context, id);
-
-        } catch (JSONException e) {
-            Toast.makeText(context, "Cannot find username in database", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
-
-        try {
-
-            this.username = user.getString("Username");
-            this.password = user.getString("Password");
-            this.rating = user.getDouble("Rating");
-            String[] tempLearning = user.getString("Learning").replace("[", "").replace("]", "").split(",");
-            this.learning = new int[tempLearning.length];
-            for (int i = 0; i < tempLearning.length; i++) {
-                this.learning[i] = Integer.parseInt(tempLearning[i]);
-            }
-            String[] tempTraining = user.getString("Training").replace("[", "").replace("]", "").split(",");
-            this.training = new int[tempTraining.length];
-            for (int i = 0; i < tempTraining.length; i++) {
-                this.training[i] = Integer.parseInt(tempTraining[i]);
-            }
-            String[] tempLanguages = user.getString("Languages").replace("[", "").replace("]", "").split(",");
-            this.languages = new int[tempLanguages.length];
-            for (int i = 0; i < tempLanguages.length; i++) {
-                this.languages[i] = Integer.parseInt(tempLanguages[i]);
-            }
-            this.age = user.getInt("Age");
-            this.location = user.getInt("Location");
-            String[] tempInterests = user.getString("Interests").replace("[", "").replace("]", "").split(",");
-            for (int i = 0; i < tempInterests.length; i++) {
-                this.interests[i] = Integer.parseInt(tempInterests[i]);
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-    }
-
+    /**
+     * Reads user data from a file on the disc
+     * User data is stored as JSON Objects in files. Filenames are created as follows:
+     * "user" + i
+     * where 'i' is the User's ID.
+     *
+     * @param context
+     * @param id
+     * @return
+     * @throws JSONException
+     */
     public JSONObject getUser(Context context, int id) throws JSONException {
         JSONObject returnObject = new JSONObject();
 
@@ -111,12 +68,24 @@ public class User {
         return returnObject;
     }
 
+    /**
+     * Builds a JSON Object using the input Username and Password:
+     * It checks if username has been registered already (isUsernameTaken), returns 0 if it has
+     * Saves the JSON by calling saveUser(Context, JSONObject)
+     * Updates the UserRecords by calling setUserRecordsJSON(Context, String)
+     *
+     * @param context
+     * @param username Username of the user
+     * @param password Password of the user
+     * @return
+     * @throws JSONException
+     * @throws IOException
+     */
     public int register(Context context, String username, String password) throws JSONException, IOException {
 
         int returnIDtoReg = 0;
 
         boolean taken = true;
-        boolean flag = true;
 
         taken = isUsernameTaken(context, username);
 
@@ -128,21 +97,24 @@ public class User {
 
             newUser.put("ID", newId).put("Username", username).put("Password", password);
 
-            if (!saveUser(context, newUser)) {
-                flag = false;
-            }
+            saveUser(context, newUser);
+            setUserRecordsJSON(context, getUserRecords(context).accumulate("IDs", newId).toString());
 
-            if (!setUserRecordsJSON(context, getUserRecords(context).accumulate("IDs", newId).toString())) {
-                flag = false;
-            }
-
-        } else {
-            flag = false;
         }
 
         return returnIDtoReg;
     }
 
+    /**
+     * Loops through all user IDs, checks arguments against each User object and finds if they
+     * match an existing User object. If it finds a match for the username, it then checks whether
+     * the password is correct.
+     *
+     * @param context
+     * @param username
+     * @param password
+     * @return 0 if Username could not be found or if entered password was incorrect
+     */
     public int login(Context context, String username, String password) {
         int userID = 0;
         boolean found = false;
@@ -178,6 +150,14 @@ public class User {
         return userID;
     }
 
+    /**
+     * Checks whether the argument Username has already been registered in the database.
+     * Converts all usernames to lowercase
+     *
+     * @param context
+     * @param username
+     * @return true if taken, false if not
+     */
     public boolean isUsernameTaken(Context context, String username) {
 
         boolean taken = false;
@@ -199,6 +179,13 @@ public class User {
         return taken;
     }
 
+    /**
+     * Finds and returns the next assignable User ID by reading in the ID of the last added ID and
+     * incrementing it by 1.
+     *
+     * @param context
+     * @return
+     */
     public int assignID(Context context) {
         int nextID = 0;
         try {
@@ -213,6 +200,16 @@ public class User {
         return nextID;
     }
 
+    /**
+     * Saves User data provided as the argument
+     * Filenames are created as follows:
+     * "user" + i
+     * where 'i' is the User's ID.
+     *
+     * @param context
+     * @param user
+     * @return true if saved successfully
+     */
     public boolean saveUser(Context context, JSONObject user) {
 
         boolean isSuccessful = false;
@@ -240,6 +237,52 @@ public class User {
         return isSuccessful;
     }
 
+    /**
+     * Updates UserRecords by overwriting it with the stringified JSON version provided as its arg.
+     * Intended to be used, therefore, e.g. by calling setUserRecords(getUserRecords.accumulate("IDs", newID))
+     * in order to retrieve the latest state of UserRecords JSON & adding the newly added ID.
+     * <p/>
+     * Filename: "user_records"
+     *
+     * @param context
+     * @param userRecordsString
+     * @return
+     */
+    public boolean setUserRecordsJSON(Context context, String userRecordsString) {
+
+        boolean success = false;
+
+        try {
+
+            FileOutputStream fou = context.openFileOutput("user_records", Context.MODE_PRIVATE);
+            OutputStreamWriter osw = new OutputStreamWriter(fou);
+            osw.write(userRecordsString);
+            osw.flush();
+            osw.close();
+
+            success = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return success;
+    }
+
+    /**
+     * Retrieves UserRecords (a JSON Object containing all registered user IDs)
+     * Creates it anew with just a zero recorded in it if the file could not be found or
+     * if the JSON appears to be damaged or unreadable.
+     * <p/>
+     * UserRecords are used to provide an easy way of determining the amount of registered users &
+     * their IDs.
+     * <p/>
+     * Filename: "user_records"
+     *
+     * @param context
+     * @return
+     * @throws JSONException
+     */
     public JSONObject getUserRecords(Context context) throws JSONException {
 
         FileInputStream fileInput = null;
@@ -285,65 +328,13 @@ public class User {
         return userRecords;
     }
 
-    public ArrayList<Integer> getModulesAuthoredBy(Context context, JSONObject user) {
-        ArrayList<Integer> modulesAuthoredByUser = new ArrayList<>();
-        JSONObject moduleRecords = null;
-        Module f = new Module();
-
-        // grab User's ID
-        int currentUserID = 0;
-        try {
-            currentUserID = user.getInt("ID");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // check all module IDs
-        try {
-            moduleRecords = f.getModuleRecordsJSON(context);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        String temp = "";
-        String[] tempArray = new String[1];
-        try {
-            temp = moduleRecords.getString("IDs");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        temp = temp.replace("[", "").replace("]", "");
-        if (temp.contains(",")) {
-            tempArray = temp.split(",");
-        } else {
-            tempArray[0] = temp;
-        }
-        if (tempArray[0].equals("")) {
-            return modulesAuthoredByUser;
-        }
-
-        ArrayList<Integer> allModuleIDs = new ArrayList<>();
-        for (int i = 0; i < tempArray.length; i++) {
-            allModuleIDs.add(Integer.parseInt(tempArray[i]));
-        }
-        System.out.println("all module ids: " + allModuleIDs);
-
-        // from all the module IDS, select the ones where Author's username == current user's Username
-        JSONObject currentModule = null;
-        for (int i = 0; i < allModuleIDs.size(); i++) {
-            currentModule = f.getModuleByID(context, allModuleIDs.get(i));
-            try {
-                if (currentModule.getString("Author").equals(getUsername(context, user))) {
-                    modulesAuthoredByUser.add(allModuleIDs.get(i));
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        System.out.println("users own modules " + modulesAuthoredByUser);
-
-        return modulesAuthoredByUser;
-    }
-
+    /**
+     * Returns the amount of users who are currently registered in the UserRecords.
+     *
+     * @param context
+     * @return
+     * @throws JSONException
+     */
     public int userCount(Context context) throws JSONException {
 
         JSONObject userRecordsJSON = getUserRecords(context);
@@ -366,42 +357,25 @@ public class User {
         return amountOfUsers;
     }
 
-    public boolean setUserRecordsJSON(Context context, String userRecordsString) {
+    /*
+    --------------------------------------------------------------
+     */
 
-        boolean success = false;
+    /*
+    TEST FUNCTIONS: RESET USER RECORDS
+     */
 
-        try {
-
-            FileOutputStream fou = context.openFileOutput("user_records", Context.MODE_PRIVATE);
-            OutputStreamWriter osw = new OutputStreamWriter(fou);
-            osw.write(userRecordsString);
-            osw.flush();
-            osw.close();
-
-            success = true;
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return success;
-    }
-
-    public List<Integer> getUserIDs(Context context) throws JSONException, IOException {
-
-        ArrayList<Integer> IDsToReturn = new ArrayList<>();
-
-        String temp;
-
-        for (int i = 0; i < userCount(context); i++) {
-            temp = getUserRecords(context).getString("IDs");
-            temp = temp.replace("[", "").replace("]", "");
-            IDsToReturn.add(Integer.parseInt(temp.split(",")[i]));
-        }
-
-        return IDsToReturn;
-    }
-
+    /**
+     * EXCLUSIVELY USED FOR TESTING
+     * <p/>
+     * Overwrites all existing files in the database: it looks up all registered User IDs, which are
+     * the same as the User data filenames. It then creates one initial entry with the ID zero.
+     * (this is so User IDs, indexes, ordinal number of Users is always registered starting from 1.)
+     *
+     * @param context
+     * @throws IOException
+     * @throws JSONException
+     */
     public void purgeUserRecords(Context context) throws IOException, JSONException {
 
         List<Integer> IDs = getUserIDs(context);
@@ -420,6 +394,16 @@ public class User {
 
     }
 
+    /**
+     * EXCLUSIVELY USED FOR TESTING
+     * <p/>
+     * Updates UserRecords by registering only one initial User, with ID: zero.
+     * Any getUserCount call after this will return zero.
+     *
+     * @param context
+     * @throws IOException
+     * @throws JSONException
+     */
     public void resetCounter(Context context) throws IOException, JSONException {
 
         JSONObject newUserRecords = new JSONObject();
@@ -431,20 +415,136 @@ public class User {
 
     }
 
-    public int getId(Context context, JSONObject user) {
-        int foundID = 0;
+    /*
+    --------------------------------------------------------------
+     */
+
+    /*
+    USER DATA RETRIEVAL
+     */
+
+    /**
+     * Returns an ArrayList of integers of the IDs of modules the User has authored.
+     *
+     * @param context
+     * @param user
+     * @return
+     */
+    public ArrayList<Integer> getModulesAuthoredBy(Context context, JSONObject user) {
+        ArrayList<Integer> modulesAuthoredByUser = new ArrayList<>();
+        JSONObject moduleRecords = null;
+        Module f = new Module();
+
+        // grab User's ID
+        int currentUserID = 0;
         try {
-            for (int id : getUserIDs(context)) {
-                if (getUsername(context, getUser(context, id)).equals(getUsername(context, user))) {
-                    foundID = id;
-                }
-            }
-        } catch (JSONException | IOException e) {
+            currentUserID = user.getInt("ID");
+        } catch (JSONException e) {
             e.printStackTrace();
         }
-        return foundID;
+
+        // check all module IDs
+        try {
+            moduleRecords = f.getModuleRecordsJSON(context);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        // v2 - OK
+
+        int[] moduleIDs = getIntfromJSON(context, moduleRecords, "IDs");
+
+        JSONObject currentModule = null;
+
+        for (int i = 1; i < moduleIDs.length; i++) {
+            currentModule = f.getModuleByID(context, moduleIDs[i]);
+            try {
+                if (currentModule.getString("Author").equals(getUsername(context, user))) {
+                    modulesAuthoredByUser.add(moduleIDs[i]);
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        /*
+        v1
+
+
+        String temp = "";
+        String[] tempArray = new String[1];
+        try {
+            temp = moduleRecords.getString("IDs");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        temp = temp.replace("[", "").replace("]", "");
+        if (temp.contains(",")) {
+            tempArray = temp.split(",");
+        } else {
+            tempArray[0] = temp;
+        }
+        if (tempArray[0].equals("")) {
+            return modulesAuthoredByUser;
+        }
+
+        ArrayList<Integer> allModuleIDs = new ArrayList<>();
+        for (int i = 0; i < tempArray.length; i++) {
+            allModuleIDs.add(Integer.parseInt(tempArray[i]));
+        }
+
+
+        // from all the module IDS, select the ones where Author's username == current user's Username
+        JSONObject currentModule = null;
+        for (int i = 0; i < allModuleIDs.size(); i++) {
+            currentModule = f.getModuleByID(context, allModuleIDs.get(i));
+            try {
+                if (currentModule.getString("Author").equals(getUsername(context, user))) {
+                    modulesAuthoredByUser.add(allModuleIDs.get(i));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        */
+
+        return modulesAuthoredByUser;
     }
 
+    /**
+     * Returns a List of int of all registered User IDs.
+     *
+     * @param context
+     * @return
+     * @throws JSONException
+     * @throws IOException
+     */
+    public List<Integer> getUserIDs(Context context) throws JSONException, IOException {
+
+        ArrayList<Integer> IDsToReturn = new ArrayList<>();
+
+        String temp;
+
+        for (int i = 0; i < userCount(context); i++) {
+            temp = getUserRecords(context).getString("IDs");
+            temp = temp.replace("[", "").replace("]", "");
+            IDsToReturn.add(Integer.parseInt(temp.split(",")[i]));
+        }
+
+        return IDsToReturn;
+    }
+
+    /**
+     * Retrieves "Username" String from User JSON.
+     * <p/>
+     * Returns empty String if not found/set yet.
+     *
+     * @param context
+     * @param user
+     * @return
+     */
     public String getUsername(Context context, JSONObject user) {
         String username = "";
 
@@ -457,6 +557,15 @@ public class User {
         return username;
     }
 
+    /**
+     * Retrieves "Password" String from User JSON.
+     * <p/>
+     * Returns empty String if not found/set yet.
+     *
+     * @param context
+     * @param user
+     * @return
+     */
     public String getPassword(Context context, JSONObject user) {
         String password = "";
         try {
@@ -467,6 +576,16 @@ public class User {
         return password;
     }
 
+    /**
+     * Retrieves "Location" int code from User JSON.
+     * To be used in conjunction with decodeLocation to get String value of numeric location value.
+     * <p/>
+     * Returns ZERO if not found/set yet.
+     *
+     * @param context
+     * @param user
+     * @return
+     */
     public int getLocation(Context context, JSONObject user) {
         int location = 0;
 
@@ -481,7 +600,7 @@ public class User {
 
     /**
      * Retrieve languages spoken by the user. If none have been registered, all three slots are
-     * set to zero (at initial user profile setup)
+     * set to and returned as zero (at initial user profile setup).
      *
      * @param context
      * @param user
@@ -523,7 +642,6 @@ public class User {
         return languages;
     }
 
-
     /**
      * Retrieves all modules the user is currently enrolled on checks the index of moduleID among
      * those, then retrieves all of the user's currently assigned trainers & returns the ID of the
@@ -534,19 +652,19 @@ public class User {
      * @param moduleID
      * @return
      */
-    public int getWhoTrainsMeThis(Context context, JSONObject user, int moduleID){
+    public int getWhoTrainsMeThis(Context context, JSONObject user, int moduleID) {
         int trainerID = 0;
 
         String allLearning = "";
         String[] allLearningArray = new String[1];
 
         try {
-            allLearning = user.getString("Learning").replace("[","").replace("]","");
+            allLearning = user.getString("Learning").replace("[", "").replace("]", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if(allLearning.contains(",")){
+        if (allLearning.contains(",")) {
             allLearningArray = allLearning.split(",");
         } else {
             allLearningArray[0] = allLearning;
@@ -554,8 +672,8 @@ public class User {
 
         int index = 0;
 
-        for(int i = 0; i < allLearningArray.length; i++){
-            if(Integer.parseInt(allLearningArray[i]) == moduleID){
+        for (int i = 0; i < allLearningArray.length; i++) {
+            if (Integer.parseInt(allLearningArray[i]) == moduleID) {
                 index = i;
             }
         }
@@ -564,13 +682,13 @@ public class User {
         String[] allTrainersArray = new String[1];
 
         try {
-            allTrainers = user.getString("Trained by").replace("]","").replace("[","");
+            allTrainers = user.getString("Trained by").replace("]", "").replace("[", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        if(allTrainers.contains(",")){
-             allTrainersArray= allTrainers.split(",");
+        if (allTrainers.contains(",")) {
+            allTrainersArray = allTrainers.split(",");
         } else {
             allTrainersArray[0] = allTrainers;
         }
@@ -579,7 +697,16 @@ public class User {
         return trainerID;
     }
 
-
+    /**
+     * Retrieves "Age" as an int from User JSON.
+     * <p/>
+     * Returns ZERO if not found/set yet. As it is not a required field, age may stay zero, in which
+     * case a '?' is displayed on the User Profile Tab.
+     *
+     * @param context
+     * @param user
+     * @return
+     */
     public int getAge(Context context, JSONObject user) {
         int age = 0;
 
@@ -591,6 +718,17 @@ public class User {
         return age;
     }
 
+    /**
+     * Retrieves "Interests" int[] codes from User JSON.
+     * To be used in conjunction with decodeInterest to get String value of numeric interest value.
+     * <p/>
+     * Returns ZERO if not found/set yet. It is not a required field, so it may stay zero, in which
+     * case all 'Interests' checkboxes remain unchecked on the User Profile Tab.
+     *
+     * @param context
+     * @param user
+     * @return
+     */
     public int[] getInterests(Context context, JSONObject user) {
 
         int[] interests = new int[10];
@@ -615,10 +753,14 @@ public class User {
         return interests;
     }
 
-    public double getRating() {
-        return rating;
-    }
-
+    /**
+     * Returns a List of ints which are the module IDs of the modules the user is currently enrolled
+     * on.
+     *
+     * @param context
+     * @param user
+     * @return
+     */
     public List<Integer> getLearning(Context context, JSONObject user) {
 
         ArrayList<Integer> learningTheseModules = new ArrayList<>();
@@ -646,6 +788,15 @@ public class User {
         return learningTheseModules;
     }
 
+    /**
+     * Checks whether the user has already enrolled on a module by checking all the module IDs the
+     * user is enrolled on agains the moduleID provided as an argument.
+     *
+     * @param context
+     * @param user
+     * @param moduleID
+     * @return true if use is already enrolled
+     */
     public boolean isLearning(Context context, JSONObject user, int moduleID) {
         boolean result = false;
 
@@ -657,26 +808,31 @@ public class User {
         return result;
     }
 
-    public int[] getTraining() {
-        return training;
-    }
+    /*
+    --------------------------------------------------------------
+     */
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    /*
+    SETTING/UPDATING USER DATA
+     */
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRating(double rating) {
-        this.rating = rating;
-    }
-
+    /**
+     * Adds moduleID to the user JSON's "Learning" array which contains the module IDs the User
+     * is currently enrolled on.
+     * Initialises User's progress on the newly added module as ZERO by adding a new value to the
+     * User JSON in the following format:
+     * <p/>
+     * "Progress + i" = j
+     * <p/>
+     * Where 'i' is the module ID, the value 'j' is the last slide of the module the User has opened.
+     * <p/>
+     * Progress is stored so Users may continue Learning the given module exactly from where they
+     * left off; and to mark the module as 'Completed' (not implemented yet).
+     *
+     * @param context
+     * @param user
+     * @param newLearning
+     */
     public void addToLearning(Context context, JSONObject user, int newLearning) {
 
         try {
@@ -716,9 +872,7 @@ public class User {
 
         // Now, it only picks the first available Trainer:
         IDofAssignedTrainer = trainers.get(0);
-        System.out.println("moduleID " + moduleID + " has been assigned tutor: " + IDofAssignedTrainer);
 
-        //
         try {
             user.accumulate("Trained by", IDofAssignedTrainer);
         } catch (JSONException e) {
@@ -728,12 +882,22 @@ public class User {
         saveUser(context, user);
     }
 
+    /**
+     * Updates User JSON Progress entry stored for the given module by overwriting and saving the
+     * stored value IF it is different from the stored value.
+     *
+     * @param context
+     * @param user
+     * @param module
+     * @param lastSlide
+     */
     public void updateProgress(Context context, JSONObject user, JSONObject module, int lastSlide) {
 
         boolean changed = false;
 
         try {
-            if (lastSlide > Integer.parseInt(user.getString("Progress" + module.getInt("ID")))) {
+            // check if new value different from the stored value
+            if (lastSlide != Integer.parseInt(user.getString("Progress" + module.getInt("ID")))) {
                 user.put("Progress" + module.getInt("ID"), lastSlide);
                 changed = true;
             }
@@ -741,13 +905,9 @@ public class User {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        // save User data if Progress was updated
         if (changed) saveUser(context, user);
     }
-
-    public void setTraining(int[] training) {
-        this.training = training;
-    }
-
 
     /**
      * Updates user's stored languages in the database.
@@ -781,18 +941,20 @@ public class User {
 
     }
 
-    public void setAge(int age) {
-        this.age = age;
-    }
+    /*
+    --------------------------------------------------------------
+     */
 
-    public void setLocation(int location) {
-        this.location = location;
-    }
+    /*
+    DECODERS int -> String
+     */
 
-    public void setInterests(int[] interests) {
-        this.interests = interests;
-    }
-
+    /**
+     * Returns human-readable String values for interest codes provided as integers.
+     *
+     * @param interestID int code for various interest Strings
+     * @return
+     */
     public String decodeInterest(int interestID) {
 
         String returnValue = "";
@@ -833,6 +995,12 @@ public class User {
         return returnValue;
     }
 
+    /**
+     * Returns human-readable String values for Country codes provided as integers.
+     *
+     * @param countryID
+     * @return
+     */
     public String decodeCountry(int countryID) {
 
         String returnValue = "";
@@ -1422,6 +1590,12 @@ public class User {
         return returnValue;
     }
 
+    /**
+     * Returns human-readable String values for Language codes provided as integers.
+     *
+     * @param languageID int code for various language Strings
+     * @return
+     */
     public String decodeLanguage(int languageID) {
 
         String returnValue = "";
@@ -1843,6 +2017,88 @@ public class User {
                 returnValue = "Zulu";
                 break;
 
+        }
+
+        return returnValue;
+    }
+
+
+    /**
+     * Returns integer values as an array from the JSON object provided
+     *
+     * @param context
+     * @param input   JSON Object to extract data from
+     * @param toFind  String value to extract values from within the JSON
+     * @return
+     */
+    public int[] getIntfromJSON(Context context, JSONObject input, String toFind) {
+
+        int[] returnValue = new int[1];
+
+        String temp = "";
+        String[] tempArray = new String[1];
+
+        try {
+            // target String is read in from the JSON Object
+            temp = input.getString(toFind);
+            // brackets are removed from the beginning and the end in case it is an array
+            temp = temp.replace("[", "").replace("]", "").trim();
+        } catch (JSONException e) {
+            returnValue[0] = 0;
+            return returnValue;
+        }
+
+        // if the array contained more than one element, it is split at the separator commas ','
+        // and placed in a temporary String[]
+        if (temp.contains(",")) {
+            tempArray = temp.split(",");
+            returnValue = new int[tempArray.length];
+        } else {
+            // if it was only 1 element, and thus there are no commas, then there is only one element
+            // in the temporary String[]
+            tempArray[0] = temp;
+        }
+
+        if (tempArray.length == 0) {
+            returnValue[0] = 0;
+            return returnValue;
+        }
+
+        // the temporary String[] is then parsed and copied into an int[]
+        for (int i = 0; i < tempArray.length; i++) {
+            returnValue[i] = Integer.parseInt(tempArray[i]);
+        }
+
+        // int[] is then returned
+        return returnValue;
+
+    }
+
+    public String[] getStringFromJSON(Context context, JSONObject input, String toFind) {
+        String[] returnValue = new String[1];
+
+        String temp = "";
+
+        try {
+            // target String is read in from the JSON Object
+            temp = input.getString(toFind);
+            // brackets are removed from the beginning and the end in case it is an array
+            temp = temp.replace("[", "").replace("]", "").trim();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            returnValue[0] = "";
+            return returnValue;
+        }
+
+        if (temp.contains(",")) {
+            returnValue = temp.split(",");
+        } else {
+            returnValue[0] = temp;
+        }
+
+        if(returnValue.length == 0){
+            returnValue[0] = "";
+            return returnValue;
         }
 
         return returnValue;

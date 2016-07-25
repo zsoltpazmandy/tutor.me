@@ -372,7 +372,6 @@ public class Module {
                 tempArray = temp.split(",");
             } else {
                 tempArray[0] = temp;
-                System.out.println("trainers of module" + module.toString() + "\n" +tempArray[0]);
             }
 
             for (int i = 0; i < tempArray.length; i++) {
