@@ -189,7 +189,7 @@
             </intent-filter>
         </service>
 
-        <service android:name=".FirebaseInstanceIdService">
+        <service android:name=".FirebaseInstanceIDService">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
