@@ -97,4 +97,11 @@ public class EditModules extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent backHome = new Intent(EditModules.this, Home.class);
+        backHome.putExtra("User", user.toString());
+        startActivity(backHome);
+        finish();
+    }
 }

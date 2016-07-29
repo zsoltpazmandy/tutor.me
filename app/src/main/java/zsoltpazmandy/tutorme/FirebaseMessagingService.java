@@ -11,12 +11,18 @@ import com.google.firebase.messaging.RemoteMessage;
  * Created by zsolt on 29/07/16.
  */
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
+
+    String message;
+    String title;
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        showNotification(remoteMessage.getData().get("message"));
+        message = remoteMessage.getNotification().getBody();
+        title = remoteMessage.getNotification().getTitle();
+        showNotification(title, message);
     }
 
-    private void showNotification(String message) {
+    private void showNotification(String title, String message) {
         Intent notifIntent = new Intent(this,MainActivity.class);
         notifIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
@@ -24,7 +30,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
                 .setAutoCancel(true)
-                .setContentTitle("testing")
+                .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.drawable.school24)
                 .setContentIntent(pendingIntent);

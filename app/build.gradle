@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "23.0.3"
 
     defaultConfig {
@@ -31,7 +31,6 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:9.2.1'
     compile 'com.firebase:firebase-client-android:2.3.1'
     compile 'com.google.firebase:firebase-messaging:9.2.1'
-    compile 'com.squareup.okhttp3:okhttp:3.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

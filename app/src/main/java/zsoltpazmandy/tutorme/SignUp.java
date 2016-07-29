@@ -11,6 +11,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -35,6 +38,8 @@ public class SignUp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         setUpViews();
+
+        mAuth = FirebaseAuth.getInstance();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -111,7 +116,9 @@ public class SignUp extends AppCompatActivity {
                         password2Field.setError("The two passwords do not match.");
                         return;
                     }
-                    returnVal = user.register(getApplicationContext(), username, password1Field.getText().toString());
+
+
+                    returnVal = user.register(getApplicationContext(), username, password1Field.getText().toString(), emailField.getText().toString().trim());
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -121,8 +128,18 @@ public class SignUp extends AppCompatActivity {
 
                 if (returnVal != 0) {
 
-                    Toast.makeText(getApplicationContext(), "Username registered.", Toast.LENGTH_SHORT).show();
-
+                    Toast.makeText(getApplicationContext(), "User registered.", Toast.LENGTH_SHORT).show();
+                    // REGISTRATION ON FIREBASE:
+                    mAuth.createUserWithEmailAndPassword(emailField.getText().toString().trim(), password1Field.getText().toString().trim())
+                            .addOnCompleteListener(SignUp.this, new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                            //...
+                                    if (!task.isSuccessful()) {
+                                        // ....
+                                    }
+                                }
+                            });
                     Intent setupProfile = new Intent(SignUp.this, ProfileSetup.class);
                     try {
                         setupProfile.putExtra("User String", user.getUser(getApplicationContext(), returnVal).toString());
@@ -132,20 +149,7 @@ public class SignUp extends AppCompatActivity {
                         e.printStackTrace();
                     }
 
-//                    // REGISTRATION ON FIREBASE:
-//                    mAuth = FirebaseAuth.getInstance();
-//                    mAuth.createUserWithEmailAndPassword(emailField.getText().toString(), password1Field.getText().toString().trim())
-//                            .addOnCompleteListener(SignUp.this, new OnCompleteListener<AuthResult>() {
-//                                @Override
-//                                public void onComplete(@NonNull Task<AuthResult> task) {
-//                                    Toast.makeText(SignUp.this, "Registration in the database: " + task.isSuccessful(), Toast.LENGTH_SHORT).show();
-//
-//                                    if (!task.isSuccessful()) {
-//                                        Toast.makeText(SignUp.this, R.string.auth_failed,
-//                                                Toast.LENGTH_SHORT).show();
-//                                    }
-//                                }
-//                            });
+
                 } else {
                     Toast.makeText(getApplicationContext(), "Registration failed. Username taken.", Toast.LENGTH_SHORT).show();
                 }

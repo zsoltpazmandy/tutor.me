@@ -1,5 +1,7 @@
 package zsoltpazmandy.tutorme;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -18,6 +20,8 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,11 +38,15 @@ public class Home extends AppCompatActivity {
     Module f;
     TabHost tabHost = null;
 
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
+        mAuth = FirebaseAuth.getInstance();
 
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
@@ -65,6 +73,36 @@ public class Home extends AppCompatActivity {
         }
         setupTrainingTab();
 
+        checkIfProfileComplete();
+
+    }
+
+
+    private void checkIfProfileComplete() {
+        if (u.getLanguages(getApplicationContext(), user)[0] == 0) {
+            AlertDialog.Builder incompleteAlert = new AlertDialog.Builder(Home.this);
+            incompleteAlert.setTitle("Profile setup incomplete.");
+            incompleteAlert.setMessage("Please complete setup.");
+            incompleteAlert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    Intent finishSetup = new Intent(Home.this, ProfileSetup.class);
+                    finishSetup.putExtra("User String", user.toString());
+                    startActivity(finishSetup);
+                    finish();
+                }
+            });
+            incompleteAlert.setNegativeButton("Quit", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    mAuth.signOut();
+                    Intent logoutIntent = new Intent(Home.this, MainActivity.class);
+                    startActivity(logoutIntent);
+                    finish();
+                }
+            });
+            incompleteAlert.show();
+        }
     }
 
     public void setupTabs() {
@@ -214,7 +252,7 @@ public class Home extends AppCompatActivity {
             public void onClick(View v) {
                 Intent editProfile = new Intent(Home.this, ProfileSetup.class);
                 editProfile.putExtra("User String", user.toString());
-                editProfile.putExtra("Modifying",1);
+                editProfile.putExtra("Modifying", 1);
                 startActivity(editProfile);
                 finish();
             }
@@ -224,6 +262,8 @@ public class Home extends AppCompatActivity {
         logoutButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                mAuth.signOut();
                 Intent logoutIntent = new Intent(Home.this, MainActivity.class);
                 startActivity(logoutIntent);
                 finish();

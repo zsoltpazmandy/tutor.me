@@ -75,6 +75,7 @@ public class ProfileSetup extends AppCompatActivity {
         setUpInterests();
 
 
+
         Button saveProfileButt = (Button) findViewById(R.id.save_profile_butt);
         assert saveProfileButt != null;
 
@@ -172,6 +173,8 @@ public class ProfileSetup extends AppCompatActivity {
         );
 
     }
+
+
 
     private void setUpInterests() {
 

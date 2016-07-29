@@ -81,13 +81,13 @@ public class User {
      * @throws JSONException
      * @throws IOException
      */
-    public int register(Context context, String username, String password) throws JSONException, IOException {
+    public int register(Context context, String username, String password, String email) throws JSONException, IOException {
 
         int returnIDtoReg = 0;
 
         boolean taken = true;
 
-        taken = isUsernameTaken(context, username);
+        taken = isUsernameTaken(context, username) && isEmailTaken(context, email);
 
         if (!taken) {
             JSONObject newUser = new JSONObject();
@@ -95,7 +95,7 @@ public class User {
             int newId = assignID(context);
             returnIDtoReg = newId;
 
-            newUser.put("ID", newId).put("Username", username).put("Password", password);
+            newUser.put("ID", newId).put("Username", username).put("Password", password).put("Email", email);
 
             saveUser(context, newUser);
             setUserRecordsJSON(context, getUserRecords(context).accumulate("IDs", newId).toString());
@@ -151,6 +151,53 @@ public class User {
     }
 
     /**
+     * Loops through all user IDs, checks arguments against each User object and finds if they
+     * match an existing User object. If it finds a match for the username, it then checks whether
+     * the password is correct.
+     *
+     * @param context
+     * @param email
+     * @param password
+     * @return 0 if Username could not be found or if entered password was incorrect
+     */
+    public int loginWithEmail(Context context, String email, String password) {
+        int userID = 0;
+        boolean found = false;
+
+        try {
+
+            List<Integer> allIDs = getUserIDs(context);
+
+            for (int i = 1; i < userCount(context); i++) {
+                if (getEmail(context, getUser(context, allIDs.get(i))).equals(email)) {
+                    if (getPassword(context, getUser(context, allIDs.get(i))).equals(password)) {
+                        userID = allIDs.get(i);
+                        Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show();
+                        found = true;
+                        return userID;
+                    } else {
+                        if (getEmail(context, getUser(context, allIDs.get(i))).equals(email) &&
+                                !getPassword(context, getUser(context, allIDs.get(i))).equals(password)) {
+                            Toast.makeText(context, "Password incorrect", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            }
+
+            if (!found) {
+                Toast.makeText(context, "Email cannot be found in database", Toast.LENGTH_SHORT).show();
+            }
+
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+
+        return userID;
+    }
+
+
+
+    /**
      * Checks whether the argument Username has already been registered in the database.
      * Converts all usernames to lowercase
      *
@@ -178,6 +225,37 @@ public class User {
         }
         return taken;
     }
+
+    /**
+     * Checks whether the argument Email has already been registered in the database.
+     * Converts all email addresses to lowercase
+     *
+     * @param context
+     * @param email
+     * @return true if taken, false if not
+     */
+    public boolean isEmailTaken(Context context, String email) {
+
+        boolean taken = false;
+
+        try {
+
+            for (int i = 1; i < userCount(context); i++) {
+                if (getUser(context, i)
+                        .getString("Email")
+                        .toLowerCase()
+                        .equals(email.toLowerCase())) {
+                    taken = true;
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return taken;
+    }
+
+
 
     /**
      * Finds and returns the next assignable User ID by reading in the ID of the last added ID and
@@ -457,7 +535,7 @@ public class User {
 
         JSONObject currentModule = null;
 
-        for (int i = 1; i < moduleIDs.length; i++) {
+        for (int i = 0; i < moduleIDs.length; i++) {
             currentModule = f.getModuleByID(context, moduleIDs[i]);
             try {
                 if (currentModule.getString("Author").equals(getUsername(context, user))) {
@@ -555,6 +633,27 @@ public class User {
         }
 
         return username;
+    }
+
+    /**
+     * Retrieves "Email" String from User JSON.
+     * <p/>
+     * Returns empty String if not found/set yet.
+     *
+     * @param context
+     * @param user
+     * @return
+     */
+    public String getEmail(Context context, JSONObject user) {
+        String email = "";
+
+        try {
+            email = user.getString("Email");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return email;
     }
 
     /**
