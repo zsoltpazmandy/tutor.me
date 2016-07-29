@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="zsoltpazmandy.tutorme.SignUp"
+    tools:showIn="@layout/activity_sign_up">
+
+    <TextView
+        android:id="@+id/signup_label"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/profile_setup_text_size"
+        android:text="Sign up"/>
+
+    <EditText
+        android:id="@+id/username_field"
+        android:layout_below="@id/signup_label"
+        android:layout_width="match_parent"
+        android:maxLength="10"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:textAlignment="center"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:hint="choose your username"/>
+
+    <EditText
+        android:id="@+id/email_field"
+        android:layout_below="@id/username_field"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/activity_vertical_margin"
+        android:textAlignment="center"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:hint="please enter a valid email address"/>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:textAlignment="center"
+        android:maxLength="10"
+        android:hint="please choose a password"
+        android:id="@+id/password1field"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_below="@+id/email_field" />
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:maxLength="10"
+        android:textAlignment="center"
+        android:hint="please repeat your password"
+        android:id="@+id/password2field"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
+        android:layout_below="@+id/password1field" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/signUpButt"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:layout_below="@id/password2field"
+        android:layout_centerHorizontal="true"
+        android:text="@string/sign_up_butt"/>
+
+</RelativeLayout>

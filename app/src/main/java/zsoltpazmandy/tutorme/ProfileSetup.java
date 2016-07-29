@@ -20,6 +20,33 @@ import java.util.ArrayList;
 public class ProfileSetup extends AppCompatActivity {
 
     JSONObject user;
+    boolean lang1exists = false;
+    boolean lang2exists;
+    boolean lang3exists;
+
+    User u;
+    TextView ageLabel;
+    Spinner ageSpinner;
+    TextView locationLabel;
+    Spinner locationSpinner;
+    TextView languages1Label;
+    Spinner languages1Spinner;
+    TextView languages2Label;
+    Spinner languages2Spinner;
+    TextView languages3Label;
+    Spinner languages3Spinner;
+
+    TextView interestsLabel;
+    CheckBox languagesCheck;
+    CheckBox travelCheck;
+    CheckBox sportsCheck;
+    CheckBox historyCheck;
+    CheckBox musicCheck;
+    CheckBox scienceCheck;
+    CheckBox artsCheck;
+    CheckBox foodCheck;
+    CheckBox healthCheck;
+    CheckBox computersCheck;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,140 +60,25 @@ public class ProfileSetup extends AppCompatActivity {
             return;
         }
 
-        User u = new User(getApplicationContext());
+        u = new User(getApplicationContext());
 
-        Intent userIntent = getIntent();
-
-        this.user = new JSONObject();
-
+        user = new JSONObject();
         try {
-
             user = new JSONObject(getIntent().getStringExtra("User String"));
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-// AGE
-        TextView ageLabel = (TextView) findViewById(R.id.age_label);
-        final Spinner ageSpinner = (Spinner) findViewById(R.id.age_spinner);
-        ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ages, android.R.layout.simple_spinner_dropdown_item);
-        ageSpinner.setAdapter(ageSpinnerAdapter);
+        setUpAge();
+        setUpLocation();
+        setUpLanguages();
+        setUpInterests();
 
-        if (u.getAge(getApplicationContext(), user) != 0) {
-            ageSpinner.setSelection(u.getAge(getApplicationContext(), user));
-        }
 
-// LOCATION
-        TextView locationLabel = (TextView) findViewById(R.id.location_label);
-        final Spinner locationSpinner = (Spinner) findViewById(R.id.location_spinner);
-        ArrayAdapter<CharSequence> locationSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.locations, android.R.layout.simple_spinner_dropdown_item);
-        locationSpinner.setAdapter(locationSpinnerAdapter);
-
-        try {
-            if (!user.getString("Location").equals("")) {
-                locationSpinner.setSelection(Integer.parseInt(user.getString("Location")));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-// LANGUAGES
-        TextView languages1Label = (TextView) findViewById(R.id.languages1_label);
-        final Spinner languages1Spinner = (Spinner) findViewById(R.id.languages1_spinner);
-        ArrayAdapter<CharSequence> languages1SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
-        languages1SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        languages1Spinner.setAdapter(languages1SpinnerAdapter);
-
-        boolean lang1exists = false;
-        boolean lang2exists = false;
-        boolean lang3exists = false;
-
-        if (!u.getLanguages(getApplicationContext(), user).equals(null)) {
-            lang1exists = true;
-            languages1Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[0]);
-        }
-
-        TextView languages2Label = (TextView) findViewById(R.id.languages2_label);
-        final Spinner languages2Spinner = (Spinner) findViewById(R.id.languages2_spinner);
-        ArrayAdapter<CharSequence> languages2SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
-        languages2SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        languages2Spinner.setAdapter(languages2SpinnerAdapter);
-
-        if(!u.getLanguages(getApplicationContext(), user).equals(null)&&
-                !("" + u.getLanguages(getApplicationContext(), user)[1]).equals("")) {
-            lang2exists = true;
-            languages2Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[1]);
-        }
-
-        TextView languages3Label = (TextView) findViewById(R.id.languages3_label);
-        final Spinner languages3Spinner = (Spinner) findViewById(R.id.languages3_spinner);
-        ArrayAdapter<CharSequence> languages3SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
-        languages3SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        languages3Spinner.setAdapter(languages3SpinnerAdapter);
-
-        if(!u.getLanguages(getApplicationContext(), user).equals(null)&&
-                !("" + u.getLanguages(getApplicationContext(), user)[2]).equals("")) {
-            lang3exists = true;
-            languages3Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[2]);
-        }
-
-// INTERESTS
-        TextView interestsLabel = (TextView) findViewById(R.id.interests_label);
-        final CheckBox languagesCheck = (CheckBox) findViewById(R.id.language_check);
-        final CheckBox travelCheck = (CheckBox) findViewById(R.id.travel_check);
-        final CheckBox sportsCheck = (CheckBox) findViewById(R.id.sports_check);
-        final CheckBox historyCheck = (CheckBox) findViewById(R.id.history_check);
-        final CheckBox musicCheck = (CheckBox) findViewById(R.id.music_check);
-        final CheckBox scienceCheck = (CheckBox) findViewById(R.id.science_check);
-        final CheckBox artsCheck = (CheckBox) findViewById(R.id.arts_check);
-        final CheckBox foodCheck = (CheckBox) findViewById(R.id.food_check);
-        final CheckBox healthCheck = (CheckBox) findViewById(R.id.health_check);
-        final CheckBox computersCheck = (CheckBox) findViewById(R.id.computers_check);
-
-        int[] checkedInterests = u.getInterests(getApplicationContext(), user);
-
-        for (int i : checkedInterests) {
-            switch (i) {
-                case 1:
-                    languagesCheck.setChecked(true);
-                    break;
-                case 2:
-                    travelCheck.setChecked(true);
-                    break;
-                case 3:
-                    sportsCheck.setChecked(true);
-                    break;
-                case 4:
-                    historyCheck.setChecked(true);
-                    break;
-                case 5:
-                    musicCheck.setChecked(true);
-                    break;
-                case 6:
-                    scienceCheck.setChecked(true);
-                    break;
-                case 7:
-                    artsCheck.setChecked(true);
-                    break;
-                case 8:
-                    foodCheck.setChecked(true);
-                    break;
-                case 9:
-                    healthCheck.setChecked(true);
-                    break;
-                case 10:
-                    computersCheck.setChecked(true);
-                    break;
-            }
-        }
-
-// SAVE PROFILE BUTTON
         Button saveProfileButt = (Button) findViewById(R.id.save_profile_butt);
         assert saveProfileButt != null;
 
         final JSONObject userUpdate = user;
-
         final boolean finalLang1exists = lang1exists;
         final boolean finalLang2exists = lang2exists;
         final boolean finalLang3exists = lang3exists;
@@ -261,13 +173,137 @@ public class ProfileSetup extends AppCompatActivity {
 
     }
 
+    private void setUpInterests() {
+
+        interestsLabel = (TextView) findViewById(R.id.interests_label);
+        languagesCheck = (CheckBox) findViewById(R.id.language_check);
+        travelCheck = (CheckBox) findViewById(R.id.travel_check);
+        sportsCheck = (CheckBox) findViewById(R.id.sports_check);
+        historyCheck = (CheckBox) findViewById(R.id.history_check);
+        musicCheck = (CheckBox) findViewById(R.id.music_check);
+        scienceCheck = (CheckBox) findViewById(R.id.science_check);
+        artsCheck = (CheckBox) findViewById(R.id.arts_check);
+        foodCheck = (CheckBox) findViewById(R.id.food_check);
+        healthCheck = (CheckBox) findViewById(R.id.health_check);
+        computersCheck = (CheckBox) findViewById(R.id.computers_check);
+
+        int[] checkedInterests = u.getInterests(getApplicationContext(), user);
+
+        for (int i : checkedInterests) {
+            switch (i) {
+                case 1:
+                    languagesCheck.setChecked(true);
+                    break;
+                case 2:
+                    travelCheck.setChecked(true);
+                    break;
+                case 3:
+                    sportsCheck.setChecked(true);
+                    break;
+                case 4:
+                    historyCheck.setChecked(true);
+                    break;
+                case 5:
+                    musicCheck.setChecked(true);
+                    break;
+                case 6:
+                    scienceCheck.setChecked(true);
+                    break;
+                case 7:
+                    artsCheck.setChecked(true);
+                    break;
+                case 8:
+                    foodCheck.setChecked(true);
+                    break;
+                case 9:
+                    healthCheck.setChecked(true);
+                    break;
+                case 10:
+                    computersCheck.setChecked(true);
+                    break;
+            }
+        }
+    }
+
+    private void setUpLanguages() {
+        languages1Label = (TextView) findViewById(R.id.languages1_label);
+        languages1Spinner = (Spinner) findViewById(R.id.languages1_spinner);
+        ArrayAdapter<CharSequence> languages1SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
+        languages1SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        languages1Spinner.setAdapter(languages1SpinnerAdapter);
+
+        lang1exists = false;
+        lang2exists = false;
+        lang3exists = false;
+
+        if (!u.getLanguages(getApplicationContext(), user).equals(null)) {
+            lang1exists = true;
+            languages1Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[0]);
+        }
+
+        languages2Label = (TextView) findViewById(R.id.languages2_label);
+        languages2Spinner = (Spinner) findViewById(R.id.languages2_spinner);
+        ArrayAdapter<CharSequence> languages2SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
+        languages2SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        languages2Spinner.setAdapter(languages2SpinnerAdapter);
+
+        if (!u.getLanguages(getApplicationContext(), user).equals(null) &&
+                !("" + u.getLanguages(getApplicationContext(), user)[1]).equals("")) {
+            lang2exists = true;
+            languages2Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[1]);
+        }
+
+        languages3Label = (TextView) findViewById(R.id.languages3_label);
+        languages3Spinner = (Spinner) findViewById(R.id.languages3_spinner);
+        ArrayAdapter<CharSequence> languages3SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
+        languages3SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        languages3Spinner.setAdapter(languages3SpinnerAdapter);
+
+        if (!u.getLanguages(getApplicationContext(), user).equals(null) &&
+                !("" + u.getLanguages(getApplicationContext(), user)[2]).equals("")) {
+            lang3exists = true;
+            languages3Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[2]);
+        }
+    }
+
+    private void setUpLocation() {
+        locationLabel = (TextView) findViewById(R.id.location_label);
+        locationSpinner = (Spinner) findViewById(R.id.location_spinner);
+        ArrayAdapter<CharSequence> locationSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.locations, android.R.layout.simple_spinner_dropdown_item);
+        locationSpinner.setAdapter(locationSpinnerAdapter);
+
+        try {
+            if (!user.getString("Location").equals("")) {
+                locationSpinner.setSelection(Integer.parseInt(user.getString("Location")));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void setUpAge() {
+        ageLabel = (TextView) findViewById(R.id.age_label);
+        ageSpinner = (Spinner) findViewById(R.id.age_spinner);
+        ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ages, android.R.layout.simple_spinner_dropdown_item);
+        ageSpinner.setAdapter(ageSpinnerAdapter);
+
+        if (u.getAge(getApplicationContext(), user) != 0) {
+            ageSpinner.setSelection(u.getAge(getApplicationContext(), user));
+        }
+    }
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        Toast.makeText(this, "Profile NOT updated.", Toast.LENGTH_SHORT).show();
-        Intent backHome = new Intent(ProfileSetup.this, Home.class);
-        backHome.putExtra("User", user.toString());
-        startActivity(backHome);
-        finish();
+        if (getIntent().hasExtra("Modifying")) {
+            super.onBackPressed();
+            Toast.makeText(this, "Profile NOT updated.", Toast.LENGTH_SHORT).show();
+            Intent backHome = new Intent(ProfileSetup.this, Home.class);
+            backHome.putExtra("User", user.toString());
+            startActivity(backHome);
+            finish();
+        } else {
+            Toast.makeText(ProfileSetup.this, "Please save your profile first", Toast.LENGTH_SHORT).show();
+            return;
+        }
     }
 }

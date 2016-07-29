@@ -3,41 +3,39 @@ package zsoltpazmandy.tutorme;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ScrollView;
 import android.widget.TextView;
+
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 
 public class Chat extends AppCompatActivity {
 
     JSONObject user;
     JSONObject tutor;
 
-    Socket clientSocket = null;
-    String host = "192.168.1.72";
-    int port = 60001;
-
     EditText enterMessage;
     ImageButton sendButton;
     TextView messageBox;
 
-    static ArrayList<String> messages;
+    Firebase chatRoot = null;
+    Firebase thisChat = null;
+    String roomName = "";
+
+    User u = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +44,15 @@ public class Chat extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final User u = new User(getApplicationContext());
+        Firebase.setAndroidContext(this);
+
+        chatRoot = new Firebase("https://tutorme-1dcd6.firebaseio.com/chat_sessions");
+        u = new User(getApplicationContext());
 
         enterMessage = (EditText) findViewById(R.id.chat_enter_message);
         sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         messageBox = (TextView) findViewById(R.id.chat_messagebox_text);
         messageBox.setMovementMethod(new ScrollingMovementMethod());
-
-        messages = new ArrayList<>();
 
         try {
             user = new JSONObject(getIntent().getStringExtra("User"));
@@ -63,106 +62,83 @@ public class Chat extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        new Thread() {
-            @Override
-            public void run() {
-                BufferedWriter output = null;
-
-                try {
-                    clientSocket = new Socket(host, port);
-                    BufferedReader input = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-                    output.write(u.getUsername(getApplicationContext(), tutor) + " is now online.");
-                    output.newLine();
-                    output.flush();
-
-
-
-                    String message;
-
-                    while ((message = input.readLine()) != null) {
-
-                        updateMessageBox(messageBox, message);
-                    }
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-        }.start();
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendMessage(v);
-            }
-        });
-
-
-        messageBox.addTextChangedListener(new TextWatcher() {
-            ScrollView messageBoxSV = (ScrollView) findViewById(R.id.chat_messagebox_sv);
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                messageBoxSV.fullScroll(ScrollView.FOCUS_DOWN);
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                messageBoxSV.fullScroll(ScrollView.FOCUS_DOWN);
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                messageBoxSV.fullScroll(ScrollView.FOCUS_DOWN);
-            }
-        });
-
+        prepareChatroom();
+        setUpSendButtListener();
+        setUpMessageBoxUpdater();
 
     }
 
-    public void updateMessageBox(final TextView messageBox, final String message) {
+    private void prepareChatroom() {
 
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-
-                messageBox.setText(messageBox.getText() + "\n" + message);
-
-            }
-        });
-    }
-
-
-    public void sendMessage(View v) {
-
-        // disallow empties
-        if(enterMessage.getText().toString().trim().equals("")) {
-            enterMessage.setError("You can't send an empty message");
-            return;
-        }
-
-        BufferedWriter output = null;
-
-        String name = null;
+        // creating unique chatroom name for the 2 users by using the combination of their IDs
+        // format: tutorID_userId
         try {
-            name = user.getString("Username");
+            roomName = "" + tutor.getInt("ID") + "_" + user.getInt("ID");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-
-        try {
-            output = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-            output.write(name + " [" + getTimeStamp() + "] : " + enterMessage.getText().toString());
-            output.newLine();
-            output.flush();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        enterMessage.setText("");
+        String sessionPushTemp = chatRoot.push().getKey();
+        thisChat = chatRoot.child(sessionPushTemp);
     }
+
+    private void setUpSendButtListener() {
+
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String sender = "";
+                String recipient = "";
+                try {
+                    sender = user.getString("Username");
+                    recipient = tutor.getString("Username");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                String timeStamp = getTimeStamp();
+                String message = enterMessage.getText().toString();
+
+                ChatMessage chatMessage = new ChatMessage(sender, recipient, timeStamp, message);
+
+                String messagePushTemp = thisChat.push().getKey();
+                thisChat.child(messagePushTemp).setValue(chatMessage);
+                enterMessage.setText("");
+            }
+        });
+    }
+
+    private void setUpMessageBoxUpdater() {
+
+        thisChat.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Iterator iter = dataSnapshot.getChildren().iterator();
+
+                messageBox.setText("");
+
+
+                while (iter.hasNext()) {
+                    DataSnapshot temp = ((DataSnapshot) iter.next());
+
+                    messageBox.append(temp.child("sender").getValue().toString());
+                    messageBox.append("[" + temp.child("timeStamp").getValue().toString() + "]: ");
+                    messageBox.append(temp.child("message").getValue().toString() + "\n");
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
+            }
+        });
+    }
+
 
     public static String getTimeStamp() {
         try {
@@ -177,5 +153,11 @@ public class Chat extends AppCompatActivity {
 
             return null;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        u.saveUser(getApplicationContext(), user);
     }
 }

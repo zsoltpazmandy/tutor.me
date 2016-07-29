@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.app.NotificationCompat;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -34,13 +33,13 @@ public class Home extends AppCompatActivity {
     User u;
     Module f;
     TabHost tabHost = null;
-    int notificationID = 10;
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
@@ -58,7 +57,6 @@ public class Home extends AppCompatActivity {
 
         setupTabs();
 
-
         setupProfileTab();
         try {
             setupLearningTab();
@@ -68,7 +66,6 @@ public class Home extends AppCompatActivity {
         setupTrainingTab();
 
     }
-
 
     public void setupTabs() {
         tabHost = (TabHost) findViewById(R.id.home_tabhost);
@@ -217,6 +214,7 @@ public class Home extends AppCompatActivity {
             public void onClick(View v) {
                 Intent editProfile = new Intent(Home.this, ProfileSetup.class);
                 editProfile.putExtra("User String", user.toString());
+                editProfile.putExtra("Modifying",1);
                 startActivity(editProfile);
                 finish();
             }
@@ -524,4 +522,5 @@ public class Home extends AppCompatActivity {
             }
         }, 1000);
     }
+
 }

@@ -20,6 +20,7 @@ public class ModuleProgress extends AppCompatActivity {
     JSONObject tutor = null;
     JSONObject module = null;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -173,4 +174,7 @@ public class ModuleProgress extends AppCompatActivity {
             }
         }, 1000);
     }
+
+
+
 }

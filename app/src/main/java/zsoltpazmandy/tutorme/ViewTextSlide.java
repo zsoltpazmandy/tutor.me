@@ -16,6 +16,7 @@ import org.json.JSONObject;
 public class ViewTextSlide extends AppCompatActivity {
 
     JSONObject user = null;
+    JSONObject tutor = null;
     JSONObject module = null;
     int slideNumber = 0;
     int totalslides = 0;
@@ -124,7 +125,6 @@ public class ViewTextSlide extends AppCompatActivity {
                 }
 
 
-                JSONObject tutor = null;
 
                 try {
                     tutor = u.getUser(getApplicationContext(), IDofTutor);
@@ -227,6 +227,7 @@ public class ViewTextSlide extends AppCompatActivity {
             }
         }, 1000);
     }
+
 }
 
 
