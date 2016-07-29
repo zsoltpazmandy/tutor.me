@@ -1,12 +1,10 @@
 <?php
 	if (isset($_POST["Token"])) {
-
-		   $_uv_Token=$_POST["Token"];
-		   $conn = mysqli_connect("mysql3.gear.host","tutorme","","tutorme") or die("Error connecting");
-		   $q="INSERT INTO tokens (Token) VALUES ( '$_uv_Token') "
-              ." ON DUPLICATE KEY UPDATE Token = '$_uv_Token';";
-
-      mysqli_query($conn,$q) or die(mysqli_error($conn));
-      mysqli_close($conn);
+	$token=$_POST["Token"];
+		   $connection = mysqli_connect("mysql3.gear.host:3306","tutorme","pizza_pie","tutorme") or die("Database connectivity error");
+		   $query="INSERT INTO tokens (Token) VALUES ( '$token') "
+              ." ON DUPLICATE KEY UPDATE Token = '$token';";
+      mysqli_query($connection,$query) or die(mysqli_error($connection));
+      mysqli_close($connection);
 	}
  ?>
