@@ -1,25 +1,32 @@
 package zsoltpazmandy.tutorme;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
-import com.firebase.client.ValueEventListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class Chat extends AppCompatActivity {
 
@@ -30,8 +37,14 @@ public class Chat extends AppCompatActivity {
     ImageButton sendButton;
     TextView messageBox;
 
-    Firebase chatRoot = null;
-    Firebase thisChat = null;
+    DatabaseReference root = null;
+    DatabaseReference chatRoot = null;
+
+    DatabaseReference thisChat = null;
+    FirebaseAuth.AuthStateListener mAuthListener;
+    FirebaseAuth mAuth;
+    FirebaseUser FBUser;
+
     String roomName = "";
 
     User u = null;
@@ -44,15 +57,28 @@ public class Chat extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        Firebase.setAndroidContext(this);
+        mAuth = FirebaseAuth.getInstance();
 
-        chatRoot = new Firebase("https://tutorme-1dcd6.firebaseio.com/chat_sessions");
+        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Log.i("AuthStateChanged", "User is signed in with uid: " + user.getUid());
+                } else {
+                    Log.i("AuthStateChanged", "No user is signed in.");
+                }
+            }
+        });
+
+
         u = new User(getApplicationContext());
 
         enterMessage = (EditText) findViewById(R.id.chat_enter_message);
         sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         messageBox = (TextView) findViewById(R.id.chat_messagebox_text);
         messageBox.setMovementMethod(new ScrollingMovementMethod());
+
 
         try {
             user = new JSONObject(getIntent().getStringExtra("User"));
@@ -62,24 +88,24 @@ public class Chat extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        prepareChatroom();
-        setUpSendButtListener();
-        setUpMessageBoxUpdater();
-
-    }
-
-    private void prepareChatroom() {
-
-        // creating unique chatroom name for the 2 users by using the combination of their IDs
-        // format: tutorID_userId
         try {
             roomName = "" + tutor.getInt("ID") + "_" + user.getInt("ID");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String sessionPushTemp = chatRoot.push().getKey();
-        thisChat = chatRoot.child(sessionPushTemp);
+        root = FirebaseDatabase.getInstance().getReference().child("/chat_sessions/" + roomName);
+
+        setUpSendButtListener();
+        setUpMessageBoxUpdater();
+
+        System.out.println(mAuth.getCurrentUser().getUid().toString());
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
     }
 
     private void setUpSendButtListener() {
@@ -102,14 +128,22 @@ public class Chat extends AppCompatActivity {
 
                 ChatMessage chatMessage = new ChatMessage(sender, recipient, timeStamp, message);
 
-                String messagePushTemp = thisChat.push().getKey();
-                thisChat.child(messagePushTemp).setValue(chatMessage);
+                String messagePushTemp = root.push().getKey();
+                Map<String, Object> map = new HashMap<String, Object>();
+
+                root.child(messagePushTemp).setValue(map);
+
+                chatRoot = root.child(messagePushTemp);
+                chatRoot.setValue(chatMessage);
+
                 enterMessage.setText("");
             }
         });
     }
 
     private void setUpMessageBoxUpdater() {
+
+        DatabaseReference thisChat = root;
 
         thisChat.addValueEventListener(new ValueEventListener() {
             @Override
@@ -133,9 +167,10 @@ public class Chat extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(FirebaseError firebaseError) {
+            public void onCancelled(DatabaseError databaseError) {
 
             }
+
         });
     }
 

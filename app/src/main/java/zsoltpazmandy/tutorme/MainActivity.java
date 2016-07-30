@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     // ....
+
                                     if (!task.isSuccessful()) {
                                         // .....
                                     }
