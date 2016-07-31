@@ -543,6 +543,8 @@ public class User {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
+            } catch (NullPointerException ne){
+                return new ArrayList<Integer>();
             }
         }
 

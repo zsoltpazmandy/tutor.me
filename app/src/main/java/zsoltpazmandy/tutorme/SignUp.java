@@ -8,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -18,20 +17,28 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
 public class SignUp extends AppCompatActivity {
 
-    TextView signupLabel;
-    EditText usernameField;
-    EditText emailField;
-    EditText password1Field;
-    EditText password2Field;
-    Button signUpButt;
+    private EditText usernameField;
+    private EditText emailField;
+    private EditText pwFirst;
+    private EditText pwSecond;
+    private Button signUpButt;
+
+    private String username;
+    private String password;
+    private String email;
+    private String FBuID;
+
+    private User u = null;
+
+    private JSONObject user;
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener mAuthListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +46,10 @@ public class SignUp extends AppCompatActivity {
         setContentView(R.layout.activity_sign_up);
         setUpViews();
 
-        mAuth = FirebaseAuth.getInstance();
+        u = new User(getApplicationContext());
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
@@ -52,24 +60,22 @@ public class SignUp extends AppCompatActivity {
                     // User is signed out
                     System.out.println("onAuthStateChanged:signed_out");
                 }
-                // ...
             }
-        };
+        });
     }
 
     private void setUpViews() {
-        signupLabel = (TextView) findViewById(R.id.signup_label);
         usernameField = (EditText) findViewById(R.id.username_field);
         usernameField.setMaxLines(1);
         emailField = (EditText) findViewById(R.id.email_field);
         if (getIntent().hasExtra("email")) {
             emailField.setText(getIntent().getExtras().getString("email").toString());
         }
-        password1Field = (EditText) findViewById(R.id.password1field);
+        pwFirst = (EditText) findViewById(R.id.password1field);
         if (getIntent().hasExtra("password")) {
-            password1Field.setText(getIntent().getExtras().getString("password").toString());
+            pwFirst.setText(getIntent().getExtras().getString("password").toString());
         }
-        password2Field = (EditText) findViewById(R.id.password2field);
+        pwSecond = (EditText) findViewById(R.id.password2field);
         signUpButt = (Button) findViewById(R.id.signUpButt);
 
         addSignUpListener();
@@ -79,86 +85,98 @@ public class SignUp extends AppCompatActivity {
         signUpButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-// offline reg
-                String username = usernameField.getText().toString().trim();
-                User user = new User(getApplicationContext());
-                int returnVal = 0;
+                username = usernameField.getText().toString().trim();
+                password = pwFirst.getText().toString().trim();
+                email = emailField.getText().toString().trim();
 
-                try {
+                if (!fieldsValid())
+                    return;
 
-                    if (!username.trim().matches("^[\\w_-]+")) {
-                        usernameField.setError("Username format incorrect.\n" +
-                                "Use: A-Z, a-z, 0-9, _, -");
-                        return;
-                    }
+                mAuth.createUserWithEmailAndPassword(
+                        emailField.getText()
+                                .toString()
+                                .trim(),
 
-                    if (!(username.trim().length() > 2 && username.trim().length() < 11)) {
-                        usernameField.setError("Username must be 3-10 characters long.");
-                        return;
-                    }
+                        pwFirst.getText()
+                                .toString()
+                                .trim())
 
-                    if (!emailField.getText().toString().trim().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
-                        emailField.setError("Invalid email address");
-                        return;
-                    }
+                        .addOnCompleteListener(SignUp.this,
+                                new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) { // registered on cloud
 
-                    if (!password1Field.getText().toString().trim().matches("^[\\w_-]+")) {
-                        password1Field.setError("Password format incorrect.\n" +
-                                "Use: A-Z, a-z, 0-9, _, -");
-                        return;
-                    }
+                                            FBuID = mAuth.getCurrentUser()
+                                                    .getUid()
+                                                    .toString();
 
-                    if (!(password1Field.getText().toString().length() > 5 && password1Field.getText().toString().trim().length() < 11)) {
-                        password1Field.setError("Password must be 6-10 characters long.");
-                        return;
-                    }
-                    if (!password1Field.getText().toString().equals(password2Field.getText().toString())) {
-                        password2Field.setError("The two passwords do not match.");
-                        return;
-                    }
+                                            // local registration
+                                            int localID = 0;
+                                            try {
+                                                localID = u.register(getApplicationContext(),
+                                                        username,
+                                                        password,
+                                                        email);
 
+                                                user = u.getUser(getApplicationContext(),
+                                                        localID)
+                                                        .put("FBuID", FBuID);
+                                            } catch (JSONException | IOException e) {
+                                                e.printStackTrace();
+                                            }
 
-                    returnVal = user.register(getApplicationContext(), username, password1Field.getText().toString(), emailField.getText().toString().trim());
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                if (returnVal != 0) {
-
-                    Toast.makeText(getApplicationContext(), "User registered.", Toast.LENGTH_SHORT).show();
-                    // REGISTRATION ON FIREBASE:
-                    mAuth.createUserWithEmailAndPassword(emailField.getText().toString().trim(), password1Field.getText().toString().trim())
-                            .addOnCompleteListener(SignUp.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                            //...
-                                    if (!task.isSuccessful()) {
-                                        // ....
+                                            // continue to profile setup
+                                            Intent setupProfile = new Intent(SignUp.this, ProfileSetup.class);
+                                            setupProfile.putExtra("User String", user.toString());
+                                            startActivity(setupProfile);
+                                            finish();
+                                        } else {
+                                            Toast.makeText(SignUp.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                                        }
                                     }
-                                }
-                            });
-                    Intent setupProfile = new Intent(SignUp.this, ProfileSetup.class);
-                    try {
-                        setupProfile.putExtra("User String", user.getUser(getApplicationContext(), returnVal).toString());
-                        startActivity(setupProfile);
-                        finish();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Registration failed. Username taken.", Toast.LENGTH_SHORT).show();
-                }
-
+                                });
             }
         });
-
     }
 
+
+    private boolean fieldsValid() {
+        boolean allValid = true;
+
+        if (!username.trim().matches("^[\\w_-]+")) {
+            usernameField.setError("Username format incorrect.\n" +
+                    "Use: A-Z, a-z, 0-9, _, -");
+            allValid = false;
+        }
+
+        if (!(username.trim().length() > 2 && username.trim().length() < 11)) {
+            usernameField.setError("Username must be 3-10 characters long.");
+            allValid = false;
+        }
+
+        if (!emailField.getText().toString().trim().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {
+            emailField.setError("Invalid email address");
+            allValid = false;
+        }
+
+        if (!pwFirst.getText().toString().trim().matches("^[\\w_-]+")) {
+            pwFirst.setError("Password format incorrect.\n" +
+                    "Use: A-Z, a-z, 0-9, _, -");
+            allValid = false;
+        }
+
+        if (!(pwFirst.getText().toString().length() > 5 && pwFirst.getText().toString().trim().length() < 11)) {
+            pwFirst.setError("Password must be 6-10 characters long.");
+            allValid = false;
+        }
+        if (!pwFirst.getText().toString().equals(pwSecond.getText().toString())) {
+            pwSecond.setError("The two passwords do not match.");
+            allValid = false;
+        }
+
+        return allValid;
+    }
 
     boolean wantsToQuit = false;
 

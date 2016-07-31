@@ -19,13 +19,24 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
+    private User u = null;
+
+    private JSONObject user = null;
+
     private EditText emailField = null;
     private EditText passwordField = null;
+    private Button loginButt = null;
+    private Button signUpButt = null;
+    private Button resetUserBaseButt = null;
+
+    private String email = null;
+    private String password = null;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
@@ -37,7 +48,9 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FirebaseMessaging.getInstance().subscribeToTopic("testing");
+        u = new User(getApplicationContext());
+
+        FirebaseMessaging.getInstance().subscribeToTopic("tutor.me");
         FirebaseInstanceId.getInstance().getToken();
 
         mAuth = FirebaseAuth.getInstance();
@@ -54,61 +67,35 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
         }
 
+        setupFields();
+        setupLoginButton();
+        setupSignupButton();
+        setupResetButton();
+    }
 
-        emailField = (EditText) findViewById(R.id.username_textfield);
-        emailField.setMaxWidth(emailField.getWidth());
-        passwordField = (EditText) findViewById(R.id.password_textfield);
-        passwordField.setMaxWidth(passwordField.getWidth());
-
-// LOGIN BUTTON
-        Button loginButt = (Button) findViewById(R.id.login_butt);
-        assert loginButt != null;
-        loginButt.setOnClickListener(new View.OnClickListener() {
+    private void setupResetButton() {
+        resetUserBaseButt = (Button) findViewById(R.id.resetUserBase_butt);
+        resetUserBaseButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                String usernameOrEmail = emailField.getText().toString().trim();
-                String password = passwordField.getText().toString().trim();
-
-                User user = new User(getApplicationContext());
-
-                if (validateInput(usernameOrEmail, password)) {
-                    int returnVal = user.loginWithEmail(getApplicationContext(), usernameOrEmail, password);
-                    if (returnVal != 0) {
-                        Intent launchHome = new Intent(MainActivity.this, Home.class);
-                        try {
-                            launchHome.putExtra("User", user.getUser(getApplicationContext(), returnVal).toString());
-                            startActivity(launchHome);
-                            finish();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    // LOGINTO FIREBASE
-                    mAuth.signInWithEmailAndPassword(emailField.getText().toString(), passwordField.getText().toString())
-                            .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
-                                @Override
-                                public void onComplete(@NonNull Task<AuthResult> task) {
-                                    // ....
-
-                                    if (!task.isSuccessful()) {
-                                        // .....
-                                    }
-                                }
-                            });
-
+                try {
+                    u.purgeUserRecords(getApplicationContext());
+                    u.resetCounter(getApplicationContext());
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
                 }
             }
         });
+    }
 
-        final Button signUp = (Button) findViewById(R.id.signUpButt);
-        signUp.setOnClickListener(new View.OnClickListener() {
+    private void setupSignupButton() {
+        signUpButt = (Button) findViewById(R.id.signUpButt);
+        signUpButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent signupActivity = new Intent(MainActivity.this, SignUp.class);
@@ -118,21 +105,56 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
         });
+    }
 
-        final Button resetUserbase = (Button) findViewById(R.id.resetUserBase_butt);
-        assert resetUserbase != null;
-        resetUserbase.setOnClickListener(new View.OnClickListener() {
+    private void setupLoginButton() {
+        loginButt = (Button) findViewById(R.id.login_butt);
+        loginButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User u = new User(getApplicationContext());
-                try {
-                    u.purgeUserRecords(getApplicationContext());
-                    u.resetCounter(getApplicationContext());
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
+
+                email = emailField.getText().toString().trim();
+                password = passwordField.getText().toString().trim();
+
+                if (!validateInput(email, password))
+                    return;
+
+
+                mAuth.signInWithEmailAndPassword(emailField.getText().toString(), passwordField.getText().toString())
+                        .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+
+                                    int localID = 0;
+                                    localID = u.loginWithEmail(getApplicationContext(), email, password);
+                                    Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+
+                                    try {
+                                        user = u.getUser(getApplicationContext(), localID);
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+                                    Intent launchHome = new Intent(MainActivity.this, Home.class);
+                                    launchHome.putExtra("User", user.toString());
+                                    startActivity(launchHome);
+                                    finish();
+
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
             }
         });
+    }
+
+    private void setupFields() {
+        emailField = (EditText) findViewById(R.id.username_textfield);
+        emailField.setMaxWidth(emailField.getWidth());
+        passwordField = (EditText) findViewById(R.id.password_textfield);
+        passwordField.setMaxWidth(passwordField.getWidth());
     }
 
     public boolean validateInput(String email, String password) {
