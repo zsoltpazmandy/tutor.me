@@ -77,7 +77,7 @@ public class ProfileSetup extends AppCompatActivity {
         setUpAge();
         setUpLocation();
         setUpLanguages();
-        setUpInterests();
+//        setUpInterests();
 
 
         Button saveProfileButt = (Button) findViewById(R.id.save_profile_butt);
@@ -97,57 +97,57 @@ public class ProfileSetup extends AppCompatActivity {
                                                        // SAVING PROFILE
 
                                                        try {
-                                                           userUpdate.put("Age", ageSpinner.getSelectedItemPosition());
-                                                           userUpdate.put("Location", locationSpinner.getSelectedItemPosition());
-                                                           ArrayList<String> interests = new ArrayList<>();
+                                                           userUpdate.put("Age", String.valueOf(ageSpinner.getSelectedItemPosition()));
+                                                           userUpdate.put("Location", u.decodeCountry(locationSpinner.getSelectedItemPosition()));
+                                                           ArrayList<Integer> interests = new ArrayList<>();
 
-                                                           if (languagesCheck.isChecked()) {
-                                                               interests.add("0");
-                                                           }
-                                                           if (travelCheck.isChecked()) {
-                                                               interests.add("1");
-                                                           }
-                                                           if (sportsCheck.isChecked()) {
-                                                               interests.add("2");
-                                                           }
-                                                           if (historyCheck.isChecked()) {
-                                                               interests.add("3");
-                                                           }
-                                                           if (musicCheck.isChecked()) {
-                                                               interests.add("4");
-                                                           }
-                                                           if (scienceCheck.isChecked()) {
-                                                               interests.add("5");
-                                                           }
-                                                           if (artsCheck.isChecked()) {
-                                                               interests.add("6");
-                                                           }
-                                                           if (foodCheck.isChecked()) {
-                                                               interests.add("7");
-                                                           }
-                                                           if (healthCheck.isChecked()) {
-                                                               interests.add("8");
-                                                           }
-                                                           if (computersCheck.isChecked()) {
-                                                               interests.add("9");
-                                                           }
+//                                                           if (languagesCheck.isChecked()) {
+//                                                               interests.add(0);
+//                                                           }
+//                                                           if (travelCheck.isChecked()) {
+//                                                               interests.add(1);
+//                                                           }
+//                                                           if (sportsCheck.isChecked()) {
+//                                                               interests.add(2);
+//                                                           }
+//                                                           if (historyCheck.isChecked()) {
+//                                                               interests.add(3);
+//                                                           }
+//                                                           if (musicCheck.isChecked()) {
+//                                                               interests.add(4);
+//                                                           }
+//                                                           if (scienceCheck.isChecked()) {
+//                                                               interests.add(5);
+//                                                           }
+//                                                           if (artsCheck.isChecked()) {
+//                                                               interests.add(6);
+//                                                           }
+//                                                           if (foodCheck.isChecked()) {
+//                                                               interests.add(7);
+//                                                           }
+//                                                           if (healthCheck.isChecked()) {
+//                                                               interests.add(8);
+//                                                           }
+//                                                           if (computersCheck.isChecked()) {
+//                                                               interests.add(9);
+//                                                           }
 
-                                                           try {
-                                                               userUpdate.remove("Interests");
-                                                               userUpdate.accumulate("Interests", "x");
-                                                               userUpdate.accumulate("Interests", "x");
-
-                                                               for (int i = 0; i < interests.size(); i++) {
-                                                                   userUpdate.accumulate("Interests", interests.get(i));
-                                                               }
-                                                           } catch (JSONException e) {
-                                                               userUpdate.accumulate("Interests", "x"); // padding from beginning with 2x, so always JSONArray
-                                                               userUpdate.accumulate("Interests", "x");
-
-                                                               for (int i = 0; i < interests.size(); i++) {
-                                                                   userUpdate.accumulate("Interests", interests.get(i));
-                                                               }
-                                                           }
+//                                                           try {
+//                                                               userUpdate.remove("Interests");
+//                                                               userUpdate.accumulate("Interests", "x");
+//                                                               userUpdate.accumulate("Interests", "x");
+//
+//                                                               for (int i = 0; i < interests.size(); i++) {
+//                                                                   userUpdate.accumulate("Interests", u.decodeInterest(interests.get(i)));
+//                                                               }
+//                                                           } catch (JSONException e) {
+//                                                               userUpdate.accumulate("Interests", "x"); // padding from beginning with 2x, so always JSONArray
+//                                                               userUpdate.accumulate("Interests", "x");
+//
+//                                                               for (int i = 0; i < interests.size(); i++) {
+//                                                                   userUpdate.accumulate("Interests", u.decodeInterest(interests.get(i)));
+//                                                               }
+//                                                           }
 
                                                        } catch (JSONException e) {
                                                            e.printStackTrace();
@@ -170,7 +170,7 @@ public class ProfileSetup extends AppCompatActivity {
                                                                String id = String.valueOf(userIDlocal);
                                                                String email = locallySavedUser.getString("Email");
                                                                String username = locallySavedUser.getString("Username");
-                                                               String location = u.decodeCountry(u.getLocation(getApplicationContext(), locallySavedUser));
+                                                               String location = u.getLocation(getApplicationContext(), locallySavedUser);
                                                                String language1 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[0]);
                                                                String language2 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[1]);
                                                                String language3 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[2]);
@@ -204,57 +204,74 @@ public class ProfileSetup extends AppCompatActivity {
     }
 
 
-    private void setUpInterests() {
+//    private void setUpInterests() {
+//
+//        interestsLabel = (TextView) findViewById(R.id.interests_label);
+//        languagesCheck = (CheckBox) findViewById(R.id.language_check);
+//        travelCheck = (CheckBox) findViewById(R.id.travel_check);
+//        sportsCheck = (CheckBox) findViewById(R.id.sports_check);
+//        historyCheck = (CheckBox) findViewById(R.id.history_check);
+//        musicCheck = (CheckBox) findViewById(R.id.music_check);
+//        scienceCheck = (CheckBox) findViewById(R.id.science_check);
+//        artsCheck = (CheckBox) findViewById(R.id.arts_check);
+//        foodCheck = (CheckBox) findViewById(R.id.food_check);
+//        healthCheck = (CheckBox) findViewById(R.id.health_check);
+//        computersCheck = (CheckBox) findViewById(R.id.computers_check);
+//
+//        String[] checkedInterests = u.getInterests(getApplicationContext(), user);
+//
+//
+//        for (String s : checkedInterests) {
+//            if(s.equals(null))break;
+//            Interests interest = Interests.valueOf(s.toUpperCase());
+//
+//            switch (interest) {
+//                case LANGUAGES:
+//                    languagesCheck.setChecked(true);
+//                    break;
+//                case TRAVELLING:
+//                    travelCheck.setChecked(true);
+//                    break;
+//                case SPORTS:
+//                    sportsCheck.setChecked(true);
+//                    break;
+//                case HISTORY:
+//                    historyCheck.setChecked(true);
+//                    break;
+//                case MUSIC:
+//                    musicCheck.setChecked(true);
+//                    break;
+//                case SCIENCE:
+//                    scienceCheck.setChecked(true);
+//                    break;
+//                case ARTS:
+//                    artsCheck.setChecked(true);
+//                    break;
+//                case FOOD:
+//                    foodCheck.setChecked(true);
+//                    break;
+//                case HEALTH:
+//                    healthCheck.setChecked(true);
+//                    break;
+//                case COMPUTERS:
+//                    computersCheck.setChecked(true);
+//                    break;
+//            }
+//        }
+//    }
 
-        interestsLabel = (TextView) findViewById(R.id.interests_label);
-        languagesCheck = (CheckBox) findViewById(R.id.language_check);
-        travelCheck = (CheckBox) findViewById(R.id.travel_check);
-        sportsCheck = (CheckBox) findViewById(R.id.sports_check);
-        historyCheck = (CheckBox) findViewById(R.id.history_check);
-        musicCheck = (CheckBox) findViewById(R.id.music_check);
-        scienceCheck = (CheckBox) findViewById(R.id.science_check);
-        artsCheck = (CheckBox) findViewById(R.id.arts_check);
-        foodCheck = (CheckBox) findViewById(R.id.food_check);
-        healthCheck = (CheckBox) findViewById(R.id.health_check);
-        computersCheck = (CheckBox) findViewById(R.id.computers_check);
-
-        int[] checkedInterests = u.getInterests(getApplicationContext(), user);
-
-        for (int i : checkedInterests) {
-            switch (i) {
-                case 1:
-                    languagesCheck.setChecked(true);
-                    break;
-                case 2:
-                    travelCheck.setChecked(true);
-                    break;
-                case 3:
-                    sportsCheck.setChecked(true);
-                    break;
-                case 4:
-                    historyCheck.setChecked(true);
-                    break;
-                case 5:
-                    musicCheck.setChecked(true);
-                    break;
-                case 6:
-                    scienceCheck.setChecked(true);
-                    break;
-                case 7:
-                    artsCheck.setChecked(true);
-                    break;
-                case 8:
-                    foodCheck.setChecked(true);
-                    break;
-                case 9:
-                    healthCheck.setChecked(true);
-                    break;
-                case 10:
-                    computersCheck.setChecked(true);
-                    break;
-            }
-        }
-    }
+//    public enum Interests {
+//        LANGUAGES,
+//        TRAVELLING,
+//        SPORTS,
+//        HISTORY,
+//        MUSIC,
+//        SCIENCE,
+//        ARTS,
+//        FOOD,
+//        HEALTH,
+//        COMPUTERS,
+//    }
 
     private void setUpLanguages() {
         languages1Label = (TextView) findViewById(R.id.languages1_label);
@@ -305,7 +322,15 @@ public class ProfileSetup extends AppCompatActivity {
 
         try {
             if (!user.getString("Location").equals("")) {
-                locationSpinner.setSelection(Integer.parseInt(user.getString("Location")));
+                int currentLocation = 0;
+
+                for (int i = 0; i < locationSpinnerAdapter.getCount(); i++) {
+                    if (u.decodeCountry(i).equals(user.getString("Location"))){
+                        currentLocation = i;
+                    }
+                }
+
+                locationSpinner.setSelection(currentLocation);
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -318,8 +343,8 @@ public class ProfileSetup extends AppCompatActivity {
         ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ages, android.R.layout.simple_spinner_dropdown_item);
         ageSpinner.setAdapter(ageSpinnerAdapter);
 
-        if (u.getAge(getApplicationContext(), user) != 0) {
-            ageSpinner.setSelection(u.getAge(getApplicationContext(), user));
+        if (!u.getAge(getApplicationContext(), user).equals("")) {
+            ageSpinner.setSelection(Integer.parseInt(u.getAge(getApplicationContext(), user)));
         }
     }
 

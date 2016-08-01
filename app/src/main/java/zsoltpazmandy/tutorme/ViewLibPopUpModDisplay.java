@@ -16,6 +16,9 @@ import java.util.ArrayList;
 
 public class ViewLibPopUpModDisplay extends Activity {
 
+    private JSONObject user = null;
+    private ArrayList<String> infoToShow = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,15 +34,13 @@ public class ViewLibPopUpModDisplay extends Activity {
 
         getWindow().setLayout((int) (screenWidth * 0.8), (int) (screenHeight * 0.6));
 
-        JSONObject user = null;
-
         try {
             user = new JSONObject(getIntent().getStringExtra("User String"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        final ArrayList<String> infoToShow = getIntent().getStringArrayListExtra("Module Info");
+        infoToShow = getIntent().getStringArrayListExtra("Module Info");
 
         TextView nameView = (TextView) findViewById(R.id.popUpTextViewName);
         nameView.setText(infoToShow.get(3));
@@ -84,9 +85,14 @@ public class ViewLibPopUpModDisplay extends Activity {
 
                 boolean enrolledAlready = u.isLearning(getApplicationContext(), userUpdated, Integer.parseInt(infoToShow.get(0)));
 
+                if (ownModule()) {
+                    Toast.makeText(ViewLibPopUpModDisplay.this, "You cannot train yourself!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
                 if (!enrolledAlready) {
 
-                    u.addToLearning(getApplicationContext(), userUpdated, Integer.parseInt(infoToShow.get(0)));
+                    u.addToLearning(getApplicationContext(), userUpdated, infoToShow.get(0));
 
                     // for now, this method assigns the first available tutor (== Author) of a module
                     u.assignTutor(getApplicationContext(), userUpdated, Integer.parseInt(infoToShow.get(0)));
@@ -128,8 +134,16 @@ public class ViewLibPopUpModDisplay extends Activity {
 
     }
 
-    public void updateUser(int id, JSONObject user) {
-
+    private boolean ownModule() {
+        try {
+            System.out.println(user.getInt("ID") + " == " + Integer.parseInt(infoToShow.get(0)));
+            if (user.getString("Username").equals(infoToShow.get(1))) {
+                return true;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
 }

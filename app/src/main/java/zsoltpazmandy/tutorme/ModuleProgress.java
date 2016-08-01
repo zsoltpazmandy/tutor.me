@@ -56,23 +56,24 @@ public class ModuleProgress extends AppCompatActivity {
             moduleRating.setText("Module *****");
             authRating.setText("Author *****");
 
-            User u = new User(getApplicationContext());
+            final User u = new User(getApplicationContext());
             int IDofTutor = 0;
-            IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, module.getInt("ID"));
+            IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, Integer.parseInt(module.getString("ID")));
             tutor = u.getUser(getApplicationContext(), IDofTutor);
             String nameOfTutor = u.getUsername(getApplicationContext(), tutor);
+            final int lastSlide = u.getLastSlideViewed(getApplicationContext(), user, module.getInt("ID"));
 
             tutorName.setText("Your tutor: " + nameOfTutor);
             tutorRating.setText("Tutor *****");
             progressBar.setMax(module.getInt("No. of Slides"));
-            progressBar.setProgress(user.getInt("Progress" + module.getString("ID")));
-            progressText.setText("" + user.getInt("Progress" + module.getString("ID")) + " of " + module.getInt("No. of Slides") + " slides.");
+            progressBar.setProgress(lastSlide);
+            progressText.setText("" + lastSlide + " of " + module.getInt("No. of Slides") + " slides.");
             moduleDesc.setText(module.getString("Description"));
 
             boolean review = false;
 
-            if (user.getInt("Progress" + module.getString("ID")) < module.getInt("No. of Slides")) {
-                if (user.getInt("Progress" + module.getString("ID")) == 0) {
+            if (lastSlide < module.getInt("No. of Slides")) {
+                if (lastSlide == 0) {
                     startButt.setText("Start");
                     startButt.setEnabled(true);
                 } else {
@@ -96,7 +97,7 @@ public class ModuleProgress extends AppCompatActivity {
                     try {
                         type = f.getSlideType(getApplicationContext(),
                                 module,
-                                Integer.parseInt(user.getString("Progress" + module.getString("ID"))));
+                                u.getLastSlideViewed(getApplicationContext(), user, module.getInt("ID")));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -115,17 +116,11 @@ public class ModuleProgress extends AppCompatActivity {
 
                     startModule.putExtra("User", user.toString());
                     startModule.putExtra("Module", module.toString());
-                    try {
 
-                        int lastSlideOpened = Integer.parseInt(user.getString("Progress" + module.getString("ID")));
-
-                        if (finalReview) {
-                            startModule.putExtra("Slide Number", "" + 0);
-                        } else {
-                            startModule.putExtra("Slide Number", "" + lastSlideOpened);
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                    if (finalReview) {
+                        startModule.putExtra("Slide Number", "" + 0);
+                    } else {
+                        startModule.putExtra("Slide Number", "" + lastSlide);
                     }
                     startActivity(startModule);
                     finish();

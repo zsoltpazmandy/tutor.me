@@ -233,7 +233,7 @@ public class ProfileTab extends Fragment {
 
 
         userEdit.setText(u.getUsername(getActivity().getApplicationContext(), user));
-        locationEdit.setText(u.decodeCountry(u.getLocation(getActivity().getApplicationContext(), user)));
+        locationEdit.setText(u.getLocation(getActivity().getApplicationContext(), user));
         int[] languages;
 
         languages = u.getLanguages(getActivity().getApplicationContext(), user);
@@ -247,50 +247,65 @@ public class ProfileTab extends Fragment {
             language3Edit.setText(u.decodeLanguage(languages[2]));
         }
 
-        if (u.getAge(getActivity().getApplicationContext(), user) != 0) {
-            ageEdit.setText("" + u.getAge(getActivity().getApplicationContext(), user));
+        if (!u.getAge(getActivity().getApplicationContext(), user).equals("")) {
+            ageEdit.setText(u.getAge(getActivity().getApplicationContext(), user));
         } else {
             ageEdit.setText("?");
         }
 
-        int[] interestIDs = u.getInterests(getActivity().getApplicationContext(), user);
-
-        if (!("" + interestIDs[0]).equals(""))
-            for (int interestID : interestIDs) {
-                switch (interestID) {
-                    case 1:
-                        languagesCheck.setChecked(true);
-                        break;
-                    case 2:
-                        travelCheck.setChecked(true);
-                        break;
-                    case 3:
-                        sportsCheck.setChecked(true);
-                        break;
-                    case 4:
-                        historyCheck.setChecked(true);
-                        break;
-                    case 5:
-                        musicCheck.setChecked(true);
-                        break;
-                    case 6:
-                        scienceCheck.setChecked(true);
-                        break;
-                    case 7:
-                        artsCheck.setChecked(true);
-                        break;
-                    case 8:
-                        foodCheck.setChecked(true);
-                        break;
-                    case 9:
-                        healthCheck.setChecked(true);
-                        break;
-                    case 10:
-                        computersCheck.setChecked(true);
-                        break;
-                }
-            }
+//        String[] checkedInterests = u.getInterests(getActivity().getApplicationContext(), user);
+//
+//
+//        for (String s : checkedInterests) {
+//            Interests interest = Interests.valueOf(s.toUpperCase());
+//
+//            switch (interest) {
+//                case LANGUAGES:
+//                    languagesCheck.setChecked(true);
+//                    break;
+//                case TRAVELLING:
+//                    travelCheck.setChecked(true);
+//                    break;
+//                case SPORTS:
+//                    sportsCheck.setChecked(true);
+//                    break;
+//                case HISTORY:
+//                    historyCheck.setChecked(true);
+//                    break;
+//                case MUSIC:
+//                    musicCheck.setChecked(true);
+//                    break;
+//                case SCIENCE:
+//                    scienceCheck.setChecked(true);
+//                    break;
+//                case ARTS:
+//                    artsCheck.setChecked(true);
+//                    break;
+//                case FOOD:
+//                    foodCheck.setChecked(true);
+//                    break;
+//                case HEALTH:
+//                    healthCheck.setChecked(true);
+//                    break;
+//                case COMPUTERS:
+//                    computersCheck.setChecked(true);
+//                    break;
+//            }
+//        }
     }
+
+//    public enum Interests {
+//        LANGUAGES,
+//        TRAVELLING,
+//        SPORTS,
+//        HISTORY,
+//        MUSIC,
+//        SCIENCE,
+//        ARTS,
+//        FOOD,
+//        HEALTH,
+//        COMPUTERS,
+//    }
 
 
 }

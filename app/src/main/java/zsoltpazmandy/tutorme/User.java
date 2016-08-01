@@ -122,7 +122,7 @@ public class User {
         return uID;
     }
 
-    public String getEmail(){
+    public String getEmail() {
         return email;
     }
 
@@ -174,7 +174,7 @@ public class User {
         this.uID = uID;
     }
 
-    public void setEmail(String email){
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -841,11 +841,11 @@ public class User {
      * @param user
      * @return
      */
-    public int getLocation(Context context, JSONObject user) {
-        int location = 0;
+    public String getLocation(Context context, JSONObject user) {
+        String location = "";
 
         try {
-            location = Integer.parseInt(user.getString("Location").replace("[", "").replace("]", ""));
+            location = user.getString("Location").replace("[", "").replace("]", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -928,7 +928,7 @@ public class User {
         int index = 0;
 
         for (int i = 0; i < allLearningArray.length; i++) {
-            if (Integer.parseInt(allLearningArray[i]) == moduleID) {
+            if (allLearningArray[i].equals(String.valueOf(moduleID))) {
                 index = i;
             }
         }
@@ -962,11 +962,11 @@ public class User {
      * @param user
      * @return
      */
-    public int getAge(Context context, JSONObject user) {
-        int age = 0;
+    public String getAge(Context context, JSONObject user) {
+        String age = "";
 
         try {
-            age = Integer.parseInt(user.getString("Age"));
+            age = user.getString("Age");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -984,9 +984,9 @@ public class User {
      * @param user
      * @return
      */
-    public int[] getInterests(Context context, JSONObject user) {
+    public String[] getInterests(Context context, JSONObject user) {
 
-        int[] interests = new int[10];
+        String[] interests = new String[10];
 
         String[] tempInterests = new String[0];
 
@@ -1002,7 +1002,7 @@ public class User {
         }
 
         for (int i = 1; i < tempInterests.length; i++) {
-            interests[i - 1] = Integer.parseInt(tempInterests[i].replace("\"", "")) + 1;
+            interests[i - 1] = tempInterests[i].replace("\"", "");
         }
 
         return interests;
@@ -1016,9 +1016,9 @@ public class User {
      * @param user
      * @return
      */
-    public List<Integer> getLearning(Context context, JSONObject user) {
+    public List<String> getLearning(Context context, JSONObject user) {
 
-        ArrayList<Integer> learningTheseModules = new ArrayList<>();
+        ArrayList<String> learningTheseModules = new ArrayList<>();
 
         String[] tempArray = new String[1];
 
@@ -1033,7 +1033,7 @@ public class User {
             }
 
             for (int i = 0; i < tempArray.length; i++) {
-                learningTheseModules.add(Integer.parseInt(tempArray[i]));
+                learningTheseModules.add(tempArray[i]);
             }
 
         } catch (JSONException e) {
@@ -1056,7 +1056,7 @@ public class User {
         boolean result = false;
 
         for (int i = 0; i < getLearning(context, user).size(); i++) {
-            if (getLearning(context, user).get(i) == moduleID)
+            if (getLearning(context, user).get(i).equals(String.valueOf(moduleID)))
                 result = true;
         }
 
@@ -1088,11 +1088,11 @@ public class User {
      * @param user
      * @param newLearning
      */
-    public void addToLearning(Context context, JSONObject user, int newLearning) {
+    public void addToLearning(Context context, JSONObject user, String newLearning) {
 
         try {
-            user.accumulate("Learning", newLearning);
-            user.accumulate("Progress" + newLearning, 0);
+            user.accumulate("Learning", "#" + newLearning);
+            user.accumulate("Progress", newLearning + "#0");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1149,19 +1149,85 @@ public class User {
     public void updateProgress(Context context, JSONObject user, JSONObject module, int lastSlide) {
 
         boolean changed = false;
+        String progressString = "";
+        int moduleID = 0;
 
         try {
-            // check if new value different from the stored value
-            if (lastSlide != Integer.parseInt(user.getString("Progress" + module.getInt("ID")))) {
-                user.put("Progress" + module.getInt("ID"), lastSlide);
-                changed = true;
-            }
-
+            moduleID = Integer.parseInt(module.getString("ID"));
+            progressString = user.getString("Progress").replace("[", "").replace("]", "").replace("\"","");
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        String[] eachModulesProgress = new String[1];
+
+        if (progressString.contains(",")) {
+            eachModulesProgress = progressString.split(",");
+        } else {
+            eachModulesProgress[0] = progressString;
+        }
+
+        for (int i = 0; i < eachModulesProgress.length; i++) {
+            try {
+                if (Integer.parseInt(eachModulesProgress[i].split("#")[0]) == moduleID) {
+                    if (Integer.parseInt(eachModulesProgress[i].split("#")[1]) < lastSlide) {
+                        String firstHalf = eachModulesProgress[i].split("#")[0];
+                        eachModulesProgress[i] = firstHalf + "#" + lastSlide;
+                        changed = true;
+                    }
+                }
+            } catch (NumberFormatException e) {
+                String firstHalf = eachModulesProgress[i].split("#")[0];
+                eachModulesProgress[i] = firstHalf + "#" + 0;
+                changed = true;
+            }
+        }
+
+        user.remove("Progress");
+
+        for (int i = 0; i < eachModulesProgress.length; i++) {
+            try {
+                user.accumulate("Progress", eachModulesProgress[i]);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
         // save User data if Progress was updated
         if (changed) saveUser(context, user);
+    }
+
+    public int getLastSlideViewed(Context context, JSONObject user, int moduleID) {
+        int lastSlide = 0;
+
+        String progressString = "";
+
+        try {
+            progressString = user.getString("Progress").replace("[", "").replace("]", "");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String[] tempProgress = new String[1];
+
+        if (progressString.contains(",")) {
+            tempProgress = progressString.split(",");
+        } else {
+            tempProgress[0] = progressString;
+        }
+
+        for (int i = 0; i < tempProgress.length; i++) {
+            try {
+                if (Integer.parseInt(tempProgress[i].split("#")[0]) == moduleID) {
+                    lastSlide = Integer.parseInt(tempProgress[i].split("#")[1]);
+                }
+            } catch (NumberFormatException e) {
+                lastSlide = 0;
+            }
+
+        }
+
+        return lastSlide;
     }
 
     /**

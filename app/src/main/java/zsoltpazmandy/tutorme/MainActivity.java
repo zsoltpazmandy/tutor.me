@@ -126,19 +126,36 @@ public class MainActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
 
-                                    int localID = u.loginWithEmail(getApplicationContext(), email, password);
                                     Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
 
-                                    try {
-                                        user = u.getUser(getApplicationContext(), localID);
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
+                                    int localID = u.loginWithEmail(getApplicationContext(), email, password);
+
+                                    if (localID != 0) {
+                                        try {
+                                            user = u.getUser(getApplicationContext(), localID);
+                                            Intent launchHome = new Intent(MainActivity.this, Home.class);
+                                            launchHome.putExtra("User", user.toString());
+                                            startActivity(launchHome);
+                                            finish();
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    } else {
+
+                                        Cloud c = new Cloud();
+                                        try {
+                                            user = c.getUserJSON();
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        Intent launchHome = new Intent(MainActivity.this, Home.class);
+                                        launchHome.putExtra("User", user.toString());
+                                        startActivity(launchHome);
+                                        finish();
                                     }
 
-                                    Intent launchHome = new Intent(MainActivity.this, Home.class);
-                                    launchHome.putExtra("User", user.toString());
-                                    startActivity(launchHome);
-                                    finish();
+
 
                                 } else {
                                     Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();

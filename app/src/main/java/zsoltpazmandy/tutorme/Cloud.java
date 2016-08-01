@@ -48,11 +48,17 @@ public class Cloud {
         User user = new User(uID, id, email, username, location, language1, language2, language3, age, learning, trainedBy, training, progress);
 
         currentUser.setValue(user);
+
+        currentUser.child("Progress").setValue("1");
+        currentUser.child("Progress").child("1").child("Last Slide").setValue("5");
+
     }
 
     public JSONObject getUserJSON() throws JSONException {
+
         String uID = mAuth.getCurrentUser().getUid();
         DatabaseReference userRoot = this.userRoot.child(uID);
+
         JSONObject localUser = new JSONObject();
 
         localUser.put("ID", userRoot.child("ID"));
@@ -76,6 +82,5 @@ public class Cloud {
 
 
     }
-
 
 }

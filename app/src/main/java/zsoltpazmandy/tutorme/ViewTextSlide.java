@@ -44,10 +44,10 @@ public class ViewTextSlide extends AppCompatActivity {
             this.module = new JSONObject(getIntent().getStringExtra("Module"));
             this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
 
-            if (this.slideNumber == 0) {
-                this.slideNumber = 1;
-            }
+            if (this.slideNumber == 0) this.slideNumber = 1;
 
+
+            System.out.println("updating now");
             u.updateProgress(getApplicationContext(), user, module, slideNumber);
 
             this.totalslides = module.getInt("No. of Slides");
@@ -123,7 +123,6 @@ public class ViewTextSlide extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
 
 
                 try {

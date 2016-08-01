@@ -73,12 +73,10 @@ public class LearningTab extends Fragment {
 
         TextView learningView = (TextView) getActivity().findViewById(R.id.learning_tab_currently_learning_top);
 
-        ArrayList<Integer> learningIDs = new ArrayList<>();
+        ArrayList<String> learningIDs = new ArrayList<>();
 
-        for (int i : u.getLearning(getActivity().getApplicationContext(), user)) {
-            if (i != 0) {
-                learningIDs.add(i);
-            }
+        for (String s : u.getLearning(getActivity().getApplicationContext(), user)) {
+            learningIDs.add(s);
         }
 
         if (learningIDs.size() == 0) {
@@ -88,19 +86,19 @@ public class LearningTab extends Fragment {
             assert learningView != null;
             learningView.setText(R.string.i_m_currently_learning);
 
-            List<Integer> currentModules = u.getLearning(getActivity().getApplicationContext(), user);
+            List<String> currentModules = u.getLearning(getActivity().getApplicationContext(), user);
 
             ListView learningList = (ListView) getActivity().findViewById(R.id.learning_tab_currently_learning_list);
 
             ArrayList<String> learningModules = new ArrayList<>();
 
-            for (int i : currentModules) {
+            for (String s : currentModules) {
                 try {
-                    double progress = user.getInt("Progress" + i);
-                    double totalSlides = f.getSlideCount(getActivity().getApplicationContext(), i);
+                    double progress = u.getLastSlideViewed(getActivity().getApplicationContext(), user, Integer.parseInt(s.replace("#","").replace("\"","")));
+                    double totalSlides = f.getSlideCount(getActivity().getApplicationContext(), Integer.parseInt(s.replace("#","").replace("\"","")));
                     double tempDouble = (progress / totalSlides) * 100;
                     long percentCompleted = Math.round(tempDouble);
-                    learningModules.add(f.getModuleByID(getActivity().getApplicationContext(), i).getString("Name") + "\n(" + percentCompleted + "%)");
+                    learningModules.add(f.getModuleByID(getActivity().getApplicationContext(), Integer.parseInt(s.replace("#","").replace("\"",""))).getString("Name") + "\n(" + percentCompleted + "%)");
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
