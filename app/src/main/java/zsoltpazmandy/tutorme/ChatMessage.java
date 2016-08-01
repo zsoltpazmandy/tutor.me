@@ -5,10 +5,10 @@ package zsoltpazmandy.tutorme;
  */
 public class ChatMessage {
 
-    String sender;
-    String recipient;
-    String timeStamp;
-    String message;
+    private String sender;
+    private String recipient;
+    private String timeStamp;
+    private String message;
 
     public ChatMessage(){
 

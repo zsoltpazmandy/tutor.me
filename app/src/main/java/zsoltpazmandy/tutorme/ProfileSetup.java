@@ -12,6 +12,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,6 +25,8 @@ public class ProfileSetup extends AppCompatActivity {
     boolean lang1exists = false;
     boolean lang2exists;
     boolean lang3exists;
+
+    private int userIDlocal;
 
     User u;
     TextView ageLabel;
@@ -65,6 +69,7 @@ public class ProfileSetup extends AppCompatActivity {
         user = new JSONObject();
         try {
             user = new JSONObject(getIntent().getStringExtra("User String"));
+            userIDlocal = user.getInt("ID");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -73,7 +78,6 @@ public class ProfileSetup extends AppCompatActivity {
         setUpLocation();
         setUpLanguages();
         setUpInterests();
-
 
 
         Button saveProfileButt = (Button) findViewById(R.id.save_profile_butt);
@@ -151,10 +155,35 @@ public class ProfileSetup extends AppCompatActivity {
 
                                                        User u = new User(getApplicationContext());
 
-                                                       if (u.saveUser(getApplicationContext(), userUpdate)) {
 
+                                                       if (u.saveUser(getApplicationContext(), userUpdate)) {
                                                            // storing languages information is handled from within the User class
                                                            u.setLanguages(getApplicationContext(), userUpdate, languages1Spinner.getSelectedItemPosition(), languages2Spinner.getSelectedItemPosition(), languages3Spinner.getSelectedItemPosition());
+
+                                                           Cloud c = new Cloud();
+                                                           JSONObject locallySavedUser = new JSONObject();
+                                                           FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                                                           String uID = mAuth.getCurrentUser().getUid();
+
+                                                           try {
+                                                               locallySavedUser = u.getUser(getApplicationContext(), userIDlocal);
+                                                               String id = String.valueOf(userIDlocal);
+                                                               String email = locallySavedUser.getString("Email");
+                                                               String username = locallySavedUser.getString("Username");
+                                                               String location = u.decodeCountry(u.getLocation(getApplicationContext(), locallySavedUser));
+                                                               String language1 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[0]);
+                                                               String language2 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[1]);
+                                                               String language3 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[2]);
+                                                               String age = locallySavedUser.getString("Age");
+
+                                                               c.saveUser(uID, id, email, username, location, language1, language2, language3, age, "", "", "", "");
+
+
+                                                           } catch (JSONException e) {
+                                                               e.printStackTrace();
+                                                           }
+
+
                                                            Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
                                                            Intent homeStart = new Intent(ProfileSetup.this, Home.class);
                                                            homeStart.putExtra("User", userUpdate.toString());
@@ -173,7 +202,6 @@ public class ProfileSetup extends AppCompatActivity {
         );
 
     }
-
 
 
     private void setUpInterests() {

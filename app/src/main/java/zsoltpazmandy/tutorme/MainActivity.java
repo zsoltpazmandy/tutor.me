@@ -126,8 +126,7 @@ public class MainActivity extends AppCompatActivity {
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
 
-                                    int localID = 0;
-                                    localID = u.loginWithEmail(getApplicationContext(), email, password);
+                                    int localID = u.loginWithEmail(getApplicationContext(), email, password);
                                     Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
 
                                     try {

@@ -22,7 +22,164 @@ import java.util.List;
  */
 public class User {
 
+    private String uID;
+    private String id;
+    private String email;
+    private String username;
+    private String location;
+    private String language1;
+    private String language2;
+    private String language3;
+    private String age;
+    private String learning;
+    private String trainedBy;
+    private String training;
+    private String progress;
+
+
     public User(Context context) {
+    }
+
+    public User(String uID,
+                String id,
+                String email,
+                String username,
+                String location,
+                String language1,
+                String language2,
+                String language3,
+                String age,
+                String learning,
+                String trainedBy,
+                String training,
+                String progress) {
+        this.uID = uID;
+        this.id = id;
+        this.email = email;
+        this.username = username;
+        this.location = location;
+        this.language1 = language1;
+        this.language2 = language2;
+        this.language3 = language3;
+        this.age = age;
+        this.learning = learning;
+        this.trainedBy = trainedBy;
+        this.training = training;
+        this.progress = progress;
+    }
+
+    public User(String uID,
+                String id,
+                String email,
+                String username) {
+        this.uID = uID;
+        this.id = id;
+        this.email = email;
+        this.username = username;
+    }
+
+    public String getAge() {
+        return age;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getLanguage1() {
+        return language1;
+    }
+
+    public String getLanguage2() {
+        return language2;
+    }
+
+    public String getLanguage3() {
+        return language3;
+    }
+
+    public String getLearning() {
+        return learning;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public String getProgress() {
+        return progress;
+    }
+
+    public String getTrainedBy() {
+        return trainedBy;
+    }
+
+    public String getTraining() {
+        return training;
+    }
+
+    public String getuID() {
+        return uID;
+    }
+
+    public String getEmail(){
+        return email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setAge(String age) {
+        this.age = age;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setLanguage1(String language1) {
+        this.language1 = language1;
+    }
+
+    public void setLanguage2(String language2) {
+        this.language2 = language2;
+    }
+
+    public void setLanguage3(String language3) {
+        this.language3 = language3;
+    }
+
+    public void setLearning(String learning) {
+        this.learning = learning;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public void setProgress(String progress) {
+        this.progress = progress;
+    }
+
+    public void setTrainedBy(String trainedBy) {
+        this.trainedBy = trainedBy;
+    }
+
+    public void setTraining(String training) {
+        this.training = training;
+    }
+
+    public void setuID(String uID) {
+        this.uID = uID;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     /*
@@ -196,7 +353,6 @@ public class User {
     }
 
 
-
     /**
      * Checks whether the argument Username has already been registered in the database.
      * Converts all usernames to lowercase
@@ -256,7 +412,6 @@ public class User {
     }
 
 
-
     /**
      * Finds and returns the next assignable User ID by reading in the ID of the last added ID and
      * incrementing it by 1.
@@ -311,7 +466,6 @@ public class User {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return isSuccessful;
     }
 
@@ -543,7 +697,7 @@ public class User {
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
-            } catch (NullPointerException ne){
+            } catch (NullPointerException ne) {
                 return new ArrayList<Integer>();
             }
         }
@@ -2197,7 +2351,7 @@ public class User {
             returnValue[0] = temp;
         }
 
-        if(returnValue.length == 0){
+        if (returnValue.length == 0) {
             returnValue[0] = "";
             return returnValue;
         }

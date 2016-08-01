@@ -28,6 +28,7 @@ public class ProfileTab extends Fragment {
     private JSONObject user = new JSONObject();
     private User u;
     private Module f;
+    private Cloud c;
 
     private ImageView avatar = null;
     private Button editProfileButt = null;
@@ -83,6 +84,7 @@ public class ProfileTab extends Fragment {
 
         u = new User(getActivity().getApplicationContext());
         f = new Module();
+        c = new Cloud();
 
     }
 
@@ -251,9 +253,7 @@ public class ProfileTab extends Fragment {
             ageEdit.setText("?");
         }
 
-        int[] interestIDs = new int[0];
-
-        interestIDs = u.getInterests(getActivity().getApplicationContext(), user);
+        int[] interestIDs = u.getInterests(getActivity().getApplicationContext(), user);
 
         if (!("" + interestIDs[0]).equals(""))
             for (int interestID : interestIDs) {

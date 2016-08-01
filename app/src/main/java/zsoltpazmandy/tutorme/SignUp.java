@@ -126,6 +126,9 @@ public class SignUp extends AppCompatActivity {
                                                 e.printStackTrace();
                                             }
 
+                                            Cloud c = new Cloud();
+                                            c.prepUser(FBuID, String.valueOf(localID), email, username);
+
                                             // continue to profile setup
                                             Intent setupProfile = new Intent(SignUp.this, ProfileSetup.class);
                                             setupProfile.putExtra("User String", user.toString());

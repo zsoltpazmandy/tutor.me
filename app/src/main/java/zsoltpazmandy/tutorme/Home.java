@@ -91,7 +91,6 @@ public class Home extends AppCompatActivity {
         }
     }
 
-
     boolean wantsToQuit = false;
 
     @Override
