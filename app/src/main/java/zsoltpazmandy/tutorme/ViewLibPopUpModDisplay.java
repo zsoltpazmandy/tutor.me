@@ -136,7 +136,6 @@ public class ViewLibPopUpModDisplay extends Activity {
 
     private boolean ownModule() {
         try {
-            System.out.println(user.getInt("ID") + " == " + Integer.parseInt(infoToShow.get(0)));
             if (user.getString("Username").equals(infoToShow.get(1))) {
                 return true;
             }

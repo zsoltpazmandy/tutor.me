@@ -7,6 +7,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.util.ArrayList;
+
 /**
  * Created by zsolt on 31/07/16.
  */
@@ -22,7 +26,7 @@ public class Cloud {
         mAuth = FirebaseAuth.getInstance();
     }
 
-    public void prepUser(String uID, String id, String email, String username){
+    public void prepUser(String uID, String id, String email, String username) {
         DatabaseReference currentUser = this.userRoot.child(uID);
         User user = new User(uID, id, email, username);
         currentUser.setValue(user);
@@ -56,10 +60,35 @@ public class Cloud {
 
     public JSONObject getUserJSON() throws JSONException {
 
-        String uID = mAuth.getCurrentUser().getUid();
+        final String uID = mAuth.getCurrentUser().getUid();
         DatabaseReference userRoot = this.userRoot.child(uID);
 
-        JSONObject localUser = new JSONObject();
+        final boolean[] done = {false};
+
+        final InputStream[] input = {null};
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    input[0] = new URL("https://tutorme-1dcd6.firebaseio.com/users/" + uID).openStream();
+                    done[0] = true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
+
+        while (!done[0]) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        JSONObject localUser = new JSONObject(input[0].toString());
 
         localUser.put("ID", userRoot.child("ID"));
         localUser.put("Email", userRoot.child("Email"));
@@ -78,9 +107,19 @@ public class Cloud {
         return localUser;
     }
 
-    public void saveModule() {
+    public void saveModule(String name,
+                           String description,
+                           int pro,
+                           String author,
+                           ArrayList<Integer> reviews,
+                           ArrayList<Integer> trainers,
+                           ArrayList<Integer> typesOfSlides,
+                           int noOfSlides,
+                           int ID) {
 
-
+        Module thisModule = new Module(name, description, pro, author, reviews, trainers, typesOfSlides, noOfSlides, ID);
+        moduleRoot.child(String.valueOf(ID)).setValue(thisModule);
     }
+
 
 }

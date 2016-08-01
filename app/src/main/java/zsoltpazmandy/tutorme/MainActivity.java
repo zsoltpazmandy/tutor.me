@@ -130,9 +130,12 @@ public class MainActivity extends AppCompatActivity {
 
                                     int localID = u.loginWithEmail(getApplicationContext(), email, password);
 
-                                    if (localID != 0) {
+//                                    if (localID != 0) {
                                         try {
-                                            user = u.getUser(getApplicationContext(), localID);
+//                                            user = u.getUser(getApplicationContext(), localID);
+                                            Cloud c = new Cloud();
+                                            user = c.getUserJSON();
+
                                             Intent launchHome = new Intent(MainActivity.this, Home.class);
                                             launchHome.putExtra("User", user.toString());
                                             startActivity(launchHome);
@@ -140,20 +143,20 @@ public class MainActivity extends AppCompatActivity {
                                         } catch (JSONException e) {
                                             e.printStackTrace();
                                         }
-                                    } else {
+//                                    } else {
 
-                                        Cloud c = new Cloud();
-                                        try {
-                                            user = c.getUserJSON();
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                        Intent launchHome = new Intent(MainActivity.this, Home.class);
-                                        launchHome.putExtra("User", user.toString());
-                                        startActivity(launchHome);
-                                        finish();
-                                    }
+//                                        Cloud c = new Cloud();
+//                                        try {
+//                                            user = c.getUserJSON();
+//                                        } catch (JSONException e) {
+//                                            e.printStackTrace();
+//                                        }
+//
+//                                        Intent launchHome = new Intent(MainActivity.this, Home.class);
+//                                        launchHome.putExtra("User", user.toString());
+//                                        startActivity(launchHome);
+//                                        finish();
+//                                    }
 
 
 

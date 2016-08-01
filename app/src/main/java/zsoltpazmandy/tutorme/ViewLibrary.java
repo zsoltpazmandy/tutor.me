@@ -97,7 +97,7 @@ public class ViewLibrary extends AppCompatActivity {
                     // ID of Module as a String (Right now redundant, as Names are also PKs of DB)
                     moduleInfo.add(moduleSelectedJSON.getString("ID"));
 
-                    // ID of author of Module (to be used to retrieve User data once there's a DB
+                    // ID of authorJSON of Module (to be used to retrieve User data once there's a DB
                     // with name, info, ratings & stats)
                     moduleInfo.add(moduleSelectedJSON.getString("Author"));
 
@@ -107,7 +107,7 @@ public class ViewLibrary extends AppCompatActivity {
                     // Name of module (must be unique)
                     moduleInfo.add(moduleSelectedJSON.getString("Name"));
 
-                    // Description of module written by author
+                    // Description of module written by authorJSON
                     moduleInfo.add(moduleSelectedJSON.getString("Description"));
 
                     // Array of IDs of Ratings (once Ratings objects implemented, will serve

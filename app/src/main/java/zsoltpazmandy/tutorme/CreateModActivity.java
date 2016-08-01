@@ -14,11 +14,22 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class CreateModActivity extends AppCompatActivity {
 
     JSONObject tempAuth2 = null;
-    JSONObject author;
+    JSONObject authorJSON;
+
+    private String name;
+    private String description;
+    private int pro;
+    private String author;
+    private ArrayList<Integer> reviews;
+    private ArrayList<Integer> trainers;
+    private ArrayList<Integer> typesOfSlides;
+    private int noOfSlides;
+    private int ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +48,7 @@ public class CreateModActivity extends AppCompatActivity {
         final Module f = new Module();
 
         try {
-            this.author = new JSONObject(getIntent().getStringExtra("User"));
+            this.authorJSON = new JSONObject(getIntent().getStringExtra("User"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -66,8 +77,8 @@ public class CreateModActivity extends AppCompatActivity {
             }
         });
 
-        final JSONObject tempAuth = author;
-        tempAuth2 = author;
+        final JSONObject tempAuth = authorJSON;
+        tempAuth2 = authorJSON;
 
         Button nextButt = (Button) findViewById(R.id.moduleBeginButton);
         assert nextButt != null;
@@ -110,7 +121,7 @@ public class CreateModActivity extends AppCompatActivity {
                     module.put("Author", u.getUsername(getApplicationContext(), tempAuth));
                     // populating Rev & Trainer arrays, with fake IDs for now
                     module.accumulate("Reviews", 1);
-                    int authID = author.getInt("ID");
+                    int authID = authorJSON.getInt("ID");
                     module.accumulate("Trainers", authID);
 
 
@@ -160,6 +171,9 @@ public class CreateModActivity extends AppCompatActivity {
             }
 
             f.saveModule(getApplicationContext(), module);
+
+            saveInCloud(module);
+
             Toast.makeText(getApplicationContext(), "Module added to the library", Toast.LENGTH_SHORT).show();
 
             Intent returnHome = new Intent(CreateModActivity.this, Home.class);
@@ -170,12 +184,45 @@ public class CreateModActivity extends AppCompatActivity {
         }
     }
 
+    private void saveInCloud(JSONObject module) {
+        Cloud c = new Cloud();
+        User u = new User(getApplicationContext());
+
+        try {
+            name = module.getString("Name");
+
+            description = module.getString("Description");
+            pro = module.getInt("PRO");
+            author = module.getString("Author");
+
+            reviews = new ArrayList<Integer>();
+            for (int i : u.getIntfromJSON(getApplicationContext(), module, "Reviews")) {
+                reviews.add(i);
+            }
+
+            trainers = new ArrayList<>();
+            for (int i : u.getIntfromJSON(getApplicationContext(), module, "Trainers")) {
+                trainers.add(i);
+            }
+
+            typesOfSlides = new ArrayList<>();
+            for (int i : u.getIntfromJSON(getApplicationContext(), module, "Types of Slides")) {
+                typesOfSlides.add(i);
+            }
+            noOfSlides = module.getInt("No. of Slides");
+            ID = module.getInt("ID");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        c.saveModule(name, description, pro, author, reviews, trainers, typesOfSlides, noOfSlides, ID);
+    }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         Toast.makeText(this, "Module cancelled.", Toast.LENGTH_SHORT).show();
         Intent backHome = new Intent(CreateModActivity.this, Home.class);
-        backHome.putExtra("User", author.toString());
+        backHome.putExtra("User", authorJSON.toString());
         startActivity(backHome);
         finish();
     }
