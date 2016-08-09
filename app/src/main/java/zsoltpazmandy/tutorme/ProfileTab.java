@@ -234,17 +234,17 @@ public class ProfileTab extends Fragment {
 
         userEdit.setText(u.getUsername(getActivity().getApplicationContext(), user));
         locationEdit.setText(u.getLocation(getActivity().getApplicationContext(), user));
-        int[] languages;
+        String[] languages;
 
         languages = u.getLanguages(getActivity().getApplicationContext(), user);
 
-        language1Edit.setText(u.decodeLanguage(languages[0]));
+        language1Edit.setText(languages[0]);
 
-        if (languages[1] != 0) {
-            language2Edit.setText(u.decodeLanguage(languages[1]));
+        if (!languages[1].isEmpty()) {
+            language2Edit.setText(languages[1]);
         }
-        if (languages[2] != 0) {
-            language3Edit.setText(u.decodeLanguage(languages[2]));
+        if (!languages[2].isEmpty()) {
+            language3Edit.setText(languages[2]);
         }
 
         if (!u.getAge(getActivity().getApplicationContext(), user).equals("")) {

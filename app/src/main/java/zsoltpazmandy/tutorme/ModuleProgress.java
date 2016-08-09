@@ -57,8 +57,7 @@ public class ModuleProgress extends AppCompatActivity {
             authRating.setText("Author *****");
 
             final User u = new User(getApplicationContext());
-            int IDofTutor = 0;
-            IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, Integer.parseInt(module.getString("ID")));
+            int IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, Integer.parseInt(module.getString("ID")));
             tutor = u.getUser(getApplicationContext(), IDofTutor);
             String nameOfTutor = u.getUsername(getApplicationContext(), tutor);
             final int lastSlide = u.getLastSlideViewed(getApplicationContext(), user, module.getInt("ID"));

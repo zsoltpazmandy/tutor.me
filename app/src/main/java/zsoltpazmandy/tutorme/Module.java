@@ -346,7 +346,7 @@ public class Module {
         return amountOfModules;
     }
 
-    public void saveModule(Context context, JSONObject module) {
+    public void saveModuleLocally(Context context, JSONObject module) {
         try {
 
             module.put("ID", moduleCount(context) + 1);

@@ -33,7 +33,6 @@ public class User {
     private String age;
     private String learning;
     private String trainedBy;
-    private String training;
     private String progress;
 
 
@@ -50,9 +49,7 @@ public class User {
                 String language3,
                 String age,
                 String learning,
-                String trainedBy,
-                String training,
-                String progress) {
+                String trainedBy) {
         this.uID = uID;
         this.id = id;
         this.email = email;
@@ -64,8 +61,6 @@ public class User {
         this.age = age;
         this.learning = learning;
         this.trainedBy = trainedBy;
-        this.training = training;
-        this.progress = progress;
     }
 
     public User(String uID,
@@ -114,10 +109,6 @@ public class User {
         return trainedBy;
     }
 
-    public String getTraining() {
-        return training;
-    }
-
     public String getuID() {
         return uID;
     }
@@ -164,10 +155,6 @@ public class User {
 
     public void setTrainedBy(String trainedBy) {
         this.trainedBy = trainedBy;
-    }
-
-    public void setTraining(String training) {
-        this.training = training;
     }
 
     public void setuID(String uID) {
@@ -228,7 +215,7 @@ public class User {
     /**
      * Builds a JSON Object using the input Username and Password:
      * It checks if username has been registered already (isUsernameTaken), returns 0 if it has
-     * Saves the JSON by calling saveUser(Context, JSONObject)
+     * Saves the JSON by calling saveUserLocally(Context, JSONObject)
      * Updates the UserRecords by calling setUserRecordsJSON(Context, String)
      *
      * @param context
@@ -254,7 +241,7 @@ public class User {
 
             newUser.put("ID", newId).put("Username", username).put("Password", password).put("Email", email);
 
-            saveUser(context, newUser);
+            saveUserLocally(context, newUser);
             setUserRecordsJSON(context, getUserRecords(context).accumulate("IDs", newId).toString());
 
         }
@@ -443,7 +430,7 @@ public class User {
      * @param user
      * @return true if saved successfully
      */
-    public boolean saveUser(Context context, JSONObject user) {
+    public boolean saveUserLocally(Context context, JSONObject user) {
 
         boolean isSuccessful = false;
 
@@ -622,7 +609,7 @@ public class User {
 
         JSONObject zeroUser = new JSONObject();
         zeroUser.put("ID", 0).put("Username", "----------").put("Password", "----------");
-        saveUser(context, zeroUser);
+        saveUserLocally(context, zeroUser);
 
     }
 
@@ -855,29 +842,33 @@ public class User {
 
     /**
      * Retrieve languages spoken by the user. If none have been registered, all three slots are
-     * set to and returned as zero (at initial user profile setup).
+     * set to and returned as "0" (at initial user profile setup).
      *
      * @param context
      * @param user
      * @return
      */
-    public int[] getLanguages(Context context, JSONObject user) {
+    public String[] getLanguages(Context context, JSONObject user) {
 
         // setting all three languages to zero
-        int[] languages = {0, 0, 0};
+        String[] languages = {"0", "0", "0"};
 
-        String[] tempLanguages = new String[1];
+        String[] tempLanguages = new String[3];
 
         // reading "Languages" string from user's JSON object record
         try {
 
-            String tempString = user.getString("Languages").replace("[", "").replace("]", "");
+            tempLanguages[0] = user.getString("Language 1");
+            tempLanguages[1] = user.getString("Language 2");
+            tempLanguages[2] = user.getString("Language 3");
 
-            if (tempString.contains(",")) {
-                tempLanguages = tempString.split(",");
-            } else {
-                tempLanguages[0] = tempString;
-            }
+//            String tempString = user.getString("Languages").replace("[", "").replace("]", "");
+//
+//            if (tempString.contains(",")) {
+//                tempLanguages = tempString.split(",");
+//            } else {
+//                tempLanguages[0] = tempString;
+//            }
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -885,15 +876,16 @@ public class User {
 
         // if no languages were parsed from the JSON, returns the initial 0,0,0
         try {
-            tempLanguages[0].equals(null);
+            tempLanguages[0].equals("0");
         } catch (NullPointerException e) {
             return languages;
         }
 
         // otherwise write languages codes in array & return them
         for (int i = 0; i < tempLanguages.length; i++) {
-            languages[i] = Integer.parseInt(tempLanguages[i]);
+            languages[i] = tempLanguages[i];
         }
+
         return languages;
     }
 
@@ -910,6 +902,8 @@ public class User {
     public int getWhoTrainsMeThis(Context context, JSONObject user, int moduleID) {
         int trainerID = 0;
 
+        System.out.println("TESTING");
+
         String allLearning = "";
         String[] allLearningArray = new String[1];
 
@@ -919,11 +913,17 @@ public class User {
             e.printStackTrace();
         }
 
+        System.out.println("allearning: " + allLearning);
+
         if (allLearning.contains(",")) {
             allLearningArray = allLearning.split(",");
         } else {
             allLearningArray[0] = allLearning;
         }
+
+        for (String s : allLearningArray)
+            System.out.println("allLearningArray: " + s);
+
 
         int index = 0;
 
@@ -932,6 +932,8 @@ public class User {
                 index = i;
             }
         }
+
+        System.out.println("index: " + index);
 
         String allTrainers = "";
         String[] allTrainersArray = new String[1];
@@ -942,13 +944,24 @@ public class User {
             e.printStackTrace();
         }
 
+        System.out.println("alltrainers: " + allTrainers);
+
         if (allTrainers.contains(",")) {
             allTrainersArray = allTrainers.split(",");
         } else {
             allTrainersArray[0] = allTrainers;
         }
 
+        for (String s : allTrainersArray)
+            System.out.println("alltrainersarray: " + s);
+
         trainerID = Integer.parseInt(allTrainersArray[index]);
+        System.out.println("trainerID: "+trainerID);
+
+        if (allTrainersArray[0].isEmpty()) {
+            trainerID = 0;
+        }
+
         return trainerID;
     }
 
@@ -1092,12 +1105,23 @@ public class User {
 
         try {
             user.accumulate("Learning", "#" + newLearning);
-            user.accumulate("Progress", newLearning + "#0");
+            user.accumulate("Progress", "#" + newLearning + "/0");
+            //              "Progress" : "[#1/0]"
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        saveUser(context, user);
+        saveUserLocally(context, user);
+    }
+
+    public void addToTraining(Context context, JSONObject user, String newTraining){
+        try {
+            user.accumulate("Training", newTraining);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        saveUserLocally(context, user);
     }
 
     /**
@@ -1134,7 +1158,7 @@ public class User {
             e.printStackTrace();
         }
 
-        saveUser(context, user);
+        saveUserLocally(context, user);
     }
 
     /**
@@ -1148,53 +1172,86 @@ public class User {
      */
     public void updateProgress(Context context, JSONObject user, JSONObject module, int lastSlide) {
 
+
+        System.out.println("TESTING");
+
+        // LOCAL UPDATE
+
         boolean changed = false;
         String progressString = "";
         int moduleID = 0;
 
         try {
             moduleID = Integer.parseInt(module.getString("ID"));
-            progressString = user.getString("Progress").replace("[", "").replace("]", "").replace("\"","");
+            progressString = user.getString("Progress").replace("[", "").replace("]", "").replace("\"", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String[] eachModulesProgress = new String[1];
+        // module IDs/theirLastSlidesOpened
+        String[] perModule = new String[1];
 
         if (progressString.contains(",")) {
-            eachModulesProgress = progressString.split(",");
-        } else {
-            eachModulesProgress[0] = progressString;
+            perModule = progressString.split(",");
+        } else { // only 1 module currenty being learnt
+            perModule[0] = progressString;
         }
 
-        for (int i = 0; i < eachModulesProgress.length; i++) {
+        for (String s : perModule)
+            System.out.println(s);
+
+
+        // module IDs
+        String[] modules = new String[perModule.length];
+        for (int i = 0; i < perModule.length; i++) {
+            modules[i] = perModule[i].split("/")[0].replace("#", "");
+        }
+
+        for (String s : modules)
+            System.out.println(s);
+
+        // lastSides
+        String[] lastSlides = new String[perModule.length];
+        for (int i = 0; i < perModule.length; i++) {
+            lastSlides[i] = perModule[i].split("/")[1];
+        }
+
+        for (String s : lastSlides)
+            System.out.println(s);
+
+        for (int i = 0; i < perModule.length; i++) {
             try {
-                if (Integer.parseInt(eachModulesProgress[i].split("#")[0]) == moduleID) {
-                    if (Integer.parseInt(eachModulesProgress[i].split("#")[1]) < lastSlide) {
-                        String firstHalf = eachModulesProgress[i].split("#")[0];
-                        eachModulesProgress[i] = firstHalf + "#" + lastSlide;
+                if (Integer.parseInt(perModule[i].split("#")[0]) == moduleID) {
+                    if (Integer.parseInt(perModule[i].split("#")[1]) < lastSlide) {
+                        String firstHalf = perModule[i].split("#")[0];
+                        perModule[i] = firstHalf + "#" + lastSlide;
                         changed = true;
                     }
                 }
             } catch (NumberFormatException e) {
-                String firstHalf = eachModulesProgress[i].split("#")[0];
-                eachModulesProgress[i] = firstHalf + "#" + 0;
+                String firstHalf = perModule[i].split("#")[0];
+                perModule[i] = firstHalf + "#" + 0;
                 changed = true;
             }
         }
 
         user.remove("Progress");
 
-        for (int i = 0; i < eachModulesProgress.length; i++) {
+        for (int i = 0; i < perModule.length; i++) {
             try {
-                user.accumulate("Progress", eachModulesProgress[i]);
+                user.accumulate("Progress", perModule[i]);
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         // save User data if Progress was updated
-        if (changed) saveUser(context, user);
+        if (changed) saveUserLocally(context, user);
+
+
+        // CLOUD UPDATE
+
+        // TODO
     }
 
     public int getLastSlideViewed(Context context, JSONObject user, int moduleID) {
@@ -1246,19 +1303,31 @@ public class User {
             return;
         } else {
 
-            user.remove("Languages");
+            user.remove("Language 1");
+            user.remove("Language 2");
+            user.remove("Language 3");
 
             try {
-                user.accumulate("Languages", language1);
-                user.accumulate("Languages", language2);
-                user.accumulate("Languages", language3);
+                user.put("Language 1", decodeLanguage(language1));
+                user.put("Language 2", decodeLanguage(language2));
+                user.put("Language 3", decodeLanguage(language3));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
+//            user.remove("Languages");
+//
+//            try {
+//                user.accumulate("Languages", language1);
+//                user.accumulate("Languages", language2);
+//                user.accumulate("Languages", language3);
+//            } catch (JSONException e) {
+//                e.printStackTrace();
+//            }
+
         }
 
-        saveUser(context, user);
+        saveUserLocally(context, user);
 
     }
 

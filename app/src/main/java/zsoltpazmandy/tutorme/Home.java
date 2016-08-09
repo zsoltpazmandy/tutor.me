@@ -60,12 +60,13 @@ public class Home extends AppCompatActivity {
         }
 
         u = new User(getApplicationContext());
+        u.saveUserLocally(getApplicationContext(), user);
 
         checkIfProfileComplete();
     }
 
     private void checkIfProfileComplete() {
-        if (u.getLanguages(getApplicationContext(), user)[0] == 0) {
+        if (u.getLanguages(getApplicationContext(), user)[0].equals("0")) {
             AlertDialog.Builder incompleteAlert = new AlertDialog.Builder(Home.this);
             incompleteAlert.setTitle("Profile setup incomplete.");
             incompleteAlert.setMessage("Please complete setup.");

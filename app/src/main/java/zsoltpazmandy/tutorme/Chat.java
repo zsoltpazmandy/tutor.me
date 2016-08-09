@@ -193,6 +193,6 @@ public class Chat extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        u.saveUser(getApplicationContext(), user);
+        u.saveUserLocally(getApplicationContext(), user);
     }
 }

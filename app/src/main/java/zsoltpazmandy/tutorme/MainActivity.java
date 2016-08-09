@@ -1,6 +1,7 @@
 package zsoltpazmandy.tutorme;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -15,6 +16,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
@@ -22,6 +28,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Iterator;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,8 +58,11 @@ public class MainActivity extends AppCompatActivity {
 
         u = new User(getApplicationContext());
 
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+
         FirebaseMessaging.getInstance().subscribeToTopic("tutor.me");
         FirebaseInstanceId.getInstance().getToken();
+
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -128,22 +139,12 @@ public class MainActivity extends AppCompatActivity {
 
                                     Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
 
-                                    int localID = u.loginWithEmail(getApplicationContext(), email, password);
+//                                    int localID = u.loginWithEmail(getApplicationContext(), email, password);
 
-//                                    if (localID != 0) {
-                                        try {
-//                                            user = u.getUser(getApplicationContext(), localID);
-                                            Cloud c = new Cloud();
-                                            user = c.getUserJSON();
+                                    AsyncCloudGetUser getUser = new AsyncCloudGetUser();
+                                    getUser.execute(mAuth.getCurrentUser().getUid());
 
-                                            Intent launchHome = new Intent(MainActivity.this, Home.class);
-                                            launchHome.putExtra("User", user.toString());
-                                            startActivity(launchHome);
-                                            finish();
-                                        } catch (JSONException e) {
-                                            e.printStackTrace();
-                                        }
-//                                    } else {
+                                    //                                    } else {
 
 //                                        Cloud c = new Cloud();
 //                                        try {
@@ -159,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
 //                                    }
 
 
-
                                 } else {
                                     Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
                                 }
@@ -167,6 +167,141 @@ public class MainActivity extends AppCompatActivity {
                         });
             }
         });
+    }
+
+    class AsyncCloudGetUser extends AsyncTask<String, String, JSONObject> {
+        @Override
+        protected JSONObject doInBackground(String... uid) {
+
+
+            final DatabaseReference userRoot = FirebaseDatabase.getInstance().getReference().child("/users/" + uid[0]);
+            userRoot.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    Map<String, Object> userMap = (Map<String, Object>) dataSnapshot.getValue();
+
+
+                    final JSONObject userFromCloud = new JSONObject();
+                    try {
+                        userFromCloud.put("Age", userMap.get("age"));
+                        userFromCloud.put("Email", userMap.get("email"));
+                        userFromCloud.put("ID", userMap.get("id"));
+                        userFromCloud.put("Language 1", userMap.get("language1"));
+                        userFromCloud.put("Language 2", userMap.get("language2"));
+                        userFromCloud.put("Language 3", userMap.get("language3"));
+                        userFromCloud.put("Learning", userMap.get("learning"));
+                        userFromCloud.put("Location", userMap.get("location"));
+                        userFromCloud.put("Trained by", userMap.get("trainedBy"));
+                        userFromCloud.put("uID", userMap.get("uID"));
+                        userFromCloud.put("Username", userMap.get("username"));
+
+                        final DatabaseReference userProgressRoot = userRoot.child("progress");
+                        userProgressRoot.addValueEventListener(new ValueEventListener() {
+
+                            JSONObject userFromCloudWithProgress = null;
+
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                userFromCloudWithProgress = userFromCloud;
+
+                                Iterator iter = dataSnapshot.getChildren().iterator();
+
+                                while (iter.hasNext()) {
+//                                    DataSnapshot line = (DataSnapshot) iter.next();
+//                                    Map<String, Object> userProg = (Map<String, Object>) line.getValue();
+
+                                    // read in all user progress module by module
+                                    String temp = iter.next().toString();
+                                    try {
+
+                                        // the entire String unprocessed without the datasnapshot prefix
+                                        String raw = temp.substring(21);
+
+                                        // the moduleID delimited by the first underscore _
+                                        String moduleID = raw.substring(0,6);
+
+                                        String progData = "";
+                                        // if the name of the module does not contain an additional user entered underscore
+                                        if (raw.split("_").length == 3) {
+
+                                            progData = raw.substring(6);
+
+                                        } else { // if the name of the module contains underscores
+                                            for (int i = 1; i < raw.split("_").length; i++) {
+                                                progData = progData + "_" + raw.split("_")[i];
+                                            }
+                                        }
+
+                                        // moduleID = ID of the module
+                                        // progData = the entire 'value' (should be name, totalslides, lastslide)
+
+                                        // used to pad moduleID strings with zeros, so it's always of length 6
+                                        // so substrings are not required
+                                        switch (moduleID.length()){
+                                            case 1:
+                                                moduleID = "00000" + moduleID;
+                                                break;
+                                            case 2:
+                                                moduleID = "0000" + moduleID;
+                                                break;
+                                            case 3:
+                                                moduleID = "000" + moduleID;
+                                                break;
+                                            case 4:
+                                                moduleID = "00" + moduleID;
+                                                break;
+                                            case 5:
+                                                moduleID = "0" + moduleID;
+                                                break;
+                                        }
+
+                                        moduleID = moduleID.replace("_","");
+                                        progData = progData.substring(10,progData.length()-2);
+
+                                        userFromCloudWithProgress.accumulate("Progress", moduleID + progData);
+
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+
+                                String stringifiedJSON = userFromCloudWithProgress.toString();
+                                publishProgress(stringifiedJSON);
+
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            super.onProgressUpdate(values);
+
+            Intent launchHome = new Intent(MainActivity.this, Home.class);
+            launchHome.putExtra("User", values[0].toString());
+            startActivity(launchHome);
+            finish();
+        }
+
+
     }
 
     private void setupFields() {

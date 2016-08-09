@@ -21,6 +21,8 @@ public class CreateModActivity extends AppCompatActivity {
     JSONObject tempAuth2 = null;
     JSONObject authorJSON;
 
+    private User u;
+
     private String name;
     private String description;
     private int pro;
@@ -38,7 +40,7 @@ public class CreateModActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final User u = new User(getApplicationContext());
+        u = new User(getApplicationContext());
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
@@ -170,12 +172,28 @@ public class CreateModActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            f.saveModule(getApplicationContext(), module);
+            // saving module locally:
+            f.saveModuleLocally(getApplicationContext(), module);
+            // saving module in the cloud:
+            uploadToCloud(module);
 
-            saveInCloud(module);
+            // updating user data by adding to its Training field locally
+            try {
+                updateUserData(module.getString("ID"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            // updating user data by adding to its Training field in the cloud
+            try {
+                Cloud c = new Cloud();
+                c.addToTraining(module.getString("ID"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
 
             Toast.makeText(getApplicationContext(), "Module added to the library", Toast.LENGTH_SHORT).show();
-
             Intent returnHome = new Intent(CreateModActivity.this, Home.class);
             returnHome.putExtra("User", tempAuth2.toString());
             startActivity(returnHome);
@@ -184,9 +202,12 @@ public class CreateModActivity extends AppCompatActivity {
         }
     }
 
-    private void saveInCloud(JSONObject module) {
+    private void updateUserData(String  moduleID) {
+        u.addToTraining(getApplicationContext(), tempAuth2, moduleID);
+    }
+
+    private void uploadToCloud(JSONObject module) {
         Cloud c = new Cloud();
-        User u = new User(getApplicationContext());
 
         try {
             name = module.getString("Name");
@@ -214,7 +235,12 @@ public class CreateModActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        c.saveModule(name, description, pro, author, reviews, trainers, typesOfSlides, noOfSlides, ID);
+
+        // save module data in cloud
+        System.out.println("saving module to cloud");
+
+        c.saveModuleInCloud(name, description, pro, author, reviews, trainers, typesOfSlides, noOfSlides, ID);
+
     }
 
     @Override

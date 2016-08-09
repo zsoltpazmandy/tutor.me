@@ -203,6 +203,7 @@ public class ViewLibrary extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
         startActivity(returnToHome);
         finish();
     }

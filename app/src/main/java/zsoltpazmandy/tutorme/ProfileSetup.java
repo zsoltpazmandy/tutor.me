@@ -26,6 +26,8 @@ public class ProfileSetup extends AppCompatActivity {
     boolean lang2exists;
     boolean lang3exists;
 
+    private boolean firstSetup;
+
     private int userIDlocal;
 
     User u;
@@ -62,6 +64,12 @@ public class ProfileSetup extends AppCompatActivity {
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
+        }
+
+        if(getIntent().hasExtra("Modifying")){
+            firstSetup = false;
+        } else {
+            firstSetup = true;
         }
 
         u = new User(getApplicationContext());
@@ -156,10 +164,12 @@ public class ProfileSetup extends AppCompatActivity {
                                                        User u = new User(getApplicationContext());
 
 
-                                                       if (u.saveUser(getApplicationContext(), userUpdate)) {
+                                                       if (u.saveUserLocally(getApplicationContext(), userUpdate)) {
                                                            // storing languages information is handled from within the User class
-                                                           u.setLanguages(getApplicationContext(), userUpdate, languages1Spinner.getSelectedItemPosition(), languages2Spinner.getSelectedItemPosition(), languages3Spinner.getSelectedItemPosition());
-
+                                                           u.setLanguages(getApplicationContext(), userUpdate,
+                                                                   languages1Spinner.getSelectedItemPosition(),
+                                                                   languages2Spinner.getSelectedItemPosition(),
+                                                                   languages3Spinner.getSelectedItemPosition());
                                                            Cloud c = new Cloud();
                                                            JSONObject locallySavedUser = new JSONObject();
                                                            FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -171,13 +181,17 @@ public class ProfileSetup extends AppCompatActivity {
                                                                String email = locallySavedUser.getString("Email");
                                                                String username = locallySavedUser.getString("Username");
                                                                String location = u.getLocation(getApplicationContext(), locallySavedUser);
-                                                               String language1 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[0]);
-                                                               String language2 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[1]);
-                                                               String language3 = u.decodeLanguage(u.getLanguages(getApplicationContext(), locallySavedUser)[2]);
+                                                               String language1 = u.getLanguages(getApplicationContext(), locallySavedUser)[0];
+                                                               String language2 = u.getLanguages(getApplicationContext(), locallySavedUser)[1];
+                                                               String language3 = u.getLanguages(getApplicationContext(), locallySavedUser)[2];
                                                                String age = locallySavedUser.getString("Age");
 
-                                                               c.saveUser(uID, id, email, username, location, language1, language2, language3, age, "", "", "", "");
+                                                               c.saveUserInCloud(uID, id, email, username, location, language1, language2, language3, age, "000000null_0_0","", "");
 
+
+                                                               if(firstSetup) {
+                                                                   locallySavedUser.accumulate("Progress", "000000null_0_0");
+                                                               }
 
                                                            } catch (JSONException e) {
                                                                e.printStackTrace();
@@ -186,7 +200,7 @@ public class ProfileSetup extends AppCompatActivity {
 
                                                            Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
                                                            Intent homeStart = new Intent(ProfileSetup.this, Home.class);
-                                                           homeStart.putExtra("User", userUpdate.toString());
+                                                           homeStart.putExtra("User", locallySavedUser.toString());
                                                            startActivity(homeStart);
                                                            finish();
 
@@ -284,9 +298,13 @@ public class ProfileSetup extends AppCompatActivity {
         lang2exists = false;
         lang3exists = false;
 
-        if (!u.getLanguages(getApplicationContext(), user).equals(null)) {
+        if (!u.getLanguages(getApplicationContext(), user).equals("0")) {
             lang1exists = true;
-            languages1Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[0]);
+
+            for (int i = 0; i < languages1SpinnerAdapter.getCount(); i++) {
+                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[0]))
+                    languages1Spinner.setSelection(i);
+            }
         }
 
         languages2Label = (TextView) findViewById(R.id.languages2_label);
@@ -295,10 +313,15 @@ public class ProfileSetup extends AppCompatActivity {
         languages2SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages2Spinner.setAdapter(languages2SpinnerAdapter);
 
-        if (!u.getLanguages(getApplicationContext(), user).equals(null) &&
-                !("" + u.getLanguages(getApplicationContext(), user)[1]).equals("")) {
+        if (!u.getLanguages(getApplicationContext(), user).equals("0") &&
+                !("" + u.getLanguages(getApplicationContext(), user)[1]).equals("0")) {
             lang2exists = true;
-            languages2Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[1]);
+
+            for (int i = 0; i < languages2SpinnerAdapter.getCount(); i++) {
+                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[1]))
+                    languages2Spinner.setSelection(i);
+            }
+
         }
 
         languages3Label = (TextView) findViewById(R.id.languages3_label);
@@ -307,10 +330,14 @@ public class ProfileSetup extends AppCompatActivity {
         languages3SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages3Spinner.setAdapter(languages3SpinnerAdapter);
 
-        if (!u.getLanguages(getApplicationContext(), user).equals(null) &&
-                !("" + u.getLanguages(getApplicationContext(), user)[2]).equals("")) {
+        if (!u.getLanguages(getApplicationContext(), user).equals("0") &&
+                !("" + u.getLanguages(getApplicationContext(), user)[2]).equals("0")) {
             lang3exists = true;
-            languages3Spinner.setSelection(u.getLanguages(getApplicationContext(), user)[2]);
+
+            for (int i = 0; i < languages3SpinnerAdapter.getCount(); i++) {
+                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[2]))
+                    languages3Spinner.setSelection(i);
+            }
         }
     }
 
@@ -325,7 +352,7 @@ public class ProfileSetup extends AppCompatActivity {
                 int currentLocation = 0;
 
                 for (int i = 0; i < locationSpinnerAdapter.getCount(); i++) {
-                    if (u.decodeCountry(i).equals(user.getString("Location"))){
+                    if (u.decodeCountry(i).equals(user.getString("Location"))) {
                         currentLocation = i;
                     }
                 }

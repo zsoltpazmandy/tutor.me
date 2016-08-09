@@ -32,6 +32,7 @@ public class ViewTextSlide extends AppCompatActivity {
         overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 
         User u = new User(getApplicationContext());
+        Cloud c = new Cloud();
 
         TextView slideCountText = (TextView) findViewById(R.id.view_text_slide_top_slidecounttext);
         Button saveQuit = (Button) findViewById(R.id.view_text_slide_savenquit_butt);
@@ -49,6 +50,15 @@ public class ViewTextSlide extends AppCompatActivity {
 
             System.out.println("updating now");
             u.updateProgress(getApplicationContext(), user, module, slideNumber);
+            String moduleID;
+            String nameOfModule;
+            String totalSlides;
+
+            moduleID = module.getString("ID");
+            nameOfModule = module.getString("Name");
+            totalSlides = module.getString("No. of Slides");
+
+            c.updateProgress(moduleID, nameOfModule, totalSlides, String.valueOf(slideNumber));
 
             this.totalslides = module.getInt("No. of Slides");
             this.setTitle(module.getString("Name"));
