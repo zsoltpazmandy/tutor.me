@@ -9,15 +9,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ViewLibPopUpModDisplay extends Activity {
 
-    private JSONObject user = null;
     private ArrayList<String> infoToShow = null;
+    private HashMap<String, String> moduleMap = null;
+    private HashMap<String, Object> userMap = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,23 +34,26 @@ public class ViewLibPopUpModDisplay extends Activity {
 
         getWindow().setLayout((int) (screenWidth * 0.8), (int) (screenHeight * 0.6));
 
-        try {
-            user = new JSONObject(getIntent().getStringExtra("User String"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
         infoToShow = getIntent().getStringArrayListExtra("Module Info");
+
+        moduleMap = (HashMap<String, String>) getIntent().getSerializableExtra("Module");
 
         TextView nameView = (TextView) findViewById(R.id.popUpTextViewName);
         nameView.setText(infoToShow.get(3));
 
         TextView authView = (TextView) findViewById(R.id.popUpTextViewAuth);
-        String author = "by " + infoToShow.get(1);
+        String author = "by " + moduleMap.get("authorName").toString();
         authView.setText(author);
 
         TextView proView = (TextView) findViewById(R.id.popUpTextViewPro);
-        int pro = Integer.parseInt(infoToShow.get(2));
+        int pro = 0;
+        if(infoToShow.get(2).equals("true")){
+            pro = 1;
+        } else {
+            pro = 0;
+        }
 
         if (pro == 1) {
             proView.setText(R.string.popup_view_pro_tag);
@@ -69,43 +72,29 @@ public class ViewLibPopUpModDisplay extends Activity {
             enrollButt.setText(R.string.popup_enroll_free);
         }
 
-        final JSONObject finalUser = user;
         enrollButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                JSONObject userUpdated = finalUser;
-
-                try {
-                    assert finalUser != null;
-                    userUpdated = u.getUser(getApplicationContext(), finalUser.getInt("ID"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                boolean enrolledAlready = u.isLearning(getApplicationContext(), userUpdated, Integer.parseInt(infoToShow.get(0)));
-
+                boolean enrolledAlready = u.isLearning(getApplicationContext(), userMap, infoToShow.get(0));
                 if (ownModule()) {
                     Toast.makeText(ViewLibPopUpModDisplay.this, "You cannot train yourself!", Toast.LENGTH_SHORT).show();
                     return;
                 }
-
                 if (!enrolledAlready) {
+                    String modID = moduleMap.get("id");
+                    String moduleName = moduleMap.get("name");
+                    String totalSlides = moduleMap.get("noOfSlides");
 
-                    u.addToLearning(getApplicationContext(), userUpdated, infoToShow.get(0));
+                    userMap = u.addToLearning(getApplicationContext(), userMap, modID, moduleName, totalSlides);
 
                     // for now, this method assigns the first available tutor (== Author) of a module
-                    u.assignTutor(getApplicationContext(), userUpdated, Integer.parseInt(infoToShow.get(0)));
+                    userMap = u.assignTutor(getApplicationContext(), userMap, moduleMap);
 
                     Toast.makeText(ViewLibPopUpModDisplay.this, "Enrolled! You can view your progress on the Learning Tab.", Toast.LENGTH_SHORT).show();
                     Intent returnResult = new Intent(ViewLibPopUpModDisplay.this, ViewLibrary.class);
-                    assert userUpdated != null;
-                    returnResult.putExtra("User String", userUpdated.toString());
-
-                    Module f = new Module();
-                    JSONObject module = f.getModuleByID(getApplicationContext(), Integer.parseInt(infoToShow.get(0)));
-
-                    returnResult.putExtra("Module", module.toString());
+                    returnResult.putExtra("User", userMap);
+                    returnResult.putExtra("Module", moduleMap);
 
                     setResult(1, returnResult);
                     finish();
@@ -135,13 +124,9 @@ public class ViewLibPopUpModDisplay extends Activity {
     }
 
     private boolean ownModule() {
-        try {
-            if (user.getString("Username").equals(infoToShow.get(1))) {
-                return true;
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        if (userMap.get("id").toString().equals(moduleMap.get("author")))
+            return true;
+
         return false;
     }
 

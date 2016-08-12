@@ -3,6 +3,7 @@ package zsoltpazmandy.tutorme;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,17 +14,32 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.json.JSONException;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 
 public class ViewLibrary extends AppCompatActivity {
 
     final Module f = new Module();
 
-    JSONObject user = null;
+    private ArrayList<HashMap<String, Object>> modules = null;
+    private ArrayList<String> modulesNamesList = null;
+    private ListView listView = null;
+    private ListAdapter libraryAdapter = null;
+    private int counterInt;
+
+    HashMap<String, Object> userMap = null;
+    HashMap<String, Object> moduleMap = null;
+
+    private JSONObject user = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,105 +56,178 @@ public class ViewLibrary extends AppCompatActivity {
         TextView displayTop = (TextView) findViewById(R.id.display_top);
         assert displayTop != null;
 
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+        listView = (ListView) findViewById(R.id.library_listview);
+
+        AsyncGetModules getMods = new AsyncGetModules();
+        getMods.execute();
+
+    }
+
+    private void setUpList() {
+
         TextView counter = (TextView) findViewById(R.id.counter);
         assert counter != null;
-        try {
+        String counterText = "" + counterInt;
+        counter.setText(counterText);
 
-            String counterText = "" + f.moduleCount(getApplicationContext());
-
-            counter.setText(counterText);
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            f.getIDs(getApplicationContext());
-        } catch (JSONException | IOException e) {
-            e.printStackTrace();
-        }
-
-        JSONObject user = null;
-        try {
-            user = new JSONObject(getIntent().getStringExtra("User String"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        ListView listView = (ListView) findViewById(R.id.library_listview);
-
-        ArrayList<String> modulesNamesList = null;
-
-        try {
-            modulesNamesList = f.getModuleNames(getApplicationContext());
-        } catch (IOException | JSONException e) {
-            e.printStackTrace();
-        }
-
-        assert modulesNamesList != null;
-        final ListAdapter libraryAdapter = new ArrayAdapter<String>(this,
+        libraryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, modulesNamesList);
 
-        assert listView != null;
         listView.setAdapter(libraryAdapter);
 
-        final JSONObject finalUser = user;
+    }
+
+    private void setUpListenerOnItems() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                String moduleSelected = String.valueOf(libraryAdapter.getItem(position));
+                ArrayList<String> moduleInfo = new ArrayList<String>();
 
-                try {
+                // ID of Module as a String (Right now redundant, as Names are also PKs of DB)
+                moduleInfo.add(modules.get(position).get("id").toString());
 
-                    JSONObject moduleSelectedJSON = f.getModuleByName(getApplicationContext(), moduleSelected);
+                // ID of authorJSON of Module (to be used to retrieve User data once there's a DB
+                // with name, info, ratings & stats)
+                moduleInfo.add(modules.get(position).get("author").toString());
 
-                    ArrayList<String> moduleInfo = new ArrayList<String>();
+                // PRO/free
+                moduleInfo.add(modules.get(position).get("pro").toString());
 
-                    // ID of Module as a String (Right now redundant, as Names are also PKs of DB)
-                    moduleInfo.add(moduleSelectedJSON.getString("ID"));
+                // Name of module (must be unique)
+                moduleInfo.add(modules.get(position).get("name").toString());
 
-                    // ID of authorJSON of Module (to be used to retrieve User data once there's a DB
-                    // with name, info, ratings & stats)
-                    moduleInfo.add(moduleSelectedJSON.getString("Author"));
+                // Description of module written by authorJSON
+                moduleInfo.add(modules.get(position).get("description").toString());
 
-                    // PRO/free
-                    moduleInfo.add("" + moduleSelectedJSON.getInt("PRO"));
+                // Array of IDs of Ratings (once Ratings objects implemented, will serve
+                // to provide Ratings value (in range 1-5 to be displayed in the Module Library)
+                moduleInfo.add("" + 1);
 
-                    // Name of module (must be unique)
-                    moduleInfo.add(moduleSelectedJSON.getString("Name"));
+                // array of IDs of the module's trainers - to be implemented:
+                moduleInfo.add("" + 1);
 
-                    // Description of module written by authorJSON
-                    moduleInfo.add(moduleSelectedJSON.getString("Description"));
+                moduleInfo.add(modules.get(position).get("noOfSlides").toString());
 
-                    // Array of IDs of Ratings (once Ratings objects implemented, will serve
-                    // to provide Ratings value (in range 1-5 to be displayed in the Module Library)
-                    moduleInfo.add("" + moduleSelectedJSON.getInt("Reviews"));
-
-                    // array of IDs of the module's trainers - to be implemented:
-                    moduleInfo.add("" + moduleSelectedJSON.getInt("Trainers"));
-
-                    moduleInfo.add("" + moduleSelectedJSON.getInt("No. of Slides"));
-
-                    // all slides stored in the module's JSON are also copied in the arraylist
-                    // might implement later to show previews of module content before in
-                    // popup view. for now: not in use:
-                    for (int i = 1; i <= moduleSelectedJSON.getInt("No. of Slides"); i++) {
-                        moduleInfo.add(moduleSelectedJSON.getString("Slide " + i));
-                    }
-
-                    Intent showModulePop = new Intent(ViewLibrary.this, ViewLibPopUpModDisplay.class);
-                    showModulePop.putExtra("User String", finalUser.toString());
-                    showModulePop.putStringArrayListExtra("Module Info", moduleInfo);
-
-                    startActivityForResult(showModulePop, 1);
-
-                } catch (JSONException | IOException e) {
-                    e.printStackTrace();
-                }
+                Intent showModulePop = new Intent(ViewLibrary.this, ViewLibPopUpModDisplay.class);
+                showModulePop.putExtra("User", userMap);
+                showModulePop.putExtra("Module", modules.get(position));
+                showModulePop.putStringArrayListExtra("Module Info", moduleInfo);
+                startActivityForResult(showModulePop, 1);
 
 
             }
         });
+    }
+
+    class AsyncGetModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
+
+        @Override
+        protected String doInBackground(String... uid) {
+
+            final DatabaseReference modulesRoot = FirebaseDatabase.getInstance().getReference().child("/modules");
+            modulesRoot.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    Iterator i = dataSnapshot.getChildren().iterator();
+
+                    modules = new ArrayList<HashMap<String, Object>>();
+
+                    while (i.hasNext()) {
+
+                        HashMap<String, Object> modMap = new HashMap<String, Object>();
+
+                        DataSnapshot temp = (DataSnapshot) i.next();
+                        modMap.put("name", temp.child("name").getValue().toString());
+                        modMap.put("description", temp.child("description").getValue().toString());
+                        modMap.put("id", temp.child("id").getValue().toString());
+                        modMap.put("author", temp.child("author").getValue().toString());
+                        modMap.put("pro", temp.child("pro").getValue().toString());
+                        modMap.put("author", temp.child("author").getValue().toString());
+                        modMap.put("noOfSlides", temp.child("noOfSlides").getValue().toString());
+                        modMap.put("authorName", temp.child("authorName").getValue().toString());
+
+                        for (int j = 1; j <= Integer.parseInt(temp.child("noOfSlides").getValue().toString()); j++) {
+                            modMap.put("Slide_" + j, temp.child("Slide_" + j).getValue().toString());
+                        }
+
+                        DataSnapshot revRoot = (DataSnapshot) temp.child("reviews");
+                        Iterator j = revRoot.getChildren().iterator();
+
+                        HashMap<String, String> reviewMap = new HashMap<String, String>();
+
+                        while (j.hasNext()){
+
+                            DataSnapshot revTemp = (DataSnapshot) j.next();
+
+                            reviewMap.put(revTemp.getKey(),revTemp.getValue().toString());
+                        }
+
+                        modMap.put("reviews",reviewMap);
+
+                        DataSnapshot trainRoot = (DataSnapshot) temp.child("trainers");
+                        Iterator k = trainRoot.getChildren().iterator();
+
+                        HashMap<String, String> trainersMap = new HashMap<String, String>();
+
+                        while (k.hasNext()){
+
+                            DataSnapshot trainersTemp = (DataSnapshot) k.next();
+
+                            trainersMap.put(trainersTemp.getKey(),trainersTemp.getValue().toString());
+                        }
+
+                        modMap.put("trainers",trainersMap);
+
+
+                        DataSnapshot typesRoot = (DataSnapshot) temp.child("typesOfSlides");
+                        Iterator l = typesRoot.getChildren().iterator();
+
+                        HashMap<String, String> typesMap = new HashMap<String, String>();
+
+                        while (l.hasNext()){
+
+                            DataSnapshot typesTemp = (DataSnapshot) l.next();
+
+                            typesMap.put(typesTemp.getKey(),typesTemp.getValue().toString());
+                        }
+
+                        modMap.put("typesOfSlides",typesMap);
+
+                        modules.add(modMap);
+                    }
+
+                    publishProgress(modules);
+
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+            return null;
+        }
+        @Override
+        protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... moduleMap) {
+            super.onProgressUpdate(moduleMap);
+
+            modulesNamesList = new ArrayList<>();
+
+            for (HashMap<String, Object> oneModule : moduleMap[0]) {
+                modulesNamesList.add(oneModule.get("name").toString());
+            }
+
+            counterInt = modules.size();
+
+            setUpList();
+            setUpListenerOnItems();
+
+        }
 
     }
 
@@ -148,25 +237,17 @@ public class ViewLibrary extends AppCompatActivity {
 
         if (resultCode == 1) {
 
-            JSONObject module = null;
-
-            // updating current user
-            try {
-                this.user = new JSONObject(data.getStringExtra("User String"));
-                module = new JSONObject(data.getStringExtra("Module"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            userMap = (HashMap<String, Object>) data.getSerializableExtra("User");
+            moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module");
 
             // asking if user wants to begin the newly added module
             AlertDialog.Builder alert = new AlertDialog.Builder(ViewLibrary.this);
             alert.setTitle("Begin new module now?");
-            final JSONObject finalModule = module;
             alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     Intent startLearning = new Intent(ViewLibrary.this, ModuleProgress.class);
-                    startLearning.putExtra("User", user.toString());
-                    startLearning.putExtra("Module", finalModule.toString());
+                    startLearning.putExtra("User", userMap);
+                    startLearning.putExtra("Module", moduleMap);
                     startActivity(startLearning);
                     finish();
                     dialog.dismiss();
@@ -190,19 +271,7 @@ public class ViewLibrary extends AppCompatActivity {
 
         User u = new User(getApplicationContext());
         Intent returnToHome = new Intent(ViewLibrary.this, Home.class);
-        JSONObject user = null;
-
-        try {
-            user = new JSONObject(getIntent().getStringExtra("User String"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            returnToHome.putExtra("User", u.getUser(getApplicationContext(), Integer.parseInt(user.getString("ID"))).toString());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        returnToHome.putExtra("User", userMap);
 
         startActivity(returnToHome);
         finish();

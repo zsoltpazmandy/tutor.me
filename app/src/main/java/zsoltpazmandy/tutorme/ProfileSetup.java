@@ -14,23 +14,18 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ProfileSetup extends AppCompatActivity {
 
-    JSONObject user;
     boolean lang1exists = false;
     boolean lang2exists;
     boolean lang3exists;
 
+    User u = null;
+
     private boolean firstSetup;
 
-    private int userIDlocal;
-
-    User u;
     TextView ageLabel;
     Spinner ageSpinner;
     TextView locationLabel;
@@ -54,6 +49,8 @@ public class ProfileSetup extends AppCompatActivity {
     CheckBox healthCheck;
     CheckBox computersCheck;
 
+    private HashMap<String, Object> userMap = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +63,7 @@ public class ProfileSetup extends AppCompatActivity {
             return;
         }
 
-        if(getIntent().hasExtra("Modifying")){
+        if (getIntent().hasExtra("Modifying")) {
             firstSetup = false;
         } else {
             firstSetup = true;
@@ -74,13 +71,15 @@ public class ProfileSetup extends AppCompatActivity {
 
         u = new User(getApplicationContext());
 
-        user = new JSONObject();
-        try {
-            user = new JSONObject(getIntent().getStringExtra("User String"));
-            userIDlocal = user.getInt("ID");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        user = new JSONObject();
+//        try {
+//            user = new JSONObject(getuser.getString("N")Intent().getStringExtra("User String"));
+//            userIDlocal = user.getInt("ID");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
         setUpAge();
         setUpLocation();
@@ -91,7 +90,6 @@ public class ProfileSetup extends AppCompatActivity {
         Button saveProfileButt = (Button) findViewById(R.id.save_profile_butt);
         assert saveProfileButt != null;
 
-        final JSONObject userUpdate = user;
         final boolean finalLang1exists = lang1exists;
         final boolean finalLang2exists = lang2exists;
         final boolean finalLang3exists = lang3exists;
@@ -104,10 +102,36 @@ public class ProfileSetup extends AppCompatActivity {
                                                    } else {
                                                        // SAVING PROFILE
 
-                                                       try {
-                                                           userUpdate.put("Age", String.valueOf(ageSpinner.getSelectedItemPosition()));
-                                                           userUpdate.put("Location", u.decodeCountry(locationSpinner.getSelectedItemPosition()));
-                                                           ArrayList<Integer> interests = new ArrayList<>();
+                                                       // v2 begins
+
+                                                       FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                                                       String id = mAuth.getCurrentUser().getUid();
+
+                                                       userMap = u.buildUserHashMap(
+                                                               id,
+                                                               userMap.get("username").toString(),
+                                                               userMap.get("email").toString(),
+                                                               String.valueOf(ageSpinner.getSelectedItemPosition()),
+                                                               u.decodeLanguage(languages1Spinner.getSelectedItemPosition()),
+                                                               u.decodeLanguage(languages2Spinner.getSelectedItemPosition()),
+                                                               u.decodeLanguage(languages3Spinner.getSelectedItemPosition()),
+                                                               u.decodeCountry(locationSpinner.getSelectedItemPosition()));
+
+                                                       Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
+                                                       Intent homeStart = new Intent(ProfileSetup.this, Home.class);
+                                                       Cloud c = new Cloud();
+                                                       c.saveUserHashMapInCloud(userMap);
+                                                       System.out.println(userMap.toString());
+                                                       homeStart.putExtra("User", userMap);
+                                                       startActivity(homeStart);
+                                                       finish();
+
+                                                       // v2 ends
+
+//                                                       try {
+//                                                           userUpdate.put("Age", String.valueOf(ageSpinner.getSelectedItemPosition()));
+//                                                           userUpdate.put("Location", u.decodeCountry(locationSpinner.getSelectedItemPosition()));
+//                                                           ArrayList<Integer> interests = new ArrayList<>();
 
 //                                                           if (languagesCheck.isChecked()) {
 //                                                               interests.add(0);
@@ -157,57 +181,50 @@ public class ProfileSetup extends AppCompatActivity {
 //                                                               }
 //                                                           }
 
-                                                       } catch (JSONException e) {
-                                                           e.printStackTrace();
-                                                       }
-
-                                                       User u = new User(getApplicationContext());
-
-
-                                                       if (u.saveUserLocally(getApplicationContext(), userUpdate)) {
-                                                           // storing languages information is handled from within the User class
-                                                           u.setLanguages(getApplicationContext(), userUpdate,
-                                                                   languages1Spinner.getSelectedItemPosition(),
-                                                                   languages2Spinner.getSelectedItemPosition(),
-                                                                   languages3Spinner.getSelectedItemPosition());
-                                                           Cloud c = new Cloud();
-                                                           JSONObject locallySavedUser = new JSONObject();
-                                                           FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                                                           String uID = mAuth.getCurrentUser().getUid();
-
-                                                           try {
-                                                               locallySavedUser = u.getUser(getApplicationContext(), userIDlocal);
-                                                               String id = String.valueOf(userIDlocal);
-                                                               String email = locallySavedUser.getString("Email");
-                                                               String username = locallySavedUser.getString("Username");
-                                                               String location = u.getLocation(getApplicationContext(), locallySavedUser);
-                                                               String language1 = u.getLanguages(getApplicationContext(), locallySavedUser)[0];
-                                                               String language2 = u.getLanguages(getApplicationContext(), locallySavedUser)[1];
-                                                               String language3 = u.getLanguages(getApplicationContext(), locallySavedUser)[2];
-                                                               String age = locallySavedUser.getString("Age");
-
-                                                               c.saveUserInCloud(uID, id, email, username, location, language1, language2, language3, age, "000000null_0_0","", "");
+//                                                       } catch (JSONException e) {
+//                                                           e.printStackTrace();
+//                                                       }
+//
+//                                                       User u = new User(getApplicationContext());
+//
+//
+//                                                       if (u.saveUserLocally(getApplicationContext(), userUpdate)) {
+//                                                           // storing languages information is handled from within the User class
+//                                                           u.setLanguages(getApplicationContext(), userUpdate,
+//                                                                   languages1Spinner.getSelectedItemPosition(),
+//                                                                   languages2Spinner.getSelectedItemPosition(),
+//                                                                   languages3Spinner.getSelectedItemPosition());
+//                                                           Cloud c = new Cloud();
+//                                                           JSONObject locallySavedUser = new JSONObject();
 
 
-                                                               if(firstSetup) {
-                                                                   locallySavedUser.accumulate("Progress", "000000null_0_0");
-                                                               }
+//                                                           try {
+//                                                               locallySavedUser = u.getUser(getApplicationContext(), userIDlocal);
+//                                                               String id = String.valueOf(userIDlocal);
+//                                                               String email = locallySavedUser.getString("Email");
+//                                                               String username = locallySavedUser.getString("Username");
+//                                                               String location = u.getLocation(getApplicationContext(), locallySavedUser);
+//                                                               String language1 = u.getLanguages(getApplicationContext(), locallySavedUser)[0];
+//                                                               String language2 = u.getLanguages(getApplicationContext(), locallySavedUser)[1];
+//                                                               String language3 = u.getLanguages(getApplicationContext(), locallySavedUser)[2];
+//                                                               String age = locallySavedUser.getString("Age");
+//
+//                                                               c.saveUserInCloud(id, id, email, username, location, language1, language2, language3, age, "", "000000null_0_0","", "");
+//                                                               if(firstSetup) {
+//                                                                   locallySavedUser.accumulate("Progress", "000000null_0_0");
+//                                                               }
+//
+//                                                           } catch (JSONException e) {
+//                                                               e.printStackTrace();
+//                                                           }
 
-                                                           } catch (JSONException e) {
-                                                               e.printStackTrace();
-                                                           }
 
 
-                                                           Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
-                                                           Intent homeStart = new Intent(ProfileSetup.this, Home.class);
-                                                           homeStart.putExtra("User", locallySavedUser.toString());
-                                                           startActivity(homeStart);
-                                                           finish();
 
-                                                       } else {
-                                                           Toast.makeText(ProfileSetup.this, "Saving profile failed.", Toast.LENGTH_SHORT).show();
-
-                                                       }
+//                                                       } else {
+//                                                           Toast.makeText(ProfileSetup.this, "Saving profile failed.", Toast.LENGTH_SHORT).show();
+//
+//                                                       }
 
                                                    }
                                                }
@@ -298,11 +315,18 @@ public class ProfileSetup extends AppCompatActivity {
         lang2exists = false;
         lang3exists = false;
 
-        if (!u.getLanguages(getApplicationContext(), user).equals("0")) {
-            lang1exists = true;
+//        if (!u.getLanguages(getApplicationContext(), user).equals("0")) {
+//            lang1exists = true;
+//
+//            for (int i = 0; i < languages1SpinnerAdapter.getCount(); i++) {
+//                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[0]))
+//                    languages1Spinner.setSelection(i);
+//            }
+//        }
 
+        if (!firstSetup) {
             for (int i = 0; i < languages1SpinnerAdapter.getCount(); i++) {
-                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[0]))
+                if (u.decodeLanguage(i).equals(userMap.get("language1")))
                     languages1Spinner.setSelection(i);
             }
         }
@@ -313,16 +337,23 @@ public class ProfileSetup extends AppCompatActivity {
         languages2SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages2Spinner.setAdapter(languages2SpinnerAdapter);
 
-        if (!u.getLanguages(getApplicationContext(), user).equals("0") &&
-                !("" + u.getLanguages(getApplicationContext(), user)[1]).equals("0")) {
-            lang2exists = true;
-
-            for (int i = 0; i < languages2SpinnerAdapter.getCount(); i++) {
-                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[1]))
-                    languages2Spinner.setSelection(i);
+//        if (!u.getLanguages(getApplicationContext(), user).equals("0") &&
+//                !("" + u.getLanguages(getApplicationContext(), user)[1]).equals("0")) {
+//            lang2exists = true;
+//
+//            for (int i = 0; i < languages2SpinnerAdapter.getCount(); i++) {
+//                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[1]))
+//                    languages2Spinner.setSelection(i);
+//            }
+//
+//        }
+        if (userMap.containsKey("language2"))
+            if (!userMap.get("language2").equals("")) {
+                for (int i = 0; i < languages2SpinnerAdapter.getCount(); i++) {
+                    if (u.decodeLanguage(i).equals(userMap.get("language2")))
+                        languages2Spinner.setSelection(i);
+                }
             }
-
-        }
 
         languages3Label = (TextView) findViewById(R.id.languages3_label);
         languages3Spinner = (Spinner) findViewById(R.id.languages3_spinner);
@@ -330,15 +361,23 @@ public class ProfileSetup extends AppCompatActivity {
         languages3SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages3Spinner.setAdapter(languages3SpinnerAdapter);
 
-        if (!u.getLanguages(getApplicationContext(), user).equals("0") &&
-                !("" + u.getLanguages(getApplicationContext(), user)[2]).equals("0")) {
-            lang3exists = true;
+//        if (!u.getLanguages(getApplicationContext(), user).equals("0") &&
+//                !("" + u.getLanguages(getApplicationContext(), user)[2]).equals("0")) {
+//            lang3exists = true;
+//
+//            for (int i = 0; i < languages3SpinnerAdapter.getCount(); i++) {
+//                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[2]))
+//                    languages3Spinner.setSelection(i);
+//            }
+//        }
 
-            for (int i = 0; i < languages3SpinnerAdapter.getCount(); i++) {
-                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[2]))
-                    languages3Spinner.setSelection(i);
+        if (userMap.containsKey("language3"))
+            if (!userMap.get("language3").equals("")) {
+                for (int i = 0; i < languages3SpinnerAdapter.getCount(); i++) {
+                    if (u.decodeLanguage(i).equals(userMap.get("language3")))
+                        languages3Spinner.setSelection(i);
+                }
             }
-        }
     }
 
     private void setUpLocation() {
@@ -347,20 +386,28 @@ public class ProfileSetup extends AppCompatActivity {
         ArrayAdapter<CharSequence> locationSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.locations, android.R.layout.simple_spinner_dropdown_item);
         locationSpinner.setAdapter(locationSpinnerAdapter);
 
-        try {
-            if (!user.getString("Location").equals("")) {
-                int currentLocation = 0;
+//        try {
+//            if (!user.getString("Location").equals("")) {
+//                int currentLocation = 0;
+//
+//                for (int i = 0; i < locationSpinnerAdapter.getCount(); i++) {
+//                    if (u.decodeCountry(i).equals(user.getString("Location"))) {
+//                        currentLocation = i;
+//                    }
+//                }
+//
+//                locationSpinner.setSelection(currentLocation);
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
-                for (int i = 0; i < locationSpinnerAdapter.getCount(); i++) {
-                    if (u.decodeCountry(i).equals(user.getString("Location"))) {
-                        currentLocation = i;
-                    }
+        if (!firstSetup) {
+            for (int i = 0; i < locationSpinnerAdapter.getCount(); i++) {
+                if (u.decodeCountry(i).equals(userMap.get("location"))) {
+                    locationSpinner.setSelection(i);
                 }
-
-                locationSpinner.setSelection(currentLocation);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
     }
 
@@ -370,9 +417,14 @@ public class ProfileSetup extends AppCompatActivity {
         ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ages, android.R.layout.simple_spinner_dropdown_item);
         ageSpinner.setAdapter(ageSpinnerAdapter);
 
-        if (!u.getAge(getApplicationContext(), user).equals("")) {
-            ageSpinner.setSelection(Integer.parseInt(u.getAge(getApplicationContext(), user)));
-        }
+//        if (!u.getAge(getApplicationContext(), user).equals("")) {
+//            ageSpinner.setSelection(Integer.parseInt(u.getAge(getApplicationContext(), user)));
+//        }
+
+        if (userMap.containsKey("age"))
+            if (!userMap.get("age").equals("")) {
+                ageSpinner.setSelection(Integer.parseInt(userMap.get("age").toString()));
+            }
     }
 
     @Override
@@ -381,7 +433,7 @@ public class ProfileSetup extends AppCompatActivity {
             super.onBackPressed();
             Toast.makeText(this, "Profile NOT updated.", Toast.LENGTH_SHORT).show();
             Intent backHome = new Intent(ProfileSetup.this, Home.class);
-            backHome.putExtra("User", user.toString());
+            backHome.putExtra("User", userMap);
             startActivity(backHome);
             finish();
         } else {

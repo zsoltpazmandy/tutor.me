@@ -9,12 +9,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class AddSlide extends AppCompatActivity {
 
     JSONObject module;
+    HashMap<String, Object> moduleMap = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,29 +39,41 @@ public class AddSlide extends AppCompatActivity {
 
         assert textSlideImg != null;
 
-        try {
-            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module frame ready");
 
         textSlideImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    module.accumulate("Types of Slides", 1);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+//                try {
+//                    module.accumulate("Types of Slides", 1);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                if (moduleMap.containsKey("typesOfSlides")) {
+                    HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                    int slideCount = typesMap.keySet().size() + 1;
+                    typesMap.put("" + slideCount, "1");
+                    moduleMap.put("typesOfSlides", typesMap);
+                } else {
+                    HashMap<String, String> typesMap = new HashMap<String, String>();
+                    typesMap.put("1", "1");
+                    moduleMap.put("typesOfSlides", typesMap);
                 }
 
                 Intent addPlaintextSlide = new Intent(AddSlide.this, MakeTextSlide.class);
-                addPlaintextSlide.putExtra("Module frame ready", module.toString());
+                addPlaintextSlide.putExtra("Module frame ready", moduleMap);
                 Toast.makeText(AddSlide.this, "Adding Plaintext slide to module", Toast.LENGTH_SHORT).show();
 
                 if (getIntent().hasExtra("Index of new slide")) {
                     addPlaintextSlide.putExtra("Index of new slide", getIntent().getStringExtra("Index of new slide"));
                     startActivityForResult(addPlaintextSlide, 3);
-                    System.out.println("text slide selected, realised that there's 'Index of new slide' extra which is this: " + getIntent().getStringExtra("Index of new slide"));
                 } else {
 
                     startActivityForResult(addPlaintextSlide, 10);
@@ -79,23 +93,31 @@ public class AddSlide extends AppCompatActivity {
 
                 assert module != null;
 
-                try {
-                    module.accumulate("Types of Slides", 2);
-                } catch (JSONException e) {
-                    e.printStackTrace();
+//                try {
+//                    module.accumulate("Types of Slides", 2);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                if (moduleMap.containsKey("typesOfSlides")) {
+                    HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                    int slideCount = typesMap.keySet().size();
+                    typesMap.put("" + slideCount + 1, "2");
+                    moduleMap.put("typesOfSlides", typesMap);
+                } else {
+                    HashMap<String, String> typesMap = new HashMap<String, String>();
+                    typesMap.put("1", "2");
+                    moduleMap.put("typesOfSlides", typesMap);
                 }
 
                 Intent addPlaintextSlide = new Intent(AddSlide.this, MakeTableSlide.class);
-                addPlaintextSlide.putExtra("Module frame ready", module.toString());
+                addPlaintextSlide.putExtra("Module frame ready", moduleMap);
                 Toast.makeText(AddSlide.this, "Adding Table slide to module", Toast.LENGTH_SHORT).show();
 
                 if (getIntent().hasExtra("Index of new slide")) {
                     addPlaintextSlide.putExtra("Index of new slide", getIntent().getStringExtra("Index of new slide"));
                     startActivityForResult(addPlaintextSlide, 3);
-                    System.out.println("text slide selected, realised that there's 'Index of new slide' extra which is this: " + getIntent().getStringExtra("Index of new slide"));
                 } else {
-
-
                     startActivityForResult(addPlaintextSlide, 10);
                 }
             }
@@ -111,39 +133,42 @@ public class AddSlide extends AppCompatActivity {
 
             case 1:
 
-                try {
-                    module = new JSONObject(data.getStringExtra("Slide added to module"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    module = new JSONObject(data.getStringExtra("Slide added to module"));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Slide added to module");
+
                 Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
 
                 break;
 
             case 2:
 
-                try {
-                    module = new JSONObject(data.getStringExtra("Last slide added to module"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    module = new JSONObject(data.getStringExtra("Last slide added to module"));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Last slide added to module");
+
 
                 Intent moduleComplete = new Intent(AddSlide.this, CreateModActivity.class);
-                moduleComplete.putExtra("Module complete", module.toString());
+                moduleComplete.putExtra("Module complete", moduleMap);
                 setResult(1, moduleComplete);
                 finish();
                 break;
             case 3:
-                try {
-                    module = new JSONObject(data.getStringExtra("Module edited"));
-                    Intent slideAddedToMod = new Intent(AddSlide.this, EditSelectedModule.class);
-                    slideAddedToMod.putExtra("Module edited", module.toString());
-                    System.out.println("we're in addslide, sending the new things back. here's the module here: " + module.toString());
-                    setResult(RESULT_OK, slideAddedToMod);
-                    finish();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module edited");
+                Intent slideAddedToMod = new Intent(AddSlide.this, EditSelectedModule.class);
+                slideAddedToMod.putExtra("Module edited", moduleMap);
+                setResult(RESULT_OK, slideAddedToMod);
+                finish();
+
+
                 break;
             case 4:
 

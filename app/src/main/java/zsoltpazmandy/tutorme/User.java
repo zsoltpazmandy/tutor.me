@@ -13,7 +13,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Functions related to User Records, updater functions, user records management
@@ -22,7 +24,6 @@ import java.util.List;
  */
 public class User {
 
-    private String uID;
     private String id;
     private String email;
     private String username;
@@ -31,6 +32,7 @@ public class User {
     private String language2;
     private String language3;
     private String age;
+    private String authored;
     private String learning;
     private String trainedBy;
     private String progress;
@@ -39,8 +41,7 @@ public class User {
     public User(Context context) {
     }
 
-    public User(String uID,
-                String id,
+    public User(String id,
                 String email,
                 String username,
                 String location,
@@ -48,9 +49,9 @@ public class User {
                 String language2,
                 String language3,
                 String age,
+                String authored,
                 String learning,
                 String trainedBy) {
-        this.uID = uID;
         this.id = id;
         this.email = email;
         this.username = username;
@@ -59,15 +60,14 @@ public class User {
         this.language2 = language2;
         this.language3 = language3;
         this.age = age;
+        this.authored = authored;
         this.learning = learning;
         this.trainedBy = trainedBy;
     }
 
-    public User(String uID,
-                String id,
+    public User(String id,
                 String email,
                 String username) {
-        this.uID = uID;
         this.id = id;
         this.email = email;
         this.username = username;
@@ -77,8 +77,12 @@ public class User {
         return age;
     }
 
-    public String getId() {
-        return id;
+    public String getAuthored() {
+        return authored;
+    }
+
+    public void setAuthored(String authored) {
+        this.authored = authored;
     }
 
     public String getLanguage1() {
@@ -109,8 +113,8 @@ public class User {
         return trainedBy;
     }
 
-    public String getuID() {
-        return uID;
+    public String getId() {
+        return id;
     }
 
     public String getEmail() {
@@ -123,10 +127,6 @@ public class User {
 
     public void setAge(String age) {
         this.age = age;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public void setLanguage1(String language1) {
@@ -157,8 +157,8 @@ public class User {
         this.trainedBy = trainedBy;
     }
 
-    public void setuID(String uID) {
-        this.uID = uID;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public void setEmail(String email) {
@@ -168,6 +168,51 @@ public class User {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public HashMap<String, Object> buildUserHashMap(
+            String id,
+            String username,
+            String email,
+            String age,
+            String language1,
+            String language2,
+            String language3,
+            String location
+    ) {
+
+        HashMap<String, String> authored = new HashMap<>();
+        authored.put("none", "none");
+        HashMap<String, String> training = new HashMap<>();
+        training.put("none", "none");
+        HashMap<String, String> learning = new HashMap<>();
+        learning.put("none", "none");
+        HashMap<String, String> progress = new HashMap<>();
+        progress.put("none", "none");
+        HashMap<String, String> trainedBy = new HashMap<>();
+        trainedBy.put("none", "none");
+
+
+        HashMap<String, Object> user = new HashMap<>();
+        user.put("id", id);
+        user.put("username", username);
+        user.put("email", email);
+        user.put("age", age);
+        user.put("language1", language1);
+        user.put("language2", language2);
+        user.put("language3", language3);
+        user.put("location", location);
+        user.put("authored", authored);
+        user.put("training", training);
+        user.put("learning", learning);
+        user.put("progress", progress);
+        user.put("trainedBy", trainedBy);
+
+
+        return user;
+
+    }
+
+
 
     /*
     USER LOGIN, REGISTRATION, USER RECORDS MANAGEMENT FUNCTIONS
@@ -649,18 +694,10 @@ public class User {
      * @param user
      * @return
      */
-    public ArrayList<Integer> getModulesAuthoredBy(Context context, JSONObject user) {
-        ArrayList<Integer> modulesAuthoredByUser = new ArrayList<>();
+    public ArrayList<String> getModulesAuthoredBy(Context context, JSONObject user) {
+        ArrayList<String> modulesAuthoredByUser = new ArrayList<>();
         JSONObject moduleRecords = null;
         Module f = new Module();
-
-        // grab User's ID
-        int currentUserID = 0;
-        try {
-            currentUserID = user.getInt("ID");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         // check all module IDs
         try {
@@ -672,20 +709,25 @@ public class User {
 
         // v2 - OK
 
-        int[] moduleIDs = getIntfromJSON(context, moduleRecords, "IDs");
+        String[] moduleIDs = getIntfromJSON(context, moduleRecords, "IDs");
 
         JSONObject currentModule = null;
 
         for (int i = 0; i < moduleIDs.length; i++) {
-            currentModule = f.getModuleByID(context, moduleIDs[i]);
+
+            if (moduleIDs[i].equals("\"000000\"")) {
+                break;
+            }
+
+            currentModule = f.getModuleByID(context, moduleIDs[i].substring(1, moduleIDs[i].length() - 1));
             try {
                 if (currentModule.getString("Author").equals(getUsername(context, user))) {
-                    modulesAuthoredByUser.add(moduleIDs[i]);
+                    modulesAuthoredByUser.add(moduleIDs[i].substring(1, moduleIDs[i].length() - 1));
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (NullPointerException ne) {
-                return new ArrayList<Integer>();
+                return new ArrayList<String>();
             }
         }
 
@@ -902,65 +944,10 @@ public class User {
     public int getWhoTrainsMeThis(Context context, JSONObject user, int moduleID) {
         int trainerID = 0;
 
-        System.out.println("TESTING");
-
-        String allLearning = "";
-        String[] allLearningArray = new String[1];
-
-        try {
-            allLearning = user.getString("Learning").replace("[", "").replace("]", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("allearning: " + allLearning);
-
-        if (allLearning.contains(",")) {
-            allLearningArray = allLearning.split(",");
-        } else {
-            allLearningArray[0] = allLearning;
-        }
-
-        for (String s : allLearningArray)
-            System.out.println("allLearningArray: " + s);
-
-
         int index = 0;
 
-        for (int i = 0; i < allLearningArray.length; i++) {
-            if (allLearningArray[i].equals(String.valueOf(moduleID))) {
-                index = i;
-            }
-        }
+        // take index of module in "Learning", that index of "Trained by" will be the return val
 
-        System.out.println("index: " + index);
-
-        String allTrainers = "";
-        String[] allTrainersArray = new String[1];
-
-        try {
-            allTrainers = user.getString("Trained by").replace("]", "").replace("[", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        System.out.println("alltrainers: " + allTrainers);
-
-        if (allTrainers.contains(",")) {
-            allTrainersArray = allTrainers.split(",");
-        } else {
-            allTrainersArray[0] = allTrainers;
-        }
-
-        for (String s : allTrainersArray)
-            System.out.println("alltrainersarray: " + s);
-
-        trainerID = Integer.parseInt(allTrainersArray[index]);
-        System.out.println("trainerID: "+trainerID);
-
-        if (allTrainersArray[0].isEmpty()) {
-            trainerID = 0;
-        }
 
         return trainerID;
     }
@@ -1065,14 +1052,22 @@ public class User {
      * @param moduleID
      * @return true if use is already enrolled
      */
-    public boolean isLearning(Context context, JSONObject user, int moduleID) {
+    public boolean isLearning(Context context, HashMap<String, Object> user, String moduleID) {
         boolean result = false;
 
-        for (int i = 0; i < getLearning(context, user).size(); i++) {
-            if (getLearning(context, user).get(i).equals(String.valueOf(moduleID)))
-                result = true;
-        }
+//        for (int i = 0; i < getLearning(context, user).size(); i++) {
+//            if (getLearning(context, user).get(i).equals(String.valueOf(moduleID)))
+//                result = true;
+//        }
 
+        HashMap<String, String> learning = (HashMap<String, String>) user.get("learning");
+        Set<String> learningIDset = learning.keySet();
+
+        for (String s : learningIDset) {
+            if (s.equals(moduleID)) {
+                result = true;
+            }
+        }
         return result;
     }
 
@@ -1098,23 +1093,45 @@ public class User {
      * left off; and to mark the module as 'Completed' (not implemented yet).
      *
      * @param context
-     * @param user
-     * @param newLearning
      */
-    public void addToLearning(Context context, JSONObject user, String newLearning) {
+    public HashMap<String, Object> addToLearning(Context context, HashMap<String, Object> userMap, String modID, String modName, String noOfSlides) {
 
-        try {
-            user.accumulate("Learning", "#" + newLearning);
-            user.accumulate("Progress", "#" + newLearning + "/0");
-            //              "Progress" : "[#1/0]"
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        String newLearning = modID.replace("[", "").replace("]", "").replaceAll("\"", "");
+//
+//        try {
+//            user.accumulate("Learning", "#" + newLearning);
+//            user.accumulate("Progress", newLearning + modName + "_" + noOfSlides + "_0");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        System.out.println(user.toString());
+//
+//        saveUserLocally(context, user);
+//        Cloud c = new Cloud();
+//        c.saveUserInCloud(context, user);
 
-        saveUserLocally(context, user);
+        HashMap<String, String> oldLearningMap = (HashMap<String, String>) userMap.get("learning");
+        if (oldLearningMap.containsKey("none")) oldLearningMap.remove("none");
+        oldLearningMap.put(modID, "true");
+
+        HashMap<String, String> oldProgressMap = (HashMap<String, String>) userMap.get("progress");
+        if (oldProgressMap.containsKey("none")) oldProgressMap.remove("none");
+        oldProgressMap.put(modID, modName + "_" + noOfSlides + "_0");
+
+        userMap.remove("learning");
+        userMap.remove("progress");
+        userMap.put("learning", oldLearningMap);
+        userMap.put("progress", oldProgressMap);
+
+        Cloud c = new Cloud();
+        c.saveUserHashMapInCloud(userMap);
+
+        return userMap;
+
     }
 
-    public void addToTraining(Context context, JSONObject user, String newTraining){
+    public void addToTraining(Context context, JSONObject user, String newTraining) {
         try {
             user.accumulate("Training", newTraining);
         } catch (JSONException e) {
@@ -1133,32 +1150,59 @@ public class User {
      * - interests
      *
      * @param context
-     * @param user     the user enrolling on a Module
-     * @param moduleID the module the user is starting to learn
      */
-    public void assignTutor(Context context, JSONObject user, int moduleID) {
+    public HashMap<String, Object> assignTutor(Context context, HashMap<String, Object> userMap, HashMap<String, String> moduleMap) {
 
-        int IDofAssignedTrainer = 0;
 
-        JSONObject module = null;
-        Module f = new Module();
-        ArrayList<Integer> trainers = new ArrayList<>();
+        String tutorID = moduleMap.get("author");
 
-        module = f.getModuleByID(context, moduleID);
-        trainers = f.getTrainers(context, module);
+        HashMap<String, String> oldTrainedBy = (HashMap<String, String>) userMap.get("trainedBy");
+        if (oldTrainedBy.containsKey("none")) oldTrainedBy.remove("none");
 
-        // Algorithm that matches the Learner with a Trainer goes here
+        if (oldTrainedBy.containsKey(tutorID)) {
 
-        // Now, it only picks the first available Trainer:
-        IDofAssignedTrainer = trainers.get(0);
+            String temp = oldTrainedBy.get(tutorID) + ", " + moduleMap.get("id");
+            oldTrainedBy.remove(tutorID);
+            oldTrainedBy.put(tutorID,temp);
 
-        try {
-            user.accumulate("Trained by", IDofAssignedTrainer);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+
+            oldTrainedBy.put(tutorID, moduleMap.get("id"));
         }
 
-        saveUserLocally(context, user);
+        userMap.remove("trainedBy");
+        userMap.put("trainedBy", oldTrainedBy);
+
+        Cloud c = new Cloud();
+
+        c.saveUserHashMapInCloud(userMap);
+
+        c.addToTrainersTrainees(tutorID, userMap.get("id").toString(), moduleMap.get("id").toString());
+
+        return userMap;
+
+//        int IDofAssignedTrainer = 0;
+//        JSONObject module = null;
+//        Module f = new Module();
+//        ArrayList<Integer> trainers = new ArrayList<>();
+//
+//        module = f.getModuleByID(context, moduleID);
+//        trainers = f.getTrainers(context, module);
+//
+//        // Algorithm that matches the Learner with a Trainer goes here
+//
+//        // Now, it only picks the first available Trainer:
+//        IDofAssignedTrainer = trainers.get(0);
+//
+//        try {
+//            user.accumulate("Trained by", IDofAssignedTrainer);
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+//
+//        saveUserLocally(context, user);
+
+
     }
 
     /**
@@ -1172,8 +1216,6 @@ public class User {
      */
     public void updateProgress(Context context, JSONObject user, JSONObject module, int lastSlide) {
 
-
-        System.out.println("TESTING");
 
         // LOCAL UPDATE
 
@@ -1197,27 +1239,17 @@ public class User {
             perModule[0] = progressString;
         }
 
-        for (String s : perModule)
-            System.out.println(s);
-
-
         // module IDs
         String[] modules = new String[perModule.length];
         for (int i = 0; i < perModule.length; i++) {
             modules[i] = perModule[i].split("/")[0].replace("#", "");
         }
 
-        for (String s : modules)
-            System.out.println(s);
-
         // lastSides
         String[] lastSlides = new String[perModule.length];
         for (int i = 0; i < perModule.length; i++) {
             lastSlides[i] = perModule[i].split("/")[1];
         }
-
-        for (String s : lastSlides)
-            System.out.println(s);
 
         for (int i = 0; i < perModule.length; i++) {
             try {
@@ -2421,9 +2453,9 @@ public class User {
      * @param toFind  String value to extract values from within the JSON
      * @return
      */
-    public int[] getIntfromJSON(Context context, JSONObject input, String toFind) {
+    public String[] getIntfromJSON(Context context, JSONObject input, String toFind) {
 
-        int[] returnValue = new int[1];
+        String[] returnValue = new String[1];
 
         String temp = "";
         String[] tempArray = new String[1];
@@ -2434,7 +2466,7 @@ public class User {
             // brackets are removed from the beginning and the end in case it is an array
             temp = temp.replace("[", "").replace("]", "").trim();
         } catch (JSONException e) {
-            returnValue[0] = 0;
+            returnValue[0] = "0";
             return returnValue;
         }
 
@@ -2442,7 +2474,7 @@ public class User {
         // and placed in a temporary String[]
         if (temp.contains(",")) {
             tempArray = temp.split(",");
-            returnValue = new int[tempArray.length];
+            returnValue = new String[tempArray.length];
         } else {
             // if it was only 1 element, and thus there are no commas, then there is only one element
             // in the temporary String[]
@@ -2450,13 +2482,13 @@ public class User {
         }
 
         if (tempArray.length == 0) {
-            returnValue[0] = 0;
+            returnValue[0] = "0";
             return returnValue;
         }
 
         // the temporary String[] is then parsed and copied into an int[]
         for (int i = 0; i < tempArray.length; i++) {
-            returnValue[i] = Integer.parseInt(tempArray[i]);
+            returnValue[i] = tempArray[i];
         }
 
         // int[] is then returned
@@ -2492,6 +2524,37 @@ public class User {
         }
 
         return returnValue;
+    }
+
+    public ArrayList<String> getStringArrayListFromJSON(Context context, JSONObject input, String toFind) {
+        ArrayList<String> returnArray = new ArrayList<>();
+
+        String temp = "";
+
+        try {
+            // target String is read in from the JSON Object
+            temp = input.getString(toFind);
+            // brackets are removed from the beginning and the end in case it is an array
+            temp = temp.replace("[", "").replace("]", "").trim();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return returnArray;
+        }
+
+
+        if (temp.contains(",")) {
+            for (String s : temp.split(",")) {
+                returnArray.add(s);
+            }
+        } else {
+            returnArray.add(temp);
+        }
+
+        if (returnArray.size() == 0) {
+            return returnArray;
+        }
+
+        return returnArray;
     }
 
 }

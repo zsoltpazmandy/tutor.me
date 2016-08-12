@@ -15,11 +15,12 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.NavigableSet;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class LearningTab extends Fragment {
@@ -34,6 +35,8 @@ public class LearningTab extends Fragment {
     private ArrayList<String> modsLearningNames;
     private ArrayList<String> modsLearningTotSlides;
     private ArrayList<String> modsLearningLastSlides;
+
+    private HashMap<String, Object> userMap = null;
 
     public LearningTab() {
     }
@@ -58,54 +61,69 @@ public class LearningTab extends Fragment {
         modsLearningTotSlides = new ArrayList<>();
         modsLearningLastSlides = new ArrayList<>();
 
-        String[] progressArray = new String[0];
+//        String[] progressArray = new String[0];
 
-        try {
-            this.user = new JSONObject(getActivity().getIntent().getStringExtra("User"));
-            progressArray = u.getStringFromJSON(getActivity().getApplicationContext(), user, "Progress");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            this.user = new JSONObject(getActivity().getIntent().getStringExtra("User"));
+//            progressArray = u.getStringFromJSON(getActivity().getApplicationContext(), user, "Progress");
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
-        // if there has been any registered progress
-        if (!progressArray[0].equals("")) {
+        userMap = (HashMap<String, Object>) getActivity().getIntent().getSerializableExtra("User");
 
-            // for every module's progress string
-            for (String s : progressArray) {
+        HashMap<String, String> userProgress = (HashMap<String, String>) userMap.get("progress");
 
-                // 6-digit ID put in arraylist
-                getModsLearningIDs.add(s.substring(0, 6));
-                String rawProg = s.substring(6);
-
-                if (rawProg.split("_").length == 3) { // name contains no underscores
-                    modsLearningNames.add(rawProg.split("_")[0]);
-                    modsLearningTotSlides.add(rawProg.split("_")[1]);
-                    modsLearningLastSlides.add(rawProg.split("_")[2]);
-                } else { // if name contains underscores
-
-                    // the last index in the arraylist, where the name is rebuilt
-                    int index = modsLearningNames.size();
-
-                    // if this isn't the first entry in the arraylist, the index of insertion is the last position: size-1
-                    if (modsLearningNames.size() != 0)
-                        index--;
-
-                    // index where the name ends, total & last slides begin
-                    int indexOfTotal = rawProg.split("_").length - 1;
-                    int indexOfLast = rawProg.split("_").length;
-
-                    // rebuild name
-                    for (int i = 0; i < rawProg.split("_").length - 2; i++) {
-                        modsLearningNames.add(index, rawProg.split("_")[i]);
-                    }
-
-                    modsLearningTotSlides.add(rawProg.split("_")[indexOfTotal]);
-                    modsLearningLastSlides.add(rawProg.split("_")[indexOfTotal + 1]);
-                }
-            }
-        } else {
+        if (userProgress.size() == 1 && userProgress.containsKey("none")){
             modsLearningNames.add("");
+        } else {
+            Set<String> modIDsLearning = userProgress.keySet();
+            for(String s : modIDsLearning){ // needs progress format as: ../progress/hashmaps of key: 000000, value: Name_X_Y  | where x = totalslides, y = last slide
+                modsLearningNames.add(userProgress.get(s).split("_")[0]);
+                modsLearningTotSlides.add(userProgress.get(s).split("_")[1]);
+                modsLearningLastSlides.add(userProgress.get(s).split("_")[2]);
+            }
         }
+
+//            // if there has been any registered progress
+//            if (!progressArray[0].equals("")) {
+//
+//                // for every module's progress string
+//                for (String s : progressArray) {
+//
+//                    // 6-digit ID put in arraylist
+//                    getModsLearningIDs.add(s.substring(0, 6));
+//                    String rawProg = s.substring(6);
+//
+//                    if (rawProg.split("_").length == 3) { // name contains no underscores
+//                        modsLearningNames.add(rawProg.split("_")[0]);
+//                        modsLearningTotSlides.add(rawProg.split("_")[1]);
+//                        modsLearningLastSlides.add(rawProg.split("_")[2]);
+//                    } else { // if name contains underscores
+//
+//                        // the last index in the arraylist, where the name is rebuilt
+//                        int index = modsLearningNames.size();
+//
+//                        // if this isn't the first entry in the arraylist, the index of insertion is the last position: size-1
+//                        if (modsLearningNames.size() != 0)
+//                            index--;
+//
+//                        // index where the name ends, total & last slides begin
+//                        int indexOfTotal = rawProg.split("_").length - 1;
+//                        int indexOfLast = rawProg.split("_").length;
+//
+//                        // rebuild name
+//                        for (int i = 0; i < rawProg.split("_").length - 2; i++) {
+//                            modsLearningNames.add(index, rawProg.split("_")[i]);
+//                        }
+//
+//                        modsLearningTotSlides.add(rawProg.split("_")[indexOfTotal]);
+//                        modsLearningLastSlides.add(rawProg.split("_")[indexOfTotal + 1]);
+//                    }
+//                }
+//            } else {
+//                modsLearningNames.add("");
+//            }
     }
 
     @Nullable
@@ -119,6 +137,20 @@ public class LearningTab extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         setupLearningTab();
+        setUpBrowseButt();
+    }
+
+    private void setUpBrowseButt() {
+        Button browseAllButt = (Button) getActivity().findViewById(R.id.viewLibButt);
+        browseAllButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent openLibrary = new Intent(getActivity(), ViewLibrary.class);
+                openLibrary.putExtra("User", userMap);
+                startActivity(openLibrary);
+                getActivity().finish();
+            }
+        });
     }
 
     private void setupLearningTab() {
@@ -206,21 +238,19 @@ public class LearningTab extends Fragment {
 //        }
 
         // setup display
-        if (modsLearningNames.get(0).equals("null")) {
+        if (modsLearningNames.get(0).equals("")) {
             learningView.setText(R.string.no_module_taken_yet);
             return;
         }
         learningView.setText(R.string.i_m_currently_learning);
 
-
-        if (modsLearningNames.size() > 1) {
+        if (modsLearningNames.size() > 0) {
 
             // Strings to be displayed in the list (Names, progresses)
             ArrayList<String> learningDisplayArray = new ArrayList<>();
-
             for (int i = 0; i < modsLearningNames.size(); i++) {
-                double progress = Double.valueOf(modsLearningLastSlides.get(i));
-                double totalSlides = Double.valueOf(modsLearningTotSlides.get(i));
+                double progress = Double.valueOf(modsLearningLastSlides.get(i).replaceAll("\"", ""));
+                double totalSlides = Double.valueOf(modsLearningTotSlides.get(i).replaceAll("\"", ""));
                 double tempDouble = (progress / totalSlides) * 100;
                 long percentCompleted = Math.round(tempDouble);
                 learningDisplayArray.add(modsLearningNames.get(i) + "\n(" + percentCompleted + "%)");
@@ -236,18 +266,6 @@ public class LearningTab extends Fragment {
             learningList.setAdapter(currentModulesAdapter);
 
         }
-
-        Button browseAllButt = (Button) getActivity().findViewById(R.id.viewLibButt);
-        browseAllButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent openLibrary = new Intent(getActivity(), ViewLibrary.class);
-                openLibrary.putExtra("User String", user.toString());
-                startActivity(openLibrary);
-                getActivity().finish();
-            }
-        });
-
 
     }
 

@@ -16,10 +16,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
+import java.util.HashMap;
 
 public class SignUp extends AppCompatActivity {
 
@@ -30,13 +27,8 @@ public class SignUp extends AppCompatActivity {
     private Button signUpButt;
 
     private String username;
-    private String password;
     private String email;
-    private String FBuID;
-
-    private User u = null;
-
-    private JSONObject user;
+    private String id;
 
     private FirebaseAuth mAuth;
 
@@ -45,8 +37,6 @@ public class SignUp extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         setUpViews();
-
-        u = new User(getApplicationContext());
 
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
@@ -86,7 +76,6 @@ public class SignUp extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 username = usernameField.getText().toString().trim();
-                password = pwFirst.getText().toString().trim();
                 email = emailField.getText().toString().trim();
 
                 if (!fieldsValid())
@@ -107,31 +96,37 @@ public class SignUp extends AppCompatActivity {
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) { // registered on cloud
 
-                                            FBuID = mAuth.getCurrentUser()
+                                            id = mAuth.getCurrentUser()
                                                     .getUid()
                                                     .toString();
 
-                                            // local registration
-                                            int localID = 0;
-                                            try {
-                                                localID = u.register(getApplicationContext(),
-                                                        username,
-                                                        password,
-                                                        email);
+                                            HashMap<String,Object> userPrepMap = new HashMap<String, Object>();
+                                            userPrepMap.put("id",id);
+                                            userPrepMap.put("username", username);
+                                            userPrepMap.put("email",email);
 
-                                                user = u.getUser(getApplicationContext(),
-                                                        localID)
-                                                        .put("FBuID", FBuID);
-                                            } catch (JSONException | IOException e) {
-                                                e.printStackTrace();
-                                            }
+
+//                                            // local registration
+//                                            int localID = 0;
+//                                            try {
+//                                                localID = u.register(getApplicationContext(),
+//                                                        username,
+//                                                        password,
+//                                                        email);
+//
+//                                                user = u.getUser(getApplicationContext(),
+//                                                        localID)
+//                                                        .put("id", id);
+//                                            } catch (JSONException | IOException e) {
+//                                                e.printStackTrace();
+//                                            }
 
                                             Cloud c = new Cloud();
-                                            c.prepUser(FBuID, String.valueOf(localID), email, username);
+                                            c.prepUser(id, email, username);
 
                                             // continue to profile setup
                                             Intent setupProfile = new Intent(SignUp.this, ProfileSetup.class);
-                                            setupProfile.putExtra("User String", user.toString());
+                                            setupProfile.putExtra("User", userPrepMap);
                                             startActivity(setupProfile);
                                             finish();
                                         } else {

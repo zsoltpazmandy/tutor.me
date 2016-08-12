@@ -14,11 +14,13 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+
 public class ModuleProgress extends AppCompatActivity {
 
     JSONObject user = null;
     JSONObject tutor = null;
-    JSONObject module = null;
+    HashMap<String,Object> modMap = null;
 
 
     @Override
@@ -30,9 +32,11 @@ public class ModuleProgress extends AppCompatActivity {
 
         final Module f = new Module();
 
+        modMap = (HashMap<String,Object>) getIntent().getSerializableExtra("Module");
+
         try {
             this.user = new JSONObject(getIntent().getStringExtra("User"));
-            this.module = new JSONObject(getIntent().getStringExtra("Module"));
+//            this.module = new JSONObject(getIntent().getStringExtra("Module"));
             this.setTitle("Module information");
         } catch (JSONException e) {
             e.printStackTrace();
@@ -51,27 +55,27 @@ public class ModuleProgress extends AppCompatActivity {
         Button startButt = (Button) findViewById(R.id.view_module_start_butt);
 
         try {
-            nameOfModule.setText(module.getString("Name"));
-            nameOfAuth.setText("written by " + module.getString("Author"));
+            nameOfModule.setText(modMap.get("name").toString());
+            nameOfAuth.setText("written by " + modMap.get("author"));
             moduleRating.setText("Module *****");
             authRating.setText("Author *****");
 
             final User u = new User(getApplicationContext());
-            int IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, Integer.parseInt(module.getString("ID")));
+            int IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, Integer.parseInt(modMap.get("id").toString()));
             tutor = u.getUser(getApplicationContext(), IDofTutor);
             String nameOfTutor = u.getUsername(getApplicationContext(), tutor);
-            final int lastSlide = u.getLastSlideViewed(getApplicationContext(), user, module.getInt("ID"));
+            final int lastSlide = u.getLastSlideViewed(getApplicationContext(), user, Integer.parseInt(modMap.get("id").toString()));
 
             tutorName.setText("Your tutor: " + nameOfTutor);
             tutorRating.setText("Tutor *****");
-            progressBar.setMax(module.getInt("No. of Slides"));
+            progressBar.setMax(Integer.parseInt(modMap.get("noOfSlides").toString()));
             progressBar.setProgress(lastSlide);
-            progressText.setText("" + lastSlide + " of " + module.getInt("No. of Slides") + " slides.");
-            moduleDesc.setText(module.getString("Description"));
+            progressText.setText("" + lastSlide + " of " + modMap.get("noOfSlides") + " slides.");
+            moduleDesc.setText(modMap.get("description").toString());
 
             boolean review = false;
 
-            if (lastSlide < module.getInt("No. of Slides")) {
+            if (lastSlide < Integer.parseInt(modMap.get("noOfSlides").toString())) {
                 if (lastSlide == 0) {
                     startButt.setText("Start");
                     startButt.setEnabled(true);
@@ -93,13 +97,9 @@ public class ModuleProgress extends AppCompatActivity {
 
                     int type = 0;
 
-                    try {
-                        type = f.getSlideType(getApplicationContext(),
-                                module,
-                                u.getLastSlideViewed(getApplicationContext(), user, module.getInt("ID")));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    type = f.getSlideType(getApplicationContext(),
+                            modMap,
+                            u.getLastSlideViewed(getApplicationContext(), user, Integer.parseInt(modMap.get("id").toString())));
 
                     Intent startModule = null;
                     switch (type) {
@@ -114,7 +114,7 @@ public class ModuleProgress extends AppCompatActivity {
                     }
 
                     startModule.putExtra("User", user.toString());
-                    startModule.putExtra("Module", module.toString());
+//                    startModule.putExtra("Module", module.toString());
 
                     if (finalReview) {
                         startModule.putExtra("Slide Number", "" + 0);

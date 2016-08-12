@@ -87,7 +87,7 @@ public class ViewTableSlide extends AppCompatActivity {
             public void onClick(View v) {
 
                 slideNumber--;
-                int type = f.getSlideType(getApplicationContext(), module, slideNumber);
+                int type = 0;//f.getSlideType(getApplicationContext(), module, slideNumber);
 
                 Intent prevSlide = null;
                 switch (type) {
@@ -120,7 +120,7 @@ public class ViewTableSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 slideNumber++;
-                int type = f.getSlideType(getApplicationContext(), module, slideNumber);
+                int type = 0;//f.getSlideType(getApplicationContext(), module, slideNumber);
 
                 Intent nextSlide = null;
                 switch (type) {

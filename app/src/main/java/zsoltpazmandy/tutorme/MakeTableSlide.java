@@ -10,15 +10,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 public class MakeTableSlide extends AppCompatActivity {
 
     JSONObject module;
+    HashMap<String, Object> moduleMap = null;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +42,14 @@ public class MakeTableSlide extends AppCompatActivity {
             return;
         }
 
-        try {
-            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module frame ready");
+
 
         if (getIntent().hasExtra("Slide to edit")) {
 
@@ -62,14 +68,8 @@ public class MakeTableSlide extends AppCompatActivity {
                 tableSlide.add(i, "");
             }
 
-            try {
-
-                tableRaw = module.getString("Slide " + slideEdited);
-                tableRaw = tableRaw.replace("[", "").replace("]", "").replace("\"", "");
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            tableRaw = moduleMap.get("Slide_" + slideEdited).toString();
+            tableRaw = tableRaw.replace("[", "").replace("]", "").replace("\"", "");
 
             String[] temp = new String[20];
             temp = tableRaw.split(",");
@@ -270,18 +270,21 @@ public class MakeTableSlide extends AppCompatActivity {
 
                     temp.removeAll(Arrays.asList("", null));
 
-                    module.remove("Slide " + slideEdited);
+                    moduleMap.remove("Slide_" + slideEdited);
 
+                    String assembled = "";
                     for (String s : temp) {
-                        try {
-                            module.accumulate("Slide " + slideEdited, s);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        assembled = assembled + s + ",";
+//                        try {
+//                            moduleMap.accumulate("Slide " + slideEdited, s);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
                     }
+                    moduleMap.put("Slide_" + slideEdited, assembled.substring(0,assembled.length()-1));
 
                     Intent editFinished = new Intent();
-                    editFinished.putExtra("Module edited", module.toString());
+                    editFinished.putExtra("Module edited", moduleMap);
                     setResult(RESULT_OK, editFinished);
                     finish();
                 }
@@ -479,37 +482,49 @@ public class MakeTableSlide extends AppCompatActivity {
 
                     temp.removeAll(Arrays.asList("", null));
 
+//                    for (String s : temp) {
+//                        try {
+//                            module.accumulate("Slide " + newSlideIndex, s);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+
+                    String assembled = "";
                     for (String s : temp) {
-                        try {
-                            module.accumulate("Slide " + newSlideIndex, s);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        assembled = assembled + s + ",";
                     }
+                    moduleMap.put("Slide_" + newSlideIndex, assembled.substring(0,assembled.length()-1));
 
 
-                    int amountOfSlides = 0;
 
-                    String temp2;
 
-                    try {
-                        temp2 = module.getString("Types of Slides");
-                        temp2 = temp2.replace("[", "").replace("]", "");
+//                    int amountOfSlides = 0;
+//
+//                    String temp2;
+//
+//                    try {
+//                        temp2 = module.getString("Types of Slides");
+//                        temp2 = temp2.replace("[", "").replace("]", "");
+//
+//                        amountOfSlides = temp2.split(",").length;
+//
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    try {
+//                        module.put("No. of Slides", amountOfSlides);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
 
-                        amountOfSlides = temp2.split(",").length;
+                    HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                    moduleMap.put("noOfSlides", typesMap.keySet().size());
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    try {
-                        module.put("No. of Slides", amountOfSlides);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
 
                     Intent addedSlide = new Intent();
-                    addedSlide.putExtra("Module edited", module.toString());
+                    addedSlide.putExtra("Module edited", moduleMap);
                     setResult(3, addedSlide);
                     finish();
 
@@ -697,27 +712,39 @@ public class MakeTableSlide extends AppCompatActivity {
                     temp.add(row0col1.getText().toString().trim().replace(",", "##comma##"));
                     temp.add(row0col2.getText().toString().trim().replace(",", "##comma##"));
 
-                    int amountOfSlides = 0;
 
-                    try {
-                        amountOfSlides = module.getJSONArray("Types of Slides").length();
 
-                    } catch (JSONException e) {
-                        amountOfSlides = 1;
-                    }
 
+
+//                    try {
+//                        amountOfSlides = module.getJSONArray("Types of Slides").length();
+//
+//                    } catch (JSONException e) {
+//                        amountOfSlides = 1;
+//                    }
+
+
+//                    for (String s : temp) {
+//                        try {
+//                            module.accumulate("Slide " + amountOfSlides, s);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+                    HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                    int amountOfSlides = typesMap.keySet().size();
                     temp.removeAll(Arrays.asList("", null));
-
+                    String assembled = "";
                     for (String s : temp) {
-                        try {
-                            module.accumulate("Slide " + amountOfSlides, s);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        assembled = assembled + s + ",";
                     }
+                    moduleMap.put("Slide_" + amountOfSlides, assembled.substring(0,assembled.length()-1));
+
+
+
 
                     Intent addNextSlide = new Intent(MakeTableSlide.this, AddSlide.class);
-                    addNextSlide.putExtra("Slide added to module", module.toString());
+                    addNextSlide.putExtra("Slide added to module", moduleMap);
                     setResult(1, addNextSlide);
                     finish();
 
@@ -823,26 +850,37 @@ public class MakeTableSlide extends AppCompatActivity {
                     temp.add(row0col1.getText().toString().trim().replace(",", "##comma##"));
                     temp.add(row0col2.getText().toString().trim().replace(",", "##comma##"));
 
-                    int amountOfSlides = 0;
+//                    int amountOfSlides = 0;
+//
+//                    try {
+//                        amountOfSlides = module.getJSONArray("Types of Slides").length();
+//                    } catch (JSONException e) {
+//                        amountOfSlides = 1;
+//                    }
+//
+//                    temp.removeAll(Arrays.asList("", null));
+//
+//                    for (String s : temp) {
+//                        try {
+//                            module.accumulate("Slide " + amountOfSlides, s);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
 
-                    try {
-                        amountOfSlides = module.getJSONArray("Types of Slides").length();
-                    } catch (JSONException e) {
-                        amountOfSlides = 1;
-                    }
 
+                    HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                    int amountOfSlides = typesMap.keySet().size();
                     temp.removeAll(Arrays.asList("", null));
-
+                    String assembled = "";
                     for (String s : temp) {
-                        try {
-                            module.accumulate("Slide " + amountOfSlides, s);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        assembled = assembled + s + ",";
                     }
+                    moduleMap.put("Slide_" + amountOfSlides, assembled.substring(0,assembled.length()-1));
+
 
                     Intent addingSlidesOver = new Intent(MakeTableSlide.this, AddSlide.class);
-                    addingSlidesOver.putExtra("Last slide added to module", module.toString());
+                    addingSlidesOver.putExtra("Last slide added to module", moduleMap);
                     setResult(2, addingSlidesOver);
                     finish();
                 }

@@ -18,18 +18,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class EditSelectedModule extends AppCompatActivity {
 
-    JSONObject user = null;
-    JSONObject userBackup = null;
-    JSONObject module = null;
     Module f = new Module();
+    Cloud c = new Cloud();
+
+    private HashMap<String, Object> userMap = null;
+    private HashMap<String, Object> moduleMap = null;
+    private HashMap<String, Object> allModNames = null;
+    private ArrayList<String> allModNamesList = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +39,19 @@ public class EditSelectedModule extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        try {
-            user = new JSONObject(getIntent().getStringExtra("User String"));
-            module = new JSONObject(getIntent().getStringExtra("Module"));
-        } catch (JSONException e) {
-            e.printStackTrace();
+//        try {
+//            user = new JSONObject(getIntent().getStringExtra("User String"));
+//            module = new JSONObject(getIntent().getStringExtra("Module"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
+        if(getIntent().hasExtra("All Module Names")) {
+            allModNamesList = (ArrayList<String>) getIntent().getSerializableExtra("All Module Names");
         }
+
 
         final TextView moduleNameLabel = (TextView) findViewById(R.id.edit_selected_name_label);
         assert moduleNameLabel != null;
@@ -90,11 +98,14 @@ public class EditSelectedModule extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
                 alert.setTitle("Change the name of the module");
                 String current = "";
-                try {
-                    current = module.getString("Name");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    current = module.getString("Name");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                current = moduleMap.get("name").toString();
+
                 final EditText newName = new EditText(getApplicationContext());
                 newName.setMaxLines(4);
                 newName.setTextColor(Color.BLACK);
@@ -104,30 +115,30 @@ public class EditSelectedModule extends AppCompatActivity {
                 final String finalCurrent = current;
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        try {
 
-                            if (newName.getText().toString().length() >= 100) {
-                                Toast.makeText(EditSelectedModule.this, "Name must be max 100 characters!", Toast.LENGTH_SHORT).show();
-                            }
+                        if (newName.getText().toString().length() >= 100) {
+                            Toast.makeText(EditSelectedModule.this, "Name must be max 100 characters!", Toast.LENGTH_SHORT).show();
+                        }
 
-                            if (newName.getText().toString().equals(finalCurrent)) {
-                                Toast.makeText(EditSelectedModule.this, "Original name kept.", Toast.LENGTH_SHORT).show();
-                            }
+                        if (newName.getText().toString().equals(finalCurrent)) {
+                            Toast.makeText(EditSelectedModule.this, "Original name kept.", Toast.LENGTH_SHORT).show();
+                        }
 
-                            if (newName.getText().toString().length() == 0) {
-                                Toast.makeText(EditSelectedModule.this, "Name cannot be empty!", Toast.LENGTH_SHORT).show();
-                            }
+                        if (newName.getText().toString().length() == 0) {
+                            Toast.makeText(EditSelectedModule.this, "Name cannot be empty!", Toast.LENGTH_SHORT).show();
+                        }
 
-                            if (!f.isNameTaken(getApplicationContext(), newName.getText().toString())) {
-                                module.remove("Name");
-                                f.updateModule(getApplicationContext(), module.put("Name", newName.getText().toString()));
-                                moduleNameTextView.setText(newName.getText().toString());
+                        if (!isNameTaken(newName.getText().toString().trim())) {
+                            moduleMap.remove("name");
+                            moduleMap.put("name", newName.getText().toString().trim());
+                            c.overWriteModuleHashMapInCloud(moduleMap);
 
-                            } else {
-                                Toast.makeText(EditSelectedModule.this, "A module with that name already exists. Please choose a different name!", Toast.LENGTH_SHORT).show();
-                            }
-                        } catch (IOException | JSONException e) {
-                            e.printStackTrace();
+//                                f.updateModule(getApplicationContext(), module.put("Name", newName.getText().toString().trim()));
+
+                            moduleNameTextView.setText(newName.getText().toString());
+
+                        } else {
+                            Toast.makeText(EditSelectedModule.this, "A module with that name already exists. Please choose a different name!", Toast.LENGTH_SHORT).show();
                         }
                         dialog.dismiss();
                     }
@@ -148,11 +159,12 @@ public class EditSelectedModule extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
                 alert.setTitle("Edit description of the module");
                 String current = "";
-                try {
-                    current = module.getString("Description");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    current = module.getString("Description");
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+                current = moduleMap.get("description").toString();
                 final EditText newDesc = new EditText(getApplicationContext());
                 newDesc.setMaxLines(4);
                 newDesc.setTextColor(Color.BLACK);
@@ -164,30 +176,29 @@ public class EditSelectedModule extends AppCompatActivity {
                 final String finalCurrent = current;
                 alert.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        try {
 
-                            if (newDesc.getText().toString().length() >= 1000) {
-                                failed[0] = true;
-                                Toast.makeText(EditSelectedModule.this, "Description must be max 1000 characters!", Toast.LENGTH_SHORT).show();
-                            }
+                        if (newDesc.getText().toString().length() >= 1000) {
+                            failed[0] = true;
+                            Toast.makeText(EditSelectedModule.this, "Description must be max 1000 characters!", Toast.LENGTH_SHORT).show();
+                        }
 
-                            if (newDesc.getText().toString().equals(finalCurrent)) {
-                                failed[0] = true;
-                                Toast.makeText(EditSelectedModule.this, "Original description kept.", Toast.LENGTH_SHORT).show();
-                            }
+                        if (newDesc.getText().toString().equals(finalCurrent)) {
+                            failed[0] = true;
+                            Toast.makeText(EditSelectedModule.this, "Original description kept.", Toast.LENGTH_SHORT).show();
+                        }
 
-                            if (newDesc.getText().toString().length() == 0) {
-                                failed[0] = true;
-                                Toast.makeText(EditSelectedModule.this, "Description cannot be empty!", Toast.LENGTH_SHORT).show();
-                            }
+                        if (newDesc.getText().toString().length() == 0) {
+                            failed[0] = true;
+                            Toast.makeText(EditSelectedModule.this, "Description cannot be empty!", Toast.LENGTH_SHORT).show();
+                        }
 
-                            if (!failed[0]) {
-                                module.remove("Description");
-                                f.updateModule(getApplicationContext(), module.put("Description", newDesc.getText().toString()));
-                                descTextView.setText(newDesc.getText().toString());
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        if (!failed[0]) {
+//                                module.remove("Description");
+                            moduleMap.remove("description");
+//                                f.updateModule(getApplicationContext(), module.put("Description", newDesc.getText().toString()));
+                            moduleMap.put("description", newDesc.getText().toString());
+                            c.overWriteModuleHashMapInCloud(moduleMap);
+                            descTextView.setText(newDesc.getText().toString());
                         }
                         dialog.dismiss();
                     }
@@ -217,7 +228,7 @@ public class EditSelectedModule extends AppCompatActivity {
             public void onClick(View v) {
 
                 Intent backHome = new Intent(EditSelectedModule.this, Home.class);
-                backHome.putExtra("User", user.toString());
+                backHome.putExtra("User", userMap);
                 startActivity(backHome);
                 finish();
 
@@ -225,99 +236,80 @@ public class EditSelectedModule extends AppCompatActivity {
         });
 
 
-        try {
-            if (module.getString("Name").length() >= 77) {
-                moduleNameTextView.setText(String.format("%s...", module.getString("Name")));
-            } else {
-                moduleNameTextView.setText(module.getString("Name"));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (moduleMap.get("name").toString().length() >= 77) {
+            moduleNameTextView.setText(String.format("%s...", moduleMap.get("name").toString()));
+        } else {
+            moduleNameTextView.setText(moduleMap.get("name").toString());
         }
 
-        try {
-            if (module.getString("Description").length() >= 97) {
-                descTextView.setText(String.format("%s...", module.getString("Description").substring(0, 97)));
-            } else {
-                descTextView.setText(module.getString("Description"));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (moduleMap.get("description").toString().length() >= 97) {
+            descTextView.setText(String.format("%s...", moduleMap.get("description").toString().substring(0, 97)));
+        } else {
+            descTextView.setText(moduleMap.get("description").toString());
         }
 
         editSlideButt.setEnabled(false);
         moveSlideButt.setEnabled(false);
         deleteSlideButt.setEnabled(false);
 
-        int noOfSlides = 0;
-        try {
-            noOfSlides = module.getInt("No. of Slides");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        int noOfSlides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
 
         final ArrayList<String> slidesNames = new ArrayList<>();
 
         for (int i = 1; i <= noOfSlides; i++) {
-            try {
+            //
+//                String tempString;
+//                String[] tempArray = new String[1];
+//                try {
+//                    tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
+//                    if (tempString.contains(",")) {
+//                        tempArray = tempString.split(",");
+//                    } else {
+//                        tempArray[0] = tempString;
+//                    }
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
 
-                String tempString;
-                String[] tempArray = new String[1];
-                try {
-                    tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
-                    if (tempString.contains(",")) {
-                        tempArray = tempString.split(",");
-                    } else {
-                        tempArray[0] = tempString;
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+            System.out.println(moduleMap.toString());
+            HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+
+            if (Integer.parseInt(typesMap.get(""+i)) == 2) {
+
+                String tableRaw = "";
+
+                tableRaw = moduleMap.get("Slide_" + i).toString();
+                tableRaw = tableRaw.replace("[", "").replace("]", "").replace("\"", "");
+
+                String[] temp;
+                temp = tableRaw.split(",");
+
+                String currentRow = "| ";
+
+                for (int j = 0; j < temp.length; j++) {
+                    currentRow = currentRow + temp[j].replace("##comma##", ",") + " | " + temp[j + 1].replace("##comma##", ",") + " | ";
+                    j++;
                 }
 
-                if (Integer.parseInt(tempArray[i - 1]) == 2) {
 
-                    String tableRaw = "";
-                    try {
-
-                        tableRaw = module.getString("Slide " + i);
-                        tableRaw = tableRaw.replace("[", "").replace("]", "").replace("\"", "");
-
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-                    String[] temp;
-                    temp = tableRaw.split(",");
-
-                    String currentRow = "| ";
-
-                    for (int j = 0; j < temp.length; j++) {
-                        currentRow = currentRow + temp[j].replace("##comma##", ",") + " | " + temp[j + 1].replace("##comma##", ",") + " | ";
-                        j++;
-                    }
-
-
-                    if (currentRow.length() >= 80) {
-                        slidesNames.add("Slide " + i + ": " + currentRow.substring(0, 80) + "...");
-                    } else {
-                        slidesNames.add("Slide " + i + ": " + currentRow);
-                    }
-
-
+                if (currentRow.length() >= 80) {
+                    slidesNames.add("Slide " + i + ": " + currentRow.substring(0, 80) + "...");
                 } else {
-
-
-                    if (module.getString("Slide " + i).length() >= 80) {
-                        slidesNames.add("Slide " + i + ": " + module.getString("Slide " + i).substring(0, 80) + "...");
-                    } else {
-                        slidesNames.add("Slide " + i + ": " + module.getString("Slide " + i));
-                    }
+                    slidesNames.add("Slide " + i + ": " + currentRow);
                 }
 
 
-            } catch (JSONException e) {
-                e.printStackTrace();
+            } else {
+
+
+                if (moduleMap.get("Slide_" + i).toString().length() >= 80) {
+                    slidesNames.add("Slide " + i + ": " + moduleMap.get("Slide_" + i).toString().substring(0, 80) + "...");
+                } else {
+                    slidesNames.add("Slide " + i + ": " + moduleMap.get("Slide_" + i).toString());
+                }
             }
+
+
         }
 
         final ArrayAdapter slidesNamesAdapter = new SlideArrayAdapter(this, slidesNames);
@@ -345,23 +337,25 @@ public class EditSelectedModule extends AppCompatActivity {
                         if (!view.isSelected()) {
                             view.setSelected(true);
 
+//                            String tempString;
+//                            String[] tempArray = new String[1];
+//                            try {
+//                                tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
+//                                if (tempString.contains(",")) {
+//                                    tempArray = tempString.split(",");
+//                                } else {
+//                                    tempArray[0] = tempString;
+//                                }
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
 
-                            String tempString;
-                            String[] tempArray = new String[1];
-                            try {
-                                tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
-                                if (tempString.contains(",")) {
-                                    tempArray = tempString.split(",");
-                                } else {
-                                    tempArray[0] = tempString;
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
+                            final HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+
 
                             final int slideNumber = position + 1;
 
-                            final String[] finalTempArray = tempArray;
+//                            final String[] finalTempArray = tempArray;
 
                             addSlideButt.setEnabled(false);
                             editSlideButt.setEnabled(true);
@@ -370,12 +364,14 @@ public class EditSelectedModule extends AppCompatActivity {
                                 public void onClick(View v) {
                                     // start editing selected slide
 
+                                    int posOffset = position + 1;
 
-                                    switch (Integer.parseInt(finalTempArray[position])) {
+
+                                    switch (Integer.parseInt(typesMap.get("" + posOffset))) {
                                         case 1:
 
                                             Intent editTextSlide = new Intent(EditSelectedModule.this, MakeTextSlide.class);
-                                            editTextSlide.putExtra("Module frame ready", module.toString());
+                                            editTextSlide.putExtra("Module frame ready", moduleMap);
                                             editTextSlide.putExtra("Slide to edit", "" + slideNumber);
                                             startActivityForResult(editTextSlide, 1);
 
@@ -383,7 +379,7 @@ public class EditSelectedModule extends AppCompatActivity {
                                         case 2:
 
                                             Intent editTableSlide = new Intent(EditSelectedModule.this, MakeTableSlide.class);
-                                            editTableSlide.putExtra("Module frame ready", module.toString());
+                                            editTableSlide.putExtra("Module frame ready", moduleMap);
                                             editTableSlide.putExtra("Slide to edit", "" + slideNumber);
                                             startActivityForResult(editTableSlide, 1);
                                             break;
@@ -421,42 +417,35 @@ public class EditSelectedModule extends AppCompatActivity {
                                                             ArrayList<Integer> newTypesArray = new ArrayList<>();
 
                                                             // ID of the module
-                                                            int id = 0;
-                                                            try {
-                                                                id = module.getInt("ID");
-                                                            } catch (JSONException e) {
-                                                                e.printStackTrace();
-                                                            }
+                                                            String id = moduleMap.get("id").toString();
 
                                                             // Amount of slides in the module
-                                                            int count = f.getSlideCount(getApplicationContext(), id);
+                                                            int count = Integer.parseInt(moduleMap.get("noOfSlides").toString());
 
                                                             // Slides copied to the ArrayList
                                                             for (int i = 1; i <= count; i++) {
-                                                                try {
-                                                                    allSlidesString.add(module.getString("Slide " + i));
-                                                                } catch (JSONException e) {
-                                                                    e.printStackTrace();
-                                                                }
+                                                                allSlidesString.add(moduleMap.get("Slide_" + i).toString());
                                                             }
 
                                                             // Retrieving slide type information
-                                                            String tempString;
-                                                            String[] tempArray = new String[1];
-                                                            try {
-                                                                tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
-                                                                if (tempString.contains(",")) {
-                                                                    tempArray = tempString.split(",");
-                                                                } else {
-                                                                    tempArray[0] = tempString;
-                                                                }
-                                                            } catch (JSONException e) {
-                                                                e.printStackTrace();
-                                                            }
+                                                            HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+
+//                                                            String tempString;
+//                                                            String[] tempArray = new String[1];
+//                                                            try {
+//                                                                tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
+//                                                                if (tempString.contains(",")) {
+//                                                                    tempArray = tempString.split(",");
+//                                                                } else {
+//                                                                    tempArray[0] = tempString;
+//                                                                }
+//                                                            } catch (JSONException e) {
+//                                                                e.printStackTrace();
+//                                                            }
 
                                                             // Copying slide types in the ArrayList
-                                                            for (int i = 0; i < count; i++) {
-                                                                newTypesArray.add(Integer.parseInt(tempArray[i]));
+                                                            for (int i = 1; i <= count; i++) {
+                                                                newTypesArray.add(Integer.parseInt(typesMap.get("" + i)));
                                                             }
 
 
@@ -509,27 +498,32 @@ public class EditSelectedModule extends AppCompatActivity {
                                                             }
 
                                                             // Remove old Slide Type information
-                                                            module.remove("Types of Slides");
+                                                            moduleMap.remove("typesOfSlides");
+
+                                                            HashMap<String, String> newTypesMap = new HashMap<String, String>();
 
                                                             // Insert new Slide data & Slide Type information in Module
                                                             for (int i = 0; i < tempList.size(); i++) {
                                                                 int no = i + 1;
-                                                                try {
-                                                                    module.put("Slide " + no, tempList.get(i));
-                                                                    if (tempTypeList.get(i) != 0)
-                                                                        module.accumulate("Types of Slides", tempTypeList.get(i));
-                                                                } catch (JSONException e) {
-                                                                    e.printStackTrace();
-                                                                }
+                                                                moduleMap.remove("Slide_" + no);
+                                                                moduleMap.put("Slide_" + no, tempList.get(i));
+//                                                                    module.put("Slide " + no, tempList.get(i));
+                                                                if (tempTypeList.get(i) != 0)
+                                                                    newTypesMap.put("" + no, tempTypeList.get(i).toString());
+//                                                                        module.accumulate("Types of Slides", tempTypeList.get(i));
                                                             }
+
+                                                            moduleMap.remove("typesOfSlides");
+                                                            moduleMap.put("typesOfSlides", newTypesMap);
 
 
                                                             // Update module in the database
-                                                            f.updateModule(getApplicationContext(), module);
+//                                                            f.updateModule(getApplicationContext(), module);
+                                                            c.overWriteModuleHashMapInCloud(moduleMap);
 
                                                             Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
-                                                            restartAct.putExtra("User String", user.toString());
-                                                            restartAct.putExtra("Module", module.toString());
+                                                            restartAct.putExtra("User String", userMap);
+                                                            restartAct.putExtra("Module", moduleMap);
                                                             startActivity(restartAct);
                                                             dialog.dismiss();
                                                             finish();
@@ -558,15 +552,13 @@ public class EditSelectedModule extends AppCompatActivity {
                                             alert.setPositiveButton("Yes, delete", new DialogInterface.OnClickListener() {
                                                         public void onClick(DialogInterface dialog, int whichButton) {
 
-                                                            try {
-                                                                f.removeSlide(getApplicationContext(), module, position);
-                                                            } catch (JSONException e) {
-                                                                e.printStackTrace();
-                                                            }
+                                                            // f.removeSlide(getApplicationContext(), module, position);
+                                                            moduleMap = f.removeSlide(getApplicationContext(), moduleMap, position);
+                                                            c.overWriteModuleHashMapInCloud(moduleMap);
 
                                                             Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
-                                                            restartAct.putExtra("User String", user.toString());
-                                                            restartAct.putExtra("Module", module.toString());
+                                                            restartAct.putExtra("User", userMap);
+                                                            restartAct.putExtra("Module", moduleMap);
                                                             startActivity(restartAct);
                                                             dialog.dismiss();
                                                             finish();
@@ -605,21 +597,13 @@ public class EditSelectedModule extends AppCompatActivity {
                     public void onClick(View v) {
 
                         Intent addNewSlide = new Intent(EditSelectedModule.this, AddSlide.class);
-                        addNewSlide.putExtra("Module frame ready", module.toString());
+                        addNewSlide.putExtra("Module frame ready", moduleMap);
 
-                        int nextIndex = 0;
-
-                        try {
-                            nextIndex = module.getInt("No. of Slides");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        int nextIndex = Integer.parseInt(moduleMap.get("noOfSlides").toString());
 
                         nextIndex++;
 
                         addNewSlide.putExtra("Index of new slide", "" + nextIndex);
-                        System.out.println("module before anything happens" + module.toString());
-                        System.out.println("add button clicked. index of new slide will be :" + nextIndex);
                         startActivityForResult(addNewSlide, 1);
 
                     }
@@ -630,10 +614,18 @@ public class EditSelectedModule extends AppCompatActivity {
 
     }
 
+    private boolean isNameTaken(String moduleName) {
+        for (String s : allModNamesList) {
+            if (s.toLowerCase().trim().equals(moduleName.toLowerCase().trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("here?");
 
         switch (resultCode) {
             case RESULT_CANCELED:
@@ -641,19 +633,21 @@ public class EditSelectedModule extends AppCompatActivity {
                 break;
             case RESULT_OK:
                 Toast.makeText(EditSelectedModule.this, "Slide updated.", Toast.LENGTH_SHORT).show();
-                try {
-                    module = new JSONObject(data.getStringExtra("Module edited"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+//                try {
+//                    module = new JSONObject(data.getStringExtra("Module edited"));
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module edited");
+                c.overWriteModuleHashMapInCloud(moduleMap);
+
+//                f.updateModule(getApplicationContext(), module);
 
 
-                System.out.println("It's back at the edit window, here's the upped mod" + module.toString());
-
-                f.updateModule(getApplicationContext(), module);
                 Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
-                restartAct.putExtra("User String", user.toString());
-                restartAct.putExtra("Module", module.toString());
+                restartAct.putExtra("User String", userMap);
+                restartAct.putExtra("Module", moduleMap);
                 startActivity(restartAct);
                 finish();
                 break;
@@ -667,7 +661,7 @@ public class EditSelectedModule extends AppCompatActivity {
         if (wantsToQuit) {
 
             Intent backHome = new Intent(EditSelectedModule.this, Home.class);
-            backHome.putExtra("User", user.toString());
+            backHome.putExtra("User", userMap);
             startActivity(backHome);
             finish();
             return;

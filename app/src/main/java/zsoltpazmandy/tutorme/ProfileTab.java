@@ -16,12 +16,9 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class ProfileTab extends Fragment {
 
@@ -64,6 +61,8 @@ public class ProfileTab extends Fragment {
 
     private FirebaseAuth mAuth;
 
+    HashMap<String, Object> userMap = null;
+
     public ProfileTab() {
     }
 
@@ -76,11 +75,15 @@ public class ProfileTab extends Fragment {
             return;
         }
 
-        try {
-            this.user = new JSONObject(getActivity().getIntent().getStringExtra("User"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            this.user = new JSONObject(getActivity().getIntent().getStringExtra("User"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        userMap = (HashMap<String, Object>) getActivity()
+                .getIntent()
+                .getSerializableExtra("User");
 
         u = new User(getActivity().getApplicationContext());
         f = new Module();
@@ -136,7 +139,7 @@ public class ProfileTab extends Fragment {
         ageEdit = (EditText) getActivity().findViewById(R.id.profile_tab_edittext_age);
     }
 
-    public void modifyElements(){
+    public void modifyElements() {
         userEdit.setMaxWidth(userEdit.getWidth());
         authoredEdit.setMaxWidth(authoredEdit.getWidth());
         locationEdit.setMaxWidth(userEdit.getWidth());
@@ -186,7 +189,7 @@ public class ProfileTab extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent editProfile = new Intent(getActivity(), ProfileSetup.class);
-                editProfile.putExtra("User String", user.toString());
+                editProfile.putExtra("User", userMap);
                 editProfile.putExtra("Modifying", 1);
                 startActivity(editProfile);
                 getActivity().finish();
@@ -205,52 +208,60 @@ public class ProfileTab extends Fragment {
             }
         });
 
-        List<Integer> moduleIDs = new ArrayList<>();
-
-        try {
-            moduleIDs = f.getIDs(getActivity().getApplicationContext());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         int counter = 0;
-
-        for (int id : moduleIDs) {
-
-            try {
-                if (u.getUsername(getActivity().getApplicationContext(), user).equals(f.getModuleByID(getActivity().getApplicationContext(), id).getString("Author"))) {
-                    counter++;
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+        HashMap<String, Object> authored = (HashMap<String, Object>) userMap.get("authored");
+        if(authored.size() != 0 && !authored.containsKey("none")){
+            counter = authored.size();
         }
+//        try {
+//            if (user.getString("Authored").contains(",")) {
+//                counter = user.getString("Authored").split(",").length;
+//            } else {
+//                if (user.getString("Authored").equals("")) {
+//                    counter = 0;
+//                } else {
+//                    counter = 1;
+//                }
+//            }
+//
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
 
         authoredEdit.setText("" + counter);
 
 
-        userEdit.setText(u.getUsername(getActivity().getApplicationContext(), user));
-        locationEdit.setText(u.getLocation(getActivity().getApplicationContext(), user));
-        String[] languages;
+//        userEdit.setText(u.getUsername(getActivity().getApplicationContext(), user));
+        userEdit.setText(userMap.get("username").toString());
+//        locationEdit.setText(u.getLocation(getActivity().getApplicationContext(), user));
+        locationEdit.setText(userMap.get("location").toString());
+//        String[] languages;
 
-        languages = u.getLanguages(getActivity().getApplicationContext(), user);
+//        languages = u.getLanguages(getActivity().getApplicationContext(), user);
 
-        language1Edit.setText(languages[0]);
+//        language1Edit.setText(languages[0]);
+//
+//        if (!languages[1].isEmpty()) {
+//            language2Edit.setText(languages[1]);
+//        }
+//        if (!languages[2].isEmpty()) {
+//            language3Edit.setText(languages[2]);
+//        }
 
-        if (!languages[1].isEmpty()) {
-            language2Edit.setText(languages[1]);
-        }
-        if (!languages[2].isEmpty()) {
-            language3Edit.setText(languages[2]);
-        }
+        language1Edit.setText(userMap.get("language1").toString());
+        language2Edit.setText(userMap.get("language2").toString());
+        language3Edit.setText(userMap.get("language3").toString());
 
-        if (!u.getAge(getActivity().getApplicationContext(), user).equals("")) {
-            ageEdit.setText(u.getAge(getActivity().getApplicationContext(), user));
-        } else {
+//        if (!u.getAge(getActivity().getApplicationContext(), user).equals("")) {
+//            ageEdit.setText(u.getAge(getActivity().getApplicationContext(), user));
+//        } else {
+//            ageEdit.setText("?");
+//        }
+
+        if(Integer.parseInt(userMap.get("age").toString())==0){
             ageEdit.setText("?");
+        } else {
+            ageEdit.setText(userMap.get("age").toString());
         }
 
 //        String[] checkedInterests = u.getInterests(getActivity().getApplicationContext(), user);

@@ -10,12 +10,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
 
 public class MakeTextSlide extends AppCompatActivity {
 
     JSONObject module;
+    HashMap<String, Object> moduleMap = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +43,13 @@ public class MakeTextSlide extends AppCompatActivity {
         finishButt.setText("Save & Exit");
         assert finishButt != null;
 
-        try {
-            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            module = new JSONObject(getIntent().getStringExtra("Module frame ready"));
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+
+        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module frame ready");
 
         if (getIntent().hasExtra("Slide to edit")) {
             setTitle("Editing slide");
@@ -54,11 +58,7 @@ public class MakeTextSlide extends AppCompatActivity {
             addSlideButt.setText("Save slide");
 
             int slideEdited = Integer.parseInt(getIntent().getStringExtra("Slide to edit"));
-            try {
-                slideStringEdit.setText(module.getString("Slide " + slideEdited));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+            slideStringEdit.setText(moduleMap.get("Slide_" + slideEdited).toString());
 
             finishButt.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -78,14 +78,10 @@ public class MakeTextSlide extends AppCompatActivity {
 
                         String userInput = slideStringEdit.getText().toString().trim();
 
-                        try {
-                            module.put("Slide " + getIntent().getStringExtra("Slide to edit"), userInput);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        moduleMap.put("Slide_" + getIntent().getStringExtra("Slide to edit"), userInput);
 
                         Intent editFinished = new Intent();
-                        editFinished.putExtra("Module edited", module.toString());
+                        editFinished.putExtra("Module edited", moduleMap);
                         setResult(RESULT_OK, editFinished);
                         finish();
                     }
@@ -98,7 +94,6 @@ public class MakeTextSlide extends AppCompatActivity {
             });
 
         } else if ((getIntent().hasExtra("Index of new slide"))) {
-            System.out.println("we're in maketextslide, we notice there's the extra: 'Index of new slide'");
             setTitle("Adding Text Slide");
             finishButt.setText("Cancel");
             addSlideButt.setText("Save slide");
@@ -120,36 +115,34 @@ public class MakeTextSlide extends AppCompatActivity {
                     } else {
                         String userInput = slideStringEdit.getText().toString().trim();
 
-                        try {
-                            module.put("Slide " + getIntent().getStringExtra("Index of new slide"), userInput);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        System.out.println("we've added the new slide content, here's the updated module" + module.toString());
+                        moduleMap.put("Slide_" + getIntent().getStringExtra("Index of new slide"), userInput);
 
-                        int amountOfSlides = 0;
+//                        int amountOfSlides = 0;
 
-                        String temp;
+//                        String temp;
+//
+//                        try {
+//                            temp = module.getString("Types of Slides");
+//                            temp = temp.replace("[", "").replace("]", "");
+//
+//                            amountOfSlides = temp.split(",").length;
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
 
-                        try {
-                            temp = module.getString("Types of Slides");
-                            temp = temp.replace("[", "").replace("]", "");
+//                        try {
+//                            module.put("No. of Slides", amountOfSlides);
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
 
-                            amountOfSlides = temp.split(",").length;
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                        try {
-                            module.put("No. of Slides", amountOfSlides);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                        HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                        moduleMap.put("noOfSlides", typesMap.keySet().size());
 
 
                         Intent addedSlide = new Intent();
-                        addedSlide.putExtra("Module edited", module.toString());
+                        addedSlide.putExtra("Module edited", moduleMap);
                         setResult(3, addedSlide);
                         finish();
                     }
@@ -169,22 +162,25 @@ public class MakeTextSlide extends AppCompatActivity {
 
                     String userInput = slideStringEdit.getText().toString().trim();
 
-                    int amountOfSlides = 0;
+//                    int amountOfSlides = 0;
+//
+//                    try {
+//                        amountOfSlides = module.getJSONArray("Types of Slides").length();
+//                    } catch (JSONException e) {
+//                        amountOfSlides = 1;
+//                    }
+//
+//                    try {
+//                        module.put("Slide " + amountOfSlides, userInput);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
 
-                    try {
-                        amountOfSlides = module.getJSONArray("Types of Slides").length();
-                    } catch (JSONException e) {
-                        amountOfSlides = 1;
-                    }
-
-                    try {
-                        module.put("Slide " + amountOfSlides, userInput);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                    moduleMap.put("Slide_" + typesMap.keySet().size(), userInput);
 
                     Intent slideAdded = new Intent(MakeTextSlide.this, AddSlide.class);
-                    slideAdded.putExtra("Slide added to module", module.toString());
+                    slideAdded.putExtra("Slide added to module", moduleMap);
                     setResult(1, slideAdded);
                     finish();
                 }
@@ -202,22 +198,25 @@ public class MakeTextSlide extends AppCompatActivity {
 
                     String userInput = slideStringEdit.getText().toString().trim();
 
-                    int amountOfSlides = 0;
+//                    int amountOfSlides = 0;
+//
+//                    try {
+//                        amountOfSlides = module.getJSONArray("Types of Slides").length();
+//                    } catch (JSONException e) {
+//                        amountOfSlides = 1;
+//                    }
+//
+//                    try {
+//                        module.put("Slide " + amountOfSlides, userInput);
+//                    } catch (JSONException e) {
+//                        e.printStackTrace();
+//                    }
 
-                    try {
-                        amountOfSlides = module.getJSONArray("Types of Slides").length();
-                    } catch (JSONException e) {
-                        amountOfSlides = 1;
-                    }
-
-                    try {
-                        module.put("Slide " + amountOfSlides, userInput);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                    moduleMap.put("Slide_" + typesMap.keySet().size(), userInput);
 
                     Intent addingSlidesOver = new Intent(MakeTextSlide.this, AddSlide.class);
-                    addingSlidesOver.putExtra("Last slide added to module", module.toString());
+                    addingSlidesOver.putExtra("Last slide added to module", moduleMap);
                     setResult(2, addingSlidesOver);
                     finish();
 

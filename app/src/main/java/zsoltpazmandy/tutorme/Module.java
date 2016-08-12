@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -29,10 +30,11 @@ public class Module {
     private ArrayList<Integer> trainers;
     private ArrayList<Integer> typesOfSlides;
     private int noOfSlides;
-    private int ID;
+    private String ID;
+
+    private int moduleCount;
 
     public Module() {
-
     }
 
     public Module(String name,
@@ -43,7 +45,7 @@ public class Module {
                   ArrayList<Integer> trainers,
                   ArrayList<Integer> typesOfSlides,
                   int noOfSlides,
-                  int ID) {
+                  String ID) {
 
         this.name = name;
         this.description = description;
@@ -73,11 +75,11 @@ public class Module {
         this.description = description;
     }
 
-    public int getID() {
+    public String getID() {
         return ID;
     }
 
-    public void setID(int ID) {
+    public void setID(String ID) {
         this.ID = ID;
     }
 
@@ -130,11 +132,9 @@ public class Module {
     }
 
     public JSONObject getModuleRecordsJSON(Context context) throws JSONException {
-
         FileInputStream fileInput = null;
 
         JSONObject moduleRecordsJSON = new JSONObject();
-
         try {
 
             fileInput = context.openFileInput("module_records");
@@ -158,7 +158,7 @@ public class Module {
             // if the file does not exist, it's created from scratch
 
             JSONObject newModuleRecords = new JSONObject();
-            newModuleRecords.put("IDs", null);
+            newModuleRecords.put("IDs", "000000");
             setModuleRecordsJSON(context, newModuleRecords.toString());
             return getModuleRecordsJSON(context);
 
@@ -167,7 +167,7 @@ public class Module {
             // if the file exists, but there is no data found inside, it is initialised
 
             JSONObject newModuleRecords = new JSONObject();
-            newModuleRecords.put("IDs", null);
+            newModuleRecords.put("IDs", "000000");
             setModuleRecordsJSON(context, newModuleRecords.toString());
             return getModuleRecordsJSON(context);
         }
@@ -177,6 +177,7 @@ public class Module {
     public void setModuleRecordsJSON(Context context, String moduleRecordsString) {
 
         try {
+
 
             FileOutputStream fou = context.openFileOutput("module_records", Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
@@ -208,13 +209,13 @@ public class Module {
             }
 
             JSONObject moduleRecordsJSON = new JSONObject(oneBigString);
-            moduleRecordsJSON.accumulate("IDs", module.getInt("ID"));
+            moduleRecordsJSON.accumulate("IDs", module.getString("ID"));
             setModuleRecordsJSON(context, moduleRecordsJSON.toString());
 
         } catch (FileNotFoundException FNFE) {
 
             JSONObject newModuleRecords = new JSONObject();
-            newModuleRecords.accumulate("IDs", null);
+            newModuleRecords.accumulate("IDs", "000000");
             setModuleRecordsJSON(context, newModuleRecords.toString());
 
         } catch (JSONException | IOException e) {
@@ -223,14 +224,21 @@ public class Module {
 
     }
 
-    public JSONObject getModuleByID(Context context, int id) {
+    public JSONObject getModuleByID(Context context, String id) {
         JSONObject theModule = null;
+        if (id.length() == 0) {
+            return theModule;
+        }
+
+        if (id.substring(1, id.length() - 1).equals("000000")) {
+            return theModule;
+        }
 
         FileInputStream fileInput = null;
 
         try {
 
-            fileInput = context.openFileInput("module" + id);
+            fileInput = context.openFileInput("module" + id.substring(1, id.length() - 1));
 
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
@@ -242,7 +250,6 @@ public class Module {
                 moduleString += read_data;
                 data = new char[100];
             }
-
             theModule = new JSONObject(moduleString);
 
         } catch (IOException e) {
@@ -250,7 +257,6 @@ public class Module {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
 
         return theModule;
     }
@@ -260,11 +266,9 @@ public class Module {
 
         FileInputStream fileInput = null;
 
-        List<Integer> IDs = getIDs(context);
-
+        List<String> IDs = getIDs(context);
         for (int i = 0; i < moduleCount(context); i++) {
-
-            fileInput = context.openFileInput("module" + IDs.get(i));
+            fileInput = context.openFileInput("module" + IDs.get(i).substring(1, IDs.get(i).length() - 1));
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String moduleString = "";
@@ -283,6 +287,7 @@ public class Module {
             }
 
         }
+
         return returnObject;
     }
 
@@ -291,9 +296,12 @@ public class Module {
 
         FileInputStream fileInput = null;
 
+        ArrayList<String> modIDs = getIDs(context);
+
         for (int i = 0; i < moduleCount(context); i++) {
 
-            fileInput = context.openFileInput("module" + getIDs(context).get(i));
+
+            fileInput = context.openFileInput("module" + modIDs.get(i).substring(1, modIDs.get(i).length() - 1));
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String moduleString = "";
@@ -308,19 +316,25 @@ public class Module {
             JSONObject currentObj = new JSONObject(moduleString);
             namesToReturn.add(currentObj.getString("Name"));
         }
+
         return namesToReturn;
     }
 
-    public List<Integer> getIDs(Context context) throws JSONException, IOException {
+    public ArrayList<String> getIDs(Context context) throws JSONException, IOException {
 
-        ArrayList<Integer> IDsToReturn = new ArrayList<>();
+        ArrayList<String> IDsToReturn = new ArrayList<>();
 
         String temp;
-
-        for (int i = 0; i < moduleCount(context); i++) {
+        for (int i = 1; i <= moduleCount(context); i++) {
             temp = getModuleRecordsJSON(context).getString("IDs");
             temp = temp.replace("[", "").replace("]", "");
-            IDsToReturn.add(Integer.parseInt(temp.split(",")[i]));
+            if (temp.contains(",")) {
+                if (!temp.split(",")[i].equals("\"\""))
+                    IDsToReturn.add(temp.split(",")[i]);
+            } else {
+                if (!temp.equals("\"\""))
+                    IDsToReturn.add(temp);
+            }
         }
 
         return IDsToReturn;
@@ -331,29 +345,47 @@ public class Module {
         int amountOfModules = 0;
 
         try {
-            amountOfModules = moduleRecordsJSON.getJSONArray("IDs").length();
+            amountOfModules = moduleRecordsJSON.getJSONArray("IDs").length() - 1;
         } catch (JSONException e) {
             try {
-                if (moduleRecordsJSON.getInt("IDs") == 1) {
+                if (moduleRecordsJSON.getString("IDs").equals("[\"\",\"000001\"]")) {
                     amountOfModules = 1;
                 }
             } catch (JSONException e2) {
-                setModuleRecordsJSON(context, moduleRecordsJSON.put("IDs", null).toString());
+                setModuleRecordsJSON(context, moduleRecordsJSON.put("IDs", "").toString());
                 amountOfModules = 0;
             }
         }
-
         return amountOfModules;
     }
 
     public void saveModuleLocally(Context context, JSONObject module) {
         try {
 
-            module.put("ID", moduleCount(context) + 1);
-
+//            String ID = String.valueOf(moduleCount(context) + 1);
+//
+//            String IDpadded = "";
+//
+//            switch (ID.length()) {
+//                case 1:
+//                    IDpadded = "00000" + ID;
+//                    break;
+//                case 2:
+//                    IDpadded = "0000" + ID;
+//                    break;
+//                case 3:
+//                    IDpadded = "000" + ID;
+//                    break;
+//                case 4:
+//                    IDpadded = "00" + ID;
+//                    break;
+//                case 5:
+//                    IDpadded = "0" + ID;
+//                    break;
+//            }
+//            module.put("ID", IDpadded);
             updateModuleRecords(context, module);
-
-            FileOutputStream fou = context.openFileOutput("module" + module.get("ID").toString(), Context.MODE_PRIVATE);
+            FileOutputStream fou = context.openFileOutput("module" + module.getString("ID"), Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
             osw.write(module.toString());
             osw.flush();
@@ -364,52 +396,61 @@ public class Module {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        System.out.println(module.toString());
     }
 
 
-
-    public void removeSlide(Context context, JSONObject module, int indexOfSlideToRemove) throws JSONException {
+    public HashMap<String, Object> removeSlide(Context context, HashMap<String, Object> moduleMap, int indexOfSlideToRemove) {
 
         ArrayList<String> allSlides = new ArrayList<>();
         ArrayList<Integer> allTypes = new ArrayList<>();
-        int slideCount = getSlideCount(context, module.getInt("ID"));
 
-        if (slideCount == 1 || slideCount == 0) {
-            return;
-        }
+        int slideCount = Integer.parseInt(moduleMap.get("noOfSlides").toString());
 
-        String typesString = module.getString("Types of Slides");
-        String[] typesStringArray = new String[1];
-        typesString = typesString.replace("[", "").replace("]", "");
-        if (typesString.contains(",")) {
-            typesStringArray = typesString.split(",");
-        } else {
-            typesStringArray[0] = typesString;
+//        String typesString = module.getString("Types of Slides");
+//        String[] typesStringArray = new String[1];
+//        typesString = typesString.replace("[", "").replace("]", "");
+//        if (typesString.contains(",")) {
+//            typesStringArray = typesString.split(",");
+//        } else {
+//            typesStringArray[0] = typesString;
+//        }
+
+        HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+
+        for (int i = 1; i <= slideCount; i++) {
+            allSlides.add(moduleMap.get("Slide_" + i).toString());
+            allTypes.add(Integer.parseInt(typesMap.get(""+i)));
         }
 
         for (int i = 1; i <= slideCount; i++) {
-            allSlides.add(module.getString("Slide " + i));
-            allTypes.add(Integer.parseInt(typesStringArray[i - 1]));
+            moduleMap.remove("Slide_" + i);
         }
+        moduleMap.remove("typesOfSlides");
 
-        for (int i = 1; i <= slideCount; i++) {
-            module.remove("Slide " + i);
-        }
-        module.remove("Types of Slides");
-
+        HashMap<String, String> newTypesMap = new HashMap<>();
 
         allSlides.remove(indexOfSlideToRemove);
         allTypes.remove(indexOfSlideToRemove);
 
-        for (int i = 1; i <= slideCount - 1; i++) {
-            module.put("Slide " + i, allSlides.get(i - 1));
-            module.accumulate("Types of Slides", allTypes.get(i - 1));
+        for (int i = 1; i <= slideCount; i++) {
+            moduleMap.remove("Slide_" + i);
         }
 
-        slideCount--;
-        module.put("No. of Slides", slideCount);
+        for (int i = 1; i <= slideCount - 1; i++) {
+            moduleMap.put("Slide_" + i, allSlides.get(i - 1));
+            newTypesMap.put(""+i, allTypes.get(i-1).toString());
+        }
 
-        updateModule(context, module);
+        moduleMap.put("typesOfSlides",newTypesMap);
+
+        slideCount--;
+        moduleMap.remove("noOfSlides");
+        moduleMap.put("noOfSlides", ""+slideCount);
+
+
+        return  moduleMap;
+//        updateModule(context, module);
 
     }
 
@@ -417,7 +458,7 @@ public class Module {
 
         try {
 
-            FileOutputStream fou = context.openFileOutput("module" + module.get("ID").toString(), Context.MODE_PRIVATE);
+            FileOutputStream fou = context.openFileOutput("module" + module.get("ID").toString().substring(1, module.getString("ID").length() - 1), Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
             osw.write(module.toString());
             osw.flush();
@@ -432,7 +473,8 @@ public class Module {
             e.printStackTrace();
         }
 
-
+        Cloud c = new Cloud();
+        c.saveModuleInCloud(context, module);
     }
 
     public boolean isNameTaken(Context context, String moduleName) throws IOException, JSONException {
@@ -443,11 +485,11 @@ public class Module {
 
         JSONObject currentModule = new JSONObject();
 
-        List<Integer> IDs = getIDs(context);
+        List<String> IDs = getIDs(context);
 
         for (int i = 0; i < moduleCount(context); i++) {
 
-            fileInput = context.openFileInput("module" + IDs.get(i));
+            fileInput = context.openFileInput("module" + IDs.get(i).substring(1, IDs.get(i).length() - 1));
             InputStreamReader streamReader = new InputStreamReader(fileInput);
             char[] data = new char[100];
             String moduleString = "";
@@ -495,7 +537,7 @@ public class Module {
         return IDsOfTrainers;
     }
 
-    public int getSlideCount(Context context, int moduleID) {
+    public int getSlideCount(Context context, String moduleID) {
         int slideCount = 0;
 
         try {
@@ -507,36 +549,44 @@ public class Module {
         return slideCount;
     }
 
-    public int getSlideType(Context context, JSONObject module, int slideNumber) {
+    public int getSlideType(Context context, HashMap<String,Object> module, int slideNumber) {
 
         int slideType = 0;
+
         if (slideNumber > 0) {
             slideNumber--;
         }
 
-        try {
+        ArrayList<String> typesOfSlides = (ArrayList<String>) module.get("typesOfSlides");
 
-            String[] temp = new String[1];
-            temp[0] = module.getString("Types of Slides").replace("[", "").replace("]", "");
-            if (temp[0].contains(",")) {
-                temp = temp[0].split(",");
-                slideType = Integer.parseInt(temp[slideNumber]);
-            } else {
-                slideType = Integer.parseInt(temp[0]);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        slideType = Integer.parseInt(typesOfSlides.get(slideNumber));
+
+//        try {
+//
+//            String[] temp = new String[1];
+//            temp[0] = module.getString("Types of Slides").replace("[", "").replace("]", "");
+//            if (temp[0].contains(",")) {
+//                temp = temp[0].split(",");
+//                slideType = Integer.parseInt(temp[slideNumber]);
+//            } else {
+//                slideType = Integer.parseInt(temp[0]);
+//            }
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
         return slideType;
 
     }
 
     public void purgeLibrary(Context context) throws IOException, JSONException {
 
-        List<Integer> IDs = getIDs(context);
+        List<String> IDs = getIDs(context);
+
+        if (IDs.size() == 0)
+            return;
 
         for (int i = 0; i < moduleCount(context); i++) {
-            FileOutputStream fou = context.openFileOutput("module" + IDs.get(i), Context.MODE_PRIVATE);
+            FileOutputStream fou = context.openFileOutput("module" + IDs.get(i).substring(1, IDs.get(i).length() - 1), Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
             osw.write("");
             osw.flush();
@@ -547,7 +597,9 @@ public class Module {
     public void resetCounter(Context context) throws IOException, JSONException {
 
         if (moduleCount(context) > 0) { // it's already at zero, no need to reset
-            setModuleRecordsJSON(context, "");
+            JSONObject newModRec = new JSONObject();
+            newModRec.accumulate("IDs", "000000");
+            setModuleRecordsJSON(context, newModRec.toString());
         }
     }
 
@@ -555,6 +607,8 @@ public class Module {
 
         purgeLibrary(context);
         resetCounter(context);
+        Cloud c = new Cloud();
+
 
         int counter = 0;
 
@@ -586,12 +640,12 @@ public class Module {
                     "\t\"Slide 17\":[\"User Functions\",\"2 days\",\"Testing\",\"1 day\",\"Create Module\",\"7 days\",\"Testing\",\"1 day\",\"Learn Module\",\"7 days\",\"Testing\",\"1 day\",\"IM\",\"2 days\",\"Testing\",\"1 day\",\"Android application\",\"7 days\",\"UI\",\"1 day\"],\n" +
                     "\t\"Slide 18\":\"Future Extension: 1. Payments using PayPal direct debit, 2. User Rating & feedback, 3. Expand Functionalities within Module Creation (e.g. images, audio/video)\",\n" +
                     "\t\"No. of Slides\":18,\n" +
-                    "\t\"ID\":1\n" +
+                    "\t\"ID\":000001\n" +
                     "}";
             JSONObject module = new JSONObject(moduleString);
+            c.saveModuleInCloud(context, module);
 
-
-            FileOutputStream fou = context.openFileOutput("module1", Context.MODE_PRIVATE);
+            FileOutputStream fou = context.openFileOutput("module000001", Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
             osw.write(module.toString());
             osw.flush();
@@ -626,11 +680,12 @@ public class Module {
                     "\t\"Slide 17\":[\"User Functions\",\"2 days\",\"Testing\",\"1 day\",\"Create Module\",\"7 days\",\"Testing\",\"1 day\",\"Learn Module\",\"7 days\",\"Testing\",\"1 day\",\"IM\",\"2 days\",\"Testing\",\"1 day\",\"Android application\",\"7 days\",\"UI\",\"1 day\"],\n" +
                     "\t\"Slide 18\":\"Future Extension: 1. Payments using PayPal direct debit, 2. User Rating & feedback, 3. Expand Functionalities within Module Creation (e.g. images, audio/video)\",\n" +
                     "\t\"No. of Slides\":18,\n" +
-                    "\t\"ID\":2\n" +
+                    "\t\"ID\":000002\n" +
                     "}";
             JSONObject module2 = new JSONObject(moduleString2);
+            c.saveModuleInCloud(context, module2);
 
-            FileOutputStream fou2 = context.openFileOutput("module2", Context.MODE_PRIVATE);
+            FileOutputStream fou2 = context.openFileOutput("module000002", Context.MODE_PRIVATE);
             OutputStreamWriter osw2 = new OutputStreamWriter(fou2);
             osw2.write(module2.toString());
             osw2.flush();
@@ -666,11 +721,12 @@ public class Module {
                     "\t\"Slide 17\":[\"User Functions\",\"2 days\",\"Testing\",\"1 day\",\"Create Module\",\"7 days\",\"Testing\",\"1 day\",\"Learn Module\",\"7 days\",\"Testing\",\"1 day\",\"IM\",\"2 days\",\"Testing\",\"1 day\",\"Android application\",\"7 days\",\"UI\",\"1 day\"],\n" +
                     "\t\"Slide 18\":\"Future Extension: 1. Payments using PayPal direct debit, 2. User Rating & feedback, 3. Expand Functionalities within Module Creation (e.g. images, audio/video)\",\n" +
                     "\t\"No. of Slides\":18,\n" +
-                    "\t\"ID\":3\n" +
+                    "\t\"ID\":000003\n" +
                     "}";
             JSONObject module3 = new JSONObject(moduleString3);
+            c.saveModuleInCloud(context, module3);
 
-            FileOutputStream fou3 = context.openFileOutput("module3", Context.MODE_PRIVATE);
+            FileOutputStream fou3 = context.openFileOutput("module000003", Context.MODE_PRIVATE);
             OutputStreamWriter osw3 = new OutputStreamWriter(fou3);
             osw3.write(module3.toString());
             osw3.flush();
@@ -679,13 +735,13 @@ public class Module {
             updateModuleRecords(context, module3);
 
 
-            System.out.println(module.toString());
-
             Toast.makeText(context, "3 Modules successfully added to Library", Toast.LENGTH_SHORT).show();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+
 
 }
