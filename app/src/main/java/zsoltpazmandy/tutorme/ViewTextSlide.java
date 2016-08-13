@@ -30,7 +30,7 @@ public class ViewTextSlide extends AppCompatActivity {
 
         overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 
-        User u = new User(getApplicationContext());
+        User u = new User();
         Cloud c = new Cloud();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");

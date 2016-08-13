@@ -72,70 +72,58 @@ public class SignUp extends AppCompatActivity {
     }
 
     private void addSignUpListener() {
-        signUpButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                username = usernameField.getText().toString().trim();
-                email = emailField.getText().toString().trim();
+        signUpButt
+                .setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        username = usernameField.getText().toString().trim();
+                        email = emailField.getText().toString().trim();
 
-                if (!fieldsValid())
-                    return;
+                        if (!fieldsValid())
+                            return;
 
-                mAuth.createUserWithEmailAndPassword(
-                        emailField.getText()
-                                .toString()
-                                .trim(),
+                        mAuth.createUserWithEmailAndPassword(
+                                emailField.getText()
+                                        .toString()
+                                        .trim(),
 
-                        pwFirst.getText()
-                                .toString()
-                                .trim())
+                                pwFirst.getText()
+                                        .toString()
+                                        .trim())
 
-                        .addOnCompleteListener(SignUp.this,
-                                new OnCompleteListener<AuthResult>() {
-                                    @Override
-                                    public void onComplete(@NonNull Task<AuthResult> task) {
-                                        if (task.isSuccessful()) { // registered on cloud
+                                .addOnCompleteListener(
+                                        SignUp.this,
+                                        new OnCompleteListener<AuthResult>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                                if (task.isSuccessful()) { // registered on cloud
 
-                                            id = mAuth.getCurrentUser()
-                                                    .getUid()
-                                                    .toString();
+                                                    id = mAuth.getCurrentUser()
+                                                            .getUid()
+                                                            .toString();
 
-                                            HashMap<String,Object> userPrepMap = new HashMap<String, Object>();
-                                            userPrepMap.put("id",id);
-                                            userPrepMap.put("username", username);
-                                            userPrepMap.put("email",email);
+                                                    HashMap<String, Object> userPrepMap = new HashMap<String, Object>();
+                                                    userPrepMap.put("id", id);
+                                                    userPrepMap.put("username", username);
+                                                    userPrepMap.put("email", email);
 
 
-//                                            // local registration
-//                                            int localID = 0;
-//                                            try {
-//                                                localID = u.register(getApplicationContext(),
-//                                                        username,
-//                                                        password,
-//                                                        email);
-//
-//                                                user = u.getUser(getApplicationContext(),
-//                                                        localID)
-//                                                        .put("id", id);
-//                                            } catch (JSONException | IOException e) {
-//                                                e.printStackTrace();
-//                                            }
+                                                    Cloud c = new Cloud();
+                                                    c.prepUser(id, email, username);
 
-                                            Cloud c = new Cloud();
-                                            c.prepUser(id, email, username);
-
-                                            // continue to profile setup
-                                            Intent setupProfile = new Intent(SignUp.this, ProfileSetup.class);
-                                            setupProfile.putExtra("User", userPrepMap);
-                                            startActivity(setupProfile);
-                                            finish();
-                                        } else {
-                                            Toast.makeText(SignUp.this, "Registration failed", Toast.LENGTH_SHORT).show();
-                                        }
-                                    }
-                                });
-            }
-        });
+                                                    // continue to profile setup
+                                                    Intent setupProfile = new Intent(SignUp.this, ProfileSetup.class);
+                                                    setupProfile.putExtra("User", userPrepMap);
+                                                    startActivity(setupProfile);
+                                                    finish();
+                                                } else {
+                                                    Toast.makeText(SignUp.this, "Registration failed", Toast.LENGTH_SHORT).show();
+                                                }
+                                            }
+                                        });
+                    }
+                });
     }
 
 

@@ -21,16 +21,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
 public class ViewLibrary extends AppCompatActivity {
-
-    final Module f = new Module();
 
     private ArrayList<HashMap<String, Object>> modules = null;
     private ArrayList<String> modulesNamesList = null;
@@ -40,8 +36,6 @@ public class ViewLibrary extends AppCompatActivity {
 
     HashMap<String, Object> userMap = null;
     HashMap<String, Object> moduleMap = null;
-
-    private JSONObject user = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,16 +164,6 @@ public class ViewLibrary extends AppCompatActivity {
                         Map<String, String> typesMap = temp.child("typesOfSlides").getValue(typesMapGen);
 
                         currentMod.put("typesOfSlides",typesMap);
-
-//                        HashMap<String, String> reviewMap = (HashMap) temp.child("reviews").getValue();
-//                        currentMod.put("reviews", reviewMap);
-
-//                        HashMap<String, String> trainersMap = (HashMap) temp.child("trainers").getValue();
-//                        currentMod.put("trainers", trainersMap);
-
-
-//                        HashMap<String, String> typesMap = (HashMap) temp.child("typesOfSlides").getValue(HashMap.class);
-//                        currentMod.put("typesOfSlides", typesMap);
 
                         modules.add(currentMod);
                     }

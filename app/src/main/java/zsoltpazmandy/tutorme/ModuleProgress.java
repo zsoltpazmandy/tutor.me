@@ -27,8 +27,6 @@ public class ModuleProgress extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        final Module f = new Module();
-
         modMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -51,9 +49,9 @@ public class ModuleProgress extends AppCompatActivity {
         moduleRating.setText("Module *****");
         authRating.setText("Author *****");
 
-        final User u = new User(getApplicationContext());
+        final User u = new User();
         String IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), userMap, modMap.get("id").toString());
-        lastSlide = u.getLastSlideViewed(getApplicationContext(), userMap, modMap.get("id").toString());
+        lastSlide = u.getLastSlideViewed(userMap, modMap.get("id").toString());
 
         tutorName.setText("Your tutor: " + IDofTutor);
         tutorRating.setText("Tutor *****");

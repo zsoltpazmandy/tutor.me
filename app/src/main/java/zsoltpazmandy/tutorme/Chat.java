@@ -72,7 +72,7 @@ public class Chat extends AppCompatActivity {
         });
 
 
-        u = new User(getApplicationContext());
+        User u = new User();
 
         enterMessage = (EditText) findViewById(R.id.chat_enter_message);
         sendButton = (ImageButton) findViewById(R.id.chat_send_button);
@@ -83,7 +83,7 @@ public class Chat extends AppCompatActivity {
         try {
             user = new JSONObject(getIntent().getStringExtra("User"));
             tutor = new JSONObject(getIntent().getStringExtra("Tutor"));
-            setTitle("Chatting with " + u.getUsername(getApplicationContext(), tutor));
+//            setTitle("Chatting with " + u.getUsername(getApplicationContext(), tutor));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -193,6 +193,5 @@ public class Chat extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        u.saveUserLocally(getApplicationContext(), user);
     }
 }

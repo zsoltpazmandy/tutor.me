@@ -24,21 +24,14 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import org.json.JSONObject;
-
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
-
-    private User u = null;
-
-    private JSONObject user = null;
 
     private EditText emailField = null;
     private EditText passwordField = null;
     private Button loginButt = null;
     private Button signUpButt = null;
-    private Button resetUserBaseButt = null;
 
     private String email = null;
     private String password = null;
@@ -52,10 +45,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        u = new User(getApplicationContext());
-
-//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 
         FirebaseMessaging.getInstance().subscribeToTopic("tutor.me");
         FirebaseInstanceId.getInstance().getToken();
@@ -110,37 +99,14 @@ public class MainActivity extends AppCompatActivity {
 
                 if (!validateInput(email, password))
                     return;
-
-
                 mAuth.signInWithEmailAndPassword(emailField.getText().toString(), passwordField.getText().toString())
                         .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-
                                     Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-
-//                                    int localID = u.loginWithEmail(getApplicationContext(), email, password);
-
                                     AsyncCloudGetUser getUser = new AsyncCloudGetUser();
                                     getUser.execute(mAuth.getCurrentUser().getUid());
-
-                                    //                                    } else {
-
-//                                        Cloud c = new Cloud();
-//                                        try {
-//                                            user = c.getUserJSON();
-//                                        } catch (JSONException e) {
-//                                            e.printStackTrace();
-//                                        }
-//
-//                                        Intent launchHome = new Intent(MainActivity.this, Home.class);
-//                                        launchHome.putExtra("User", user.toString());
-//                                        startActivity(launchHome);
-//                                        finish();
-//                                    }
-
-
                                 } else {
                                     Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
                                 }
@@ -153,160 +119,16 @@ public class MainActivity extends AppCompatActivity {
     class AsyncCloudGetUser extends AsyncTask<String, HashMap<String, Object>, String> {
         @Override
         protected String doInBackground(String... uid) {
-
-
             final DatabaseReference userRoot = FirebaseDatabase.getInstance().getReference().child("/users/" + uid[0]);
             userRoot.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-
                     HashMap<String, Object> userMap = (HashMap<String, Object>) dataSnapshot.getValue();
-
                     publishProgress(userMap);
-
-
-
-//
-//                    Map<String, Object> userMap = (Map<String, Object>) dataSnapshot.getValue();
-//
-//
-//                    final JSONObject userFromCloud = new JSONObject();
-//                    try {
-//                        userFromCloud.put("Age", userMap.get("age"));
-//                        userFromCloud.put("Email", userMap.get("email"));
-//                        userFromCloud.put("ID", userMap.get("id"));
-//                        userFromCloud.put("Language 1", userMap.get("language1"));
-//                        userFromCloud.put("Language 2", userMap.get("language2"));
-//                        userFromCloud.put("Language 3", userMap.get("language3"));
-//                        userFromCloud.put("Learning", userMap.get("learning"));
-//                        userFromCloud.put("Location", userMap.get("location"));
-//                        userFromCloud.put("Trained by", userMap.get("trainedBy"));
-//                        userFromCloud.put("uID", userMap.get("uID"));
-//                        userFromCloud.put("Username", userMap.get("username"));
-//
-//                        final DatabaseReference userProgressRoot = userRoot.child("progress");
-//                        userProgressRoot.addValueEventListener(new ValueEventListener() {
-//
-//                            JSONObject userFromCloudWithProgress = null;
-//
-//                            @Override
-//                            public void onDataChange(DataSnapshot dataSnapshot) {
-//                                userFromCloudWithProgress = userFromCloud;
-//
-//                                Iterator iter = dataSnapshot.getChildren().iterator();
-//
-//                                while (iter.hasNext()) {
-////                                    DataSnapshot line = (DataSnapshot) iter.next();
-////                                    Map<String, Object> userProg = (Map<String, Object>) line.getValue();
-//
-//                                    // read in all user progress module by module
-//                                    String temp = iter.next().toString();
-//                                    try {
-//
-//                                        // the entire String unprocessed without the datasnapshot prefix
-//                                        String raw = temp.substring(21);
-//
-//                                        // the moduleID delimited by the first underscore _
-//                                        String moduleID = raw.substring(0, 6);
-//
-//                                        String progData = "";
-//                                        // if the name of the module does not contain an additional user entered underscore
-//                                        if (raw.split("_").length == 3) {
-//
-//                                            progData = raw.substring(6);
-//
-//                                        } else { // if the name of the module contains underscores
-//                                            for (int i = 1; i < raw.split("_").length; i++) {
-//                                                progData = progData + "_" + raw.split("_")[i];
-//                                            }
-//                                        }
-//
-//                                        // moduleID = ID of the module
-//                                        // progData = the entire 'value' (should be name, totalslides, lastslide)
-//
-//                                        // used to pad moduleID strings with zeros, so it's always of length 6
-//                                        // so substrings are not required
-//                                        switch (moduleID.length()) {
-//                                            case 1:
-//                                                moduleID = "00000" + moduleID;
-//                                                break;
-//                                            case 2:
-//                                                moduleID = "0000" + moduleID;
-//                                                break;
-//                                            case 3:
-//                                                moduleID = "000" + moduleID;
-//                                                break;
-//                                            case 4:
-//                                                moduleID = "00" + moduleID;
-//                                                break;
-//                                            case 5:
-//                                                moduleID = "0" + moduleID;
-//                                                break;
-//                                        }
-//
-//                                        moduleID = moduleID.replace("_", "");
-//                                        progData = progData.substring(10, progData.length() - 2);
-//
-//                                        userFromCloudWithProgress.accumulate("Progress", moduleID + progData);
-//
-//                                    } catch (JSONException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                }
-//
-//                                final DatabaseReference userAuthRoot = userRoot.child("Authored");
-//                                userAuthRoot.addValueEventListener(new ValueEventListener() {
-//
-//                                    JSONObject userFromCloudWithAuth = null;
-//
-//                                    @Override
-//                                    public void onDataChange(DataSnapshot dataSnapshot) {
-//                                        userFromCloudWithAuth = userFromCloudWithProgress;
-//
-//                                        Iterator iter = dataSnapshot.getChildren().iterator();
-//
-//                                        while (iter.hasNext()) {
-//
-//                                            String raw = iter.next().toString().substring(21);
-//
-//                                            String[] temp = raw.split(",");
-//
-//                                            for (int i = 0; i < temp.length; i++) {
-//                                                try {
-//                                                    userFromCloudWithAuth.accumulate("Authored", temp[i]);
-//                                                } catch (JSONException e) {
-//                                                    e.printStackTrace();
-//                                                }
-//                                                i++;
-//                                            }
-//                                        }
-//
-//                                        String stringifiedJSON = userFromCloudWithAuth.toString();
-//
-//                                        publishProgress(stringifiedJSON);
-//                                    }
-//
-//                                    @Override
-//                                    public void onCancelled(DatabaseError databaseError) {
-//
-//                                    }
-//                                });
-//                            }
-//
-//                            @Override
-//                            public void onCancelled(DatabaseError databaseError) {
-//
-//                            }
-//                        });
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                 }
             });
 
@@ -322,8 +144,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(launchHome);
             finish();
         }
-
-
     }
 
     private void setupFields() {
@@ -367,7 +187,4 @@ public class MainActivity extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-
-
-
 }

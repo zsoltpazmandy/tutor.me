@@ -31,7 +31,7 @@ public class ViewTableSlide extends AppCompatActivity {
 
         overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 
-        User u = new User(getApplicationContext());
+        User u = new User();
 
         TextView slideCountText = (TextView) findViewById(R.id.view_table_slide_top_slidecounttext);
         Button saveQuit = (Button) findViewById(R.id.view_table_slide_savenquit_butt);

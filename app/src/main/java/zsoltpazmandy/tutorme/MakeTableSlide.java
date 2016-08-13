@@ -19,15 +19,6 @@ public class MakeTableSlide extends AppCompatActivity {
     HashMap<String, Object> moduleMap = null;
     HashMap<String, Object> userMap = null;
 
-    private final int CREATE_MODULE_ADD_SLIDE = 1;
-    private final int EDIT_MODULE_ADD_SLIDE = 2;
-    private final int CREATE_MODULE_ADD_TEXT_SLIDE = 3;
-    private final int CREATE_MODULE_ADD_TABLE_SLIDE = 4;
-    private final int EDIT_MODULE_ADD_TEXT_SLIDE = 5;
-    private final int EDIT_MODULE_ADD_TABLE_SLIDE = 6;
-    private final int EDIT_MODULE_EDIT_TEXT_SLIDE = 7;
-    private final int EDIT_MODULE_EDIT_TABLE_SLIDE = 8;
-
     int slideIndex;
 
 

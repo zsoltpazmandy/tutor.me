@@ -16,16 +16,9 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-import org.json.JSONObject;
-
 import java.util.HashMap;
 
 public class ProfileTab extends Fragment {
-
-    private JSONObject user = new JSONObject();
-    private User u;
-    private Module f;
-    private Cloud c;
 
     private ImageView avatar = null;
     private Button editProfileButt = null;
@@ -75,20 +68,9 @@ public class ProfileTab extends Fragment {
             return;
         }
 
-//        try {
-//            this.user = new JSONObject(getActivity().getIntent().getStringExtra("User"));
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
         userMap = (HashMap<String, Object>) getActivity()
                 .getIntent()
                 .getSerializableExtra("User");
-
-        u = new User(getActivity().getApplicationContext());
-        f = new Module();
-        c = new Cloud();
-
     }
 
     @Nullable
@@ -213,50 +195,16 @@ public class ProfileTab extends Fragment {
         if(authored.size() != 0 && !authored.containsKey("none")){
             counter = authored.size();
         }
-//        try {
-//            if (user.getString("Authored").contains(",")) {
-//                counter = user.getString("Authored").split(",").length;
-//            } else {
-//                if (user.getString("Authored").equals("")) {
-//                    counter = 0;
-//                } else {
-//                    counter = 1;
-//                }
-//            }
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
 
         authoredEdit.setText("" + counter);
 
 
-//        userEdit.setText(u.getUsername(getActivity().getApplicationContext(), user));
         userEdit.setText(userMap.get("username").toString());
-//        locationEdit.setText(u.getLocation(getActivity().getApplicationContext(), user));
         locationEdit.setText(userMap.get("location").toString());
-//        String[] languages;
-
-//        languages = u.getLanguages(getActivity().getApplicationContext(), user);
-
-//        language1Edit.setText(languages[0]);
-//
-//        if (!languages[1].isEmpty()) {
-//            language2Edit.setText(languages[1]);
-//        }
-//        if (!languages[2].isEmpty()) {
-//            language3Edit.setText(languages[2]);
-//        }
 
         language1Edit.setText(userMap.get("language1").toString());
         language2Edit.setText(userMap.get("language2").toString());
         language3Edit.setText(userMap.get("language3").toString());
-
-//        if (!u.getAge(getActivity().getApplicationContext(), user).equals("")) {
-//            ageEdit.setText(u.getAge(getActivity().getApplicationContext(), user));
-//        } else {
-//            ageEdit.setText("?");
-//        }
 
         if(Integer.parseInt(userMap.get("age").toString())==0){
             ageEdit.setText("?");

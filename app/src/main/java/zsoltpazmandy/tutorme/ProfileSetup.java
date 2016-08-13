@@ -69,15 +69,7 @@ public class ProfileSetup extends AppCompatActivity {
             firstSetup = true;
         }
 
-        u = new User(getApplicationContext());
-
-//        user = new JSONObject();
-//        try {
-//            user = new JSONObject(getuser.getString("N")Intent().getStringExtra("User String"));
-//            userIDlocal = user.getInt("ID");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+        u = new User();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -93,45 +85,36 @@ public class ProfileSetup extends AppCompatActivity {
         final boolean finalLang1exists = lang1exists;
         final boolean finalLang2exists = lang2exists;
         final boolean finalLang3exists = lang3exists;
-        saveProfileButt.setOnClickListener(new View.OnClickListener() {
-                                               @Override
-                                               public void onClick(View v) {
-                                                   if (locationSpinner.getSelectedItemPosition() == 0 || languages1Spinner.getSelectedItemPosition() == 0) {
-                                                       Toast.makeText(ProfileSetup.this, "Some of the required fields are missing", Toast.LENGTH_SHORT).show();
-                                                       return;
-                                                   } else {
-                                                       // SAVING PROFILE
+        saveProfileButt.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (locationSpinner.getSelectedItemPosition() == 0 || languages1Spinner.getSelectedItemPosition() == 0) {
+                            Toast.makeText(ProfileSetup.this, "Some of the required fields are missing", Toast.LENGTH_SHORT).show();
+                            return;
+                        } else {
+                            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+                            String id = mAuth.getCurrentUser().getUid();
 
-                                                       // v2 begins
+                            userMap = u.buildUserHashMap(
+                                    id,
+                                    userMap.get("username").toString(),
+                                    userMap.get("email").toString(),
+                                    String.valueOf(ageSpinner.getSelectedItemPosition()),
+                                    u.decodeLanguage(languages1Spinner.getSelectedItemPosition()),
+                                    u.decodeLanguage(languages2Spinner.getSelectedItemPosition()),
+                                    u.decodeLanguage(languages3Spinner.getSelectedItemPosition()),
+                                    u.decodeCountry(locationSpinner.getSelectedItemPosition()));
 
-                                                       FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                                                       String id = mAuth.getCurrentUser().getUid();
+                            Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
+                            Intent homeStart = new Intent(ProfileSetup.this, Home.class);
+                            Cloud c = new Cloud();
+                            c.saveUserHashMapInCloud(userMap);
+                            System.out.println(userMap.toString());
+                            homeStart.putExtra("User", userMap);
+                            startActivity(homeStart);
+                            finish();
 
-                                                       userMap = u.buildUserHashMap(
-                                                               id,
-                                                               userMap.get("username").toString(),
-                                                               userMap.get("email").toString(),
-                                                               String.valueOf(ageSpinner.getSelectedItemPosition()),
-                                                               u.decodeLanguage(languages1Spinner.getSelectedItemPosition()),
-                                                               u.decodeLanguage(languages2Spinner.getSelectedItemPosition()),
-                                                               u.decodeLanguage(languages3Spinner.getSelectedItemPosition()),
-                                                               u.decodeCountry(locationSpinner.getSelectedItemPosition()));
-
-                                                       Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
-                                                       Intent homeStart = new Intent(ProfileSetup.this, Home.class);
-                                                       Cloud c = new Cloud();
-                                                       c.saveUserHashMapInCloud(userMap);
-                                                       System.out.println(userMap.toString());
-                                                       homeStart.putExtra("User", userMap);
-                                                       startActivity(homeStart);
-                                                       finish();
-
-                                                       // v2 ends
-
-//                                                       try {
-//                                                           userUpdate.put("Age", String.valueOf(ageSpinner.getSelectedItemPosition()));
-//                                                           userUpdate.put("Location", u.decodeCountry(locationSpinner.getSelectedItemPosition()));
-//                                                           ArrayList<Integer> interests = new ArrayList<>();
 
 //                                                           if (languagesCheck.isChecked()) {
 //                                                               interests.add(0);
@@ -164,71 +147,9 @@ public class ProfileSetup extends AppCompatActivity {
 //                                                               interests.add(9);
 //                                                           }
 
-//                                                           try {
-//                                                               userUpdate.remove("Interests");
-//                                                               userUpdate.accumulate("Interests", "x");
-//                                                               userUpdate.accumulate("Interests", "x");
-//
-//                                                               for (int i = 0; i < interests.size(); i++) {
-//                                                                   userUpdate.accumulate("Interests", u.decodeInterest(interests.get(i)));
-//                                                               }
-//                                                           } catch (JSONException e) {
-//                                                               userUpdate.accumulate("Interests", "x"); // padding from beginning with 2x, so always JSONArray
-//                                                               userUpdate.accumulate("Interests", "x");
-//
-//                                                               for (int i = 0; i < interests.size(); i++) {
-//                                                                   userUpdate.accumulate("Interests", u.decodeInterest(interests.get(i)));
-//                                                               }
-//                                                           }
-
-//                                                       } catch (JSONException e) {
-//                                                           e.printStackTrace();
-//                                                       }
-//
-//                                                       User u = new User(getApplicationContext());
-//
-//
-//                                                       if (u.saveUserLocally(getApplicationContext(), userUpdate)) {
-//                                                           // storing languages information is handled from within the User class
-//                                                           u.setLanguages(getApplicationContext(), userUpdate,
-//                                                                   languages1Spinner.getSelectedItemPosition(),
-//                                                                   languages2Spinner.getSelectedItemPosition(),
-//                                                                   languages3Spinner.getSelectedItemPosition());
-//                                                           Cloud c = new Cloud();
-//                                                           JSONObject locallySavedUser = new JSONObject();
-
-
-//                                                           try {
-//                                                               locallySavedUser = u.getUser(getApplicationContext(), userIDlocal);
-//                                                               String id = String.valueOf(userIDlocal);
-//                                                               String email = locallySavedUser.getString("Email");
-//                                                               String username = locallySavedUser.getString("Username");
-//                                                               String location = u.getLocation(getApplicationContext(), locallySavedUser);
-//                                                               String language1 = u.getLanguages(getApplicationContext(), locallySavedUser)[0];
-//                                                               String language2 = u.getLanguages(getApplicationContext(), locallySavedUser)[1];
-//                                                               String language3 = u.getLanguages(getApplicationContext(), locallySavedUser)[2];
-//                                                               String age = locallySavedUser.getString("Age");
-//
-//                                                               c.saveUserInCloud(id, id, email, username, location, language1, language2, language3, age, "", "000000null_0_0","", "");
-//                                                               if(firstSetup) {
-//                                                                   locallySavedUser.accumulate("Progress", "000000null_0_0");
-//                                                               }
-//
-//                                                           } catch (JSONException e) {
-//                                                               e.printStackTrace();
-//                                                           }
-
-
-
-
-//                                                       } else {
-//                                                           Toast.makeText(ProfileSetup.this, "Saving profile failed.", Toast.LENGTH_SHORT).show();
-//
-//                                                       }
-
-                                                   }
-                                               }
-                                           }
+                        }
+                    }
+                }
 
         );
 
@@ -315,15 +236,6 @@ public class ProfileSetup extends AppCompatActivity {
         lang2exists = false;
         lang3exists = false;
 
-//        if (!u.getLanguages(getApplicationContext(), user).equals("0")) {
-//            lang1exists = true;
-//
-//            for (int i = 0; i < languages1SpinnerAdapter.getCount(); i++) {
-//                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[0]))
-//                    languages1Spinner.setSelection(i);
-//            }
-//        }
-
         if (!firstSetup) {
             for (int i = 0; i < languages1SpinnerAdapter.getCount(); i++) {
                 if (u.decodeLanguage(i).equals(userMap.get("language1")))
@@ -337,16 +249,6 @@ public class ProfileSetup extends AppCompatActivity {
         languages2SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages2Spinner.setAdapter(languages2SpinnerAdapter);
 
-//        if (!u.getLanguages(getApplicationContext(), user).equals("0") &&
-//                !("" + u.getLanguages(getApplicationContext(), user)[1]).equals("0")) {
-//            lang2exists = true;
-//
-//            for (int i = 0; i < languages2SpinnerAdapter.getCount(); i++) {
-//                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[1]))
-//                    languages2Spinner.setSelection(i);
-//            }
-//
-//        }
         if (userMap.containsKey("language2"))
             if (!userMap.get("language2").equals("")) {
                 for (int i = 0; i < languages2SpinnerAdapter.getCount(); i++) {
@@ -360,16 +262,6 @@ public class ProfileSetup extends AppCompatActivity {
         ArrayAdapter<CharSequence> languages3SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
         languages3SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages3Spinner.setAdapter(languages3SpinnerAdapter);
-
-//        if (!u.getLanguages(getApplicationContext(), user).equals("0") &&
-//                !("" + u.getLanguages(getApplicationContext(), user)[2]).equals("0")) {
-//            lang3exists = true;
-//
-//            for (int i = 0; i < languages3SpinnerAdapter.getCount(); i++) {
-//                if (u.decodeLanguage(i).equals(u.getLanguages(getApplicationContext(), user)[2]))
-//                    languages3Spinner.setSelection(i);
-//            }
-//        }
 
         if (userMap.containsKey("language3"))
             if (!userMap.get("language3").equals("")) {
@@ -386,22 +278,6 @@ public class ProfileSetup extends AppCompatActivity {
         ArrayAdapter<CharSequence> locationSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.locations, android.R.layout.simple_spinner_dropdown_item);
         locationSpinner.setAdapter(locationSpinnerAdapter);
 
-//        try {
-//            if (!user.getString("Location").equals("")) {
-//                int currentLocation = 0;
-//
-//                for (int i = 0; i < locationSpinnerAdapter.getCount(); i++) {
-//                    if (u.decodeCountry(i).equals(user.getString("Location"))) {
-//                        currentLocation = i;
-//                    }
-//                }
-//
-//                locationSpinner.setSelection(currentLocation);
-//            }
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
         if (!firstSetup) {
             for (int i = 0; i < locationSpinnerAdapter.getCount(); i++) {
                 if (u.decodeCountry(i).equals(userMap.get("location"))) {
@@ -416,10 +292,6 @@ public class ProfileSetup extends AppCompatActivity {
         ageSpinner = (Spinner) findViewById(R.id.age_spinner);
         ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ages, android.R.layout.simple_spinner_dropdown_item);
         ageSpinner.setAdapter(ageSpinnerAdapter);
-
-//        if (!u.getAge(getApplicationContext(), user).equals("")) {
-//            ageSpinner.setSelection(Integer.parseInt(u.getAge(getApplicationContext(), user)));
-//        }
 
         if (userMap.containsKey("age"))
             if (!userMap.get("age").equals("")) {

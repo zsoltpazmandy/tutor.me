@@ -25,7 +25,6 @@ import java.util.Iterator;
 
 public class CreateModActivity extends AppCompatActivity {
 
-    private User u;
     private Cloud c;
 
     private ArrayList<HashMap<String, Object>> modules = null;
@@ -51,7 +50,6 @@ public class CreateModActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        u = new User(getApplicationContext());
         c = new Cloud();
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {

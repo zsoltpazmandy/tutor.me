@@ -13,8 +13,8 @@ import java.util.HashMap;
 
 public class AddSlide extends AppCompatActivity {
 
-    HashMap<String, Object> moduleMap = null;
-    HashMap<String, Object> userMap = null;
+    private HashMap<String, Object> moduleMap = null;
+    private HashMap<String, Object> userMap = null;
 
     private final int CREATE_MODULE_ADD_SLIDE = 1;
     private final int EDIT_MODULE_ADD_SLIDE = 2;
@@ -26,6 +26,9 @@ public class AddSlide extends AppCompatActivity {
     private final int EDIT_MODULE_EDIT_TABLE_SLIDE = 8;
 
     private int noOfSlides;
+
+    private TextView selSlideHint;
+    private TextView textSlideTag;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +43,8 @@ public class AddSlide extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        TextView selSlideHint = (TextView) findViewById(R.id.selectSlideHint);
-        TextView textSlideTag = (TextView) findViewById(R.id.plaintextSlideTag);
+        selSlideHint = (TextView) findViewById(R.id.selectSlideHint);
+        textSlideTag = (TextView) findViewById(R.id.plaintextSlideTag);
 
         final ImageView textSlideImg = (ImageView) findViewById(R.id.plaintextImage);
 

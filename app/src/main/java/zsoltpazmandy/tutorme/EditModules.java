@@ -28,7 +28,6 @@ import java.util.Set;
 
 public class EditModules extends AppCompatActivity {
 
-    JSONObject user = null;
     private ArrayList<String> IDsAuthoredByThisUser = null;
     private ArrayList<HashMap<String, Object>> myModules = null;
     private ListAdapter modulesListAdapter = null;
@@ -51,7 +50,7 @@ public class EditModules extends AppCompatActivity {
 
         allModuleNames = new ArrayList<>();
 
-        User u = new User(getApplicationContext());
+        User u = new User();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -76,30 +75,6 @@ public class EditModules extends AppCompatActivity {
     }
 
     private void getMyAuthoredNames() {
-//        String raw = "";
-//        boolean isArray = false;
-//        try {
-//            raw = user.getString("Authored");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        String[] temp = new String[1];
-//
-//        if (raw.contains(",")) {
-//            temp = raw.split(",");
-//            isArray = true;
-//        } else {
-//            temp[0] = raw;
-//        }
-//
-//        for (String s : temp) {
-//            if (isArray) {
-//                s = s.replace("[", "").replace("]", "").replace(",", "");
-//                s = s.substring(1, s.length() - 1);
-//            }
-//            IDsAuthoredByThisUser.add(s);
-//        }
         HashMap<String, String> authoredMap = (HashMap<String, String>) userMap.get("authored");
         Set<String> IDset = authoredMap.keySet();
         IDsAuthoredByThisUser.addAll(IDset);

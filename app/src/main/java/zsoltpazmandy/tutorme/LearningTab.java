@@ -30,8 +30,6 @@ import java.util.TreeSet;
 
 public class LearningTab extends Fragment {
 
-    private Module f;
-
     private ArrayList<String> modsLearningNames;
     private ArrayList<String> modsLearningTotSlides;
     private ArrayList<String> modsLearningLastSlides;
@@ -50,8 +48,6 @@ public class LearningTab extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        f = new Module();
 
         if ((getActivity().getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             getActivity().finish();
@@ -194,46 +190,47 @@ public class LearningTab extends Fragment {
         protected String doInBackground(String... uid) {
 
             final DatabaseReference modulesRoot = FirebaseDatabase.getInstance().getReference().child("/modules");
-            modulesRoot.addListenerForSingleValueEvent(new ValueEventListener() {
-                                                           @Override
-                                                           public void onDataChange(DataSnapshot dataSnapshot) {
-                                                               for (String s : modIDsLearning) {
+            modulesRoot.addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            for (String s : modIDsLearning) {
 
-                                                                   HashMap<String, Object> modMap = new HashMap<String, Object>();
+                                HashMap<String, Object> modMap = new HashMap<String, Object>();
 
-                                                                   modMap.put("name", dataSnapshot.child(s).child("name").getValue().toString());
-                                                                   modMap.put("description", dataSnapshot.child(s).child("description").getValue().toString());
-                                                                   modMap.put("id", dataSnapshot.child(s).child("id").getValue().toString());
-                                                                   modMap.put("author", dataSnapshot.child(s).child("author").getValue().toString());
-                                                                   modMap.put("pro", dataSnapshot.child(s).child("pro").getValue().toString());
-                                                                   modMap.put("author", dataSnapshot.child(s).child("author").getValue().toString());
-                                                                   modMap.put("noOfSlides", dataSnapshot.child(s).child("noOfSlides").getValue().toString());
-                                                                   modMap.put("authorName", dataSnapshot.child(s).child("authorName").getValue().toString());
+                                modMap.put("name", dataSnapshot.child(s).child("name").getValue().toString());
+                                modMap.put("description", dataSnapshot.child(s).child("description").getValue().toString());
+                                modMap.put("id", dataSnapshot.child(s).child("id").getValue().toString());
+                                modMap.put("author", dataSnapshot.child(s).child("author").getValue().toString());
+                                modMap.put("pro", dataSnapshot.child(s).child("pro").getValue().toString());
+                                modMap.put("author", dataSnapshot.child(s).child("author").getValue().toString());
+                                modMap.put("noOfSlides", dataSnapshot.child(s).child("noOfSlides").getValue().toString());
+                                modMap.put("authorName", dataSnapshot.child(s).child("authorName").getValue().toString());
 
-                                                                   int amountOfSlides = Integer.parseInt(dataSnapshot.child(s).child("noOfSlides").getValue().toString());
+                                int amountOfSlides = Integer.parseInt(dataSnapshot.child(s).child("noOfSlides").getValue().toString());
 
-                                                                   for (int j = 1; j <= amountOfSlides; j++) {
-                                                                       modMap.put("Slide_" + j, dataSnapshot.child(s).child("Slide_" + j).getValue().toString());
-                                                                   }
+                                for (int j = 1; j <= amountOfSlides; j++) {
+                                    modMap.put("Slide_" + j, dataSnapshot.child(s).child("Slide_" + j).getValue().toString());
+                                }
 
-                                                                   HashMap<String, String> reviewMap = (HashMap) dataSnapshot.child(s).child("reviews").getValue();
-                                                                   modMap.put("reviews", reviewMap);
+                                HashMap<String, String> reviewMap = (HashMap) dataSnapshot.child(s).child("reviews").getValue();
+                                modMap.put("reviews", reviewMap);
 
-                                                                   HashMap<String, String> trainersMap = (HashMap) dataSnapshot.child(s).child("trainers").getValue();
-                                                                   modMap.put("trainers", trainersMap);
+                                HashMap<String, String> trainersMap = (HashMap) dataSnapshot.child(s).child("trainers").getValue();
+                                modMap.put("trainers", trainersMap);
 
-                                                                   HashMap<String, String> typesMap = (HashMap) dataSnapshot.child(s).child("typesOfSlides").getValue();
-                                                                   modMap.put("typesOfSlides", typesMap);
+                                HashMap<String, String> typesMap = (HashMap) dataSnapshot.child(s).child("typesOfSlides").getValue();
+                                modMap.put("typesOfSlides", typesMap);
 
-                                                                   modules.add(modMap);
-                                                               }
-                                                               publishProgress(modules);
-                                                           }
+                                modules.add(modMap);
+                            }
+                            publishProgress(modules);
+                        }
 
-                                                           @Override
-                                                           public void onCancelled(DatabaseError databaseError) {
-                                                           }
-                                                       }
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                        }
+                    }
             );
             return null;
         }

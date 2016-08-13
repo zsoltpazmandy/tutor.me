@@ -27,7 +27,7 @@ public class ViewLibPopUpModDisplay extends Activity {
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 
-        final User u = new User(getApplicationContext());
+        final User u = new User();
 
         int screenWidth = displayMetrics.widthPixels;
         int screenHeight = displayMetrics.heightPixels;
@@ -89,7 +89,7 @@ public class ViewLibPopUpModDisplay extends Activity {
                     userMap = u.addToLearning(getApplicationContext(), userMap, modID, moduleName, totalSlides);
 
                     // for now, this method assigns the first available tutor (== Author) of a module
-                    userMap = u.assignTutor(getApplicationContext(), userMap, moduleMap);
+                    userMap = u.assignTutor(userMap, moduleMap);
 
                     Toast.makeText(ViewLibPopUpModDisplay.this, "Enrolled! You can view your progress on the Learning Tab.", Toast.LENGTH_SHORT).show();
                     Intent returnResult = new Intent(ViewLibPopUpModDisplay.this, ViewLibrary.class);
