@@ -46,7 +46,6 @@ public class Cloud {
     }
 
 
-
     public void saveUserInCloud(String id,
                                 String email,
                                 String username,
@@ -279,7 +278,6 @@ public class Cloud {
         if(authored.containsKey("none")){
             authored.remove("none");
         }
-
         authored.put(moduleMap.get("id").toString(), moduleMap.get("name").toString());
 
         userMap.remove("authored");
@@ -297,7 +295,6 @@ public class Cloud {
         if(training.containsKey("none")){
             training.remove("none");
         }
-
         training.put(moduleID, "true");
 
         userMap.remove("training");

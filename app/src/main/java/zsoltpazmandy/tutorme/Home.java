@@ -42,8 +42,10 @@ public class Home extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+
         if (!isProfileComplete()) {
             warnOfIncompleteProfile();
+
         } else {
             tabLayout = (TabLayout) findViewById(R.id.tab_layout);
             viewPager = (ViewPager) findViewById(R.id.viewPager);

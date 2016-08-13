@@ -420,7 +420,7 @@ public class Module {
 
         for (int i = 1; i <= slideCount; i++) {
             allSlides.add(moduleMap.get("Slide_" + i).toString());
-            allTypes.add(Integer.parseInt(typesMap.get(""+i)));
+            allTypes.add(Integer.parseInt(typesMap.get("Slide_"+i)));
         }
 
         for (int i = 1; i <= slideCount; i++) {
@@ -439,7 +439,7 @@ public class Module {
 
         for (int i = 1; i <= slideCount - 1; i++) {
             moduleMap.put("Slide_" + i, allSlides.get(i - 1));
-            newTypesMap.put(""+i, allTypes.get(i-1).toString());
+            newTypesMap.put("Slide_"+i, allTypes.get(i-1).toString());
         }
 
         moduleMap.put("typesOfSlides",newTypesMap);
@@ -474,7 +474,7 @@ public class Module {
         }
 
         Cloud c = new Cloud();
-        c.saveModuleInCloud(context, module);
+//        c.saveModuleInCloud(context, module);
     }
 
     public boolean isNameTaken(Context context, String moduleName) throws IOException, JSONException {
@@ -643,7 +643,7 @@ public class Module {
                     "\t\"ID\":000001\n" +
                     "}";
             JSONObject module = new JSONObject(moduleString);
-            c.saveModuleInCloud(context, module);
+//            c.saveModuleInCloud(context, module);
 
             FileOutputStream fou = context.openFileOutput("module000001", Context.MODE_PRIVATE);
             OutputStreamWriter osw = new OutputStreamWriter(fou);
@@ -683,7 +683,7 @@ public class Module {
                     "\t\"ID\":000002\n" +
                     "}";
             JSONObject module2 = new JSONObject(moduleString2);
-            c.saveModuleInCloud(context, module2);
+//            c.saveModuleInCloud(context, module2);
 
             FileOutputStream fou2 = context.openFileOutput("module000002", Context.MODE_PRIVATE);
             OutputStreamWriter osw2 = new OutputStreamWriter(fou2);
@@ -724,7 +724,7 @@ public class Module {
                     "\t\"ID\":000003\n" +
                     "}";
             JSONObject module3 = new JSONObject(moduleString3);
-            c.saveModuleInCloud(context, module3);
+//            c.saveModuleInCloud(context, module3);
 
             FileOutputStream fou3 = context.openFileOutput("module000003", Context.MODE_PRIVATE);
             OutputStreamWriter osw3 = new OutputStreamWriter(fou3);

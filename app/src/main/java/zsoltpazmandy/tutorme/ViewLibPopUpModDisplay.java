@@ -93,6 +93,7 @@ public class ViewLibPopUpModDisplay extends Activity {
 
                     Toast.makeText(ViewLibPopUpModDisplay.this, "Enrolled! You can view your progress on the Learning Tab.", Toast.LENGTH_SHORT).show();
                     Intent returnResult = new Intent(ViewLibPopUpModDisplay.this, ViewLibrary.class);
+                    System.out.println(userMap.toString());
                     returnResult.putExtra("User", userMap);
                     returnResult.putExtra("Module", moduleMap);
 
@@ -102,10 +103,8 @@ public class ViewLibPopUpModDisplay extends Activity {
                 } else {
                     Toast.makeText(ViewLibPopUpModDisplay.this, "You've already started this module.", Toast.LENGTH_SHORT).show();
                 }
-
             }
         });
-
 
         TextView slideNumView = (TextView) findViewById(R.id.popUpTextNoOfSlides);
 

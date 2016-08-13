@@ -18,6 +18,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONObject;
@@ -25,6 +26,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 public class ViewLibrary extends AppCompatActivity {
 
@@ -127,91 +129,70 @@ public class ViewLibrary extends AppCompatActivity {
         protected String doInBackground(String... uid) {
 
             final DatabaseReference modulesRoot = FirebaseDatabase.getInstance().getReference().child("/modules");
-            modulesRoot.addValueEventListener(new ValueEventListener() {
+            modulesRoot.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     Iterator i = dataSnapshot.getChildren().iterator();
 
                     modules = new ArrayList<HashMap<String, Object>>();
-
                     while (i.hasNext()) {
 
-                        HashMap<String, Object> modMap = new HashMap<String, Object>();
+                        HashMap<String, Object> currentMod = new HashMap<String, Object>();
 
                         DataSnapshot temp = (DataSnapshot) i.next();
-                        modMap.put("name", temp.child("name").getValue().toString());
-                        modMap.put("description", temp.child("description").getValue().toString());
-                        modMap.put("id", temp.child("id").getValue().toString());
-                        modMap.put("author", temp.child("author").getValue().toString());
-                        modMap.put("pro", temp.child("pro").getValue().toString());
-                        modMap.put("author", temp.child("author").getValue().toString());
-                        modMap.put("noOfSlides", temp.child("noOfSlides").getValue().toString());
-                        modMap.put("authorName", temp.child("authorName").getValue().toString());
+
+                        currentMod.put("name", temp.child("name").getValue().toString());
+                        currentMod.put("description", temp.child("description").getValue().toString());
+                        currentMod.put("id", temp.child("id").getValue().toString());
+                        currentMod.put("author", temp.child("author").getValue().toString());
+                        currentMod.put("pro", temp.child("pro").getValue().toString());
+                        currentMod.put("author", temp.child("author").getValue().toString());
+                        currentMod.put("noOfSlides", temp.child("noOfSlides").getValue().toString());
+                        currentMod.put("authorName", temp.child("authorName").getValue().toString());
 
                         for (int j = 1; j <= Integer.parseInt(temp.child("noOfSlides").getValue().toString()); j++) {
-                            modMap.put("Slide_" + j, temp.child("Slide_" + j).getValue().toString());
+                            currentMod.put("Slide_" + j, temp.child("Slide_" + j).getValue().toString());
                         }
 
-                        DataSnapshot revRoot = (DataSnapshot) temp.child("reviews");
-                        Iterator j = revRoot.getChildren().iterator();
+                        GenericTypeIndicator<Map<String, String>> reviewMapGen = new GenericTypeIndicator<Map<String, String>>() {
+                        };
+                        Map<String, String> reviewMap = temp.child("reviews").getValue(reviewMapGen);
 
-                        HashMap<String, String> reviewMap = new HashMap<String, String>();
+                        currentMod.put("reviews",reviewMap);
+                        GenericTypeIndicator<Map<String, String>> trainersMapGen = new GenericTypeIndicator<Map<String, String>>() {
+                        };
+                        Map<String, String> trainersMap = temp.child("trainers").getValue(trainersMapGen);
 
-                        while (j.hasNext()){
+                        currentMod.put("trainers",trainersMap);
+                        GenericTypeIndicator<Map<String, String>> typesMapGen = new GenericTypeIndicator<Map<String, String>>() {
+                        };
+                        Map<String, String> typesMap = temp.child("typesOfSlides").getValue(typesMapGen);
 
-                            DataSnapshot revTemp = (DataSnapshot) j.next();
+                        currentMod.put("typesOfSlides",typesMap);
 
-                            reviewMap.put(revTemp.getKey(),revTemp.getValue().toString());
-                        }
+//                        HashMap<String, String> reviewMap = (HashMap) temp.child("reviews").getValue();
+//                        currentMod.put("reviews", reviewMap);
 
-                        modMap.put("reviews",reviewMap);
-
-                        DataSnapshot trainRoot = (DataSnapshot) temp.child("trainers");
-                        Iterator k = trainRoot.getChildren().iterator();
-
-                        HashMap<String, String> trainersMap = new HashMap<String, String>();
-
-                        while (k.hasNext()){
-
-                            DataSnapshot trainersTemp = (DataSnapshot) k.next();
-
-                            trainersMap.put(trainersTemp.getKey(),trainersTemp.getValue().toString());
-                        }
-
-                        modMap.put("trainers",trainersMap);
+//                        HashMap<String, String> trainersMap = (HashMap) temp.child("trainers").getValue();
+//                        currentMod.put("trainers", trainersMap);
 
 
-                        DataSnapshot typesRoot = (DataSnapshot) temp.child("typesOfSlides");
-                        Iterator l = typesRoot.getChildren().iterator();
+//                        HashMap<String, String> typesMap = (HashMap) temp.child("typesOfSlides").getValue(HashMap.class);
+//                        currentMod.put("typesOfSlides", typesMap);
 
-                        HashMap<String, String> typesMap = new HashMap<String, String>();
-
-                        while (l.hasNext()){
-
-                            DataSnapshot typesTemp = (DataSnapshot) l.next();
-
-                            typesMap.put(typesTemp.getKey(),typesTemp.getValue().toString());
-                        }
-
-                        modMap.put("typesOfSlides",typesMap);
-
-                        modules.add(modMap);
+                        modules.add(currentMod);
                     }
-
                     publishProgress(modules);
-
-
                 }
-
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
+                    publishProgress(modules);
                 }
             });
-
             return null;
         }
+
         @Override
         protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... moduleMap) {
             super.onProgressUpdate(moduleMap);

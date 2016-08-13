@@ -23,6 +23,15 @@ import java.util.HashMap;
 
 public class EditSelectedModule extends AppCompatActivity {
 
+    private final int CREATE_MODULE_ADD_SLIDE = 1;
+    private final int EDIT_MODULE_ADD_SLIDE = 2;
+    private final int CREATE_MODULE_ADD_TEXT_SLIDE = 3;
+    private final int CREATE_MODULE_ADD_TABLE_SLIDE = 4;
+    private final int EDIT_MODULE_ADD_TEXT_SLIDE = 5;
+    private final int EDIT_MODULE_ADD_TABLE_SLIDE = 6;
+    private final int EDIT_MODULE_EDIT_TEXT_SLIDE = 7;
+    private final int EDIT_MODULE_EDIT_TABLE_SLIDE = 8;
+
     Module f = new Module();
     Cloud c = new Cloud();
 
@@ -39,16 +48,9 @@ public class EditSelectedModule extends AppCompatActivity {
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-//        try {
-//            user = new JSONObject(getIntent().getStringExtra("User String"));
-//            module = new JSONObject(getIntent().getStringExtra("Module"));
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
-        if(getIntent().hasExtra("All Module Names")) {
+        if (getIntent().hasExtra("All Module Names")) {
             allModNamesList = (ArrayList<String>) getIntent().getSerializableExtra("All Module Names");
         }
 
@@ -97,14 +99,7 @@ public class EditSelectedModule extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
                 alert.setTitle("Change the name of the module");
-                String current = "";
-//                try {
-//                    current = module.getString("Name");
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-
-                current = moduleMap.get("name").toString();
+                String current = moduleMap.get("name").toString();
 
                 final EditText newName = new EditText(getApplicationContext());
                 newName.setMaxLines(4);
@@ -131,12 +126,8 @@ public class EditSelectedModule extends AppCompatActivity {
                         if (!isNameTaken(newName.getText().toString().trim())) {
                             moduleMap.remove("name");
                             moduleMap.put("name", newName.getText().toString().trim());
-                            c.overWriteModuleHashMapInCloud(moduleMap);
-
-//                                f.updateModule(getApplicationContext(), module.put("Name", newName.getText().toString().trim()));
-
+                            c.saveModuleHashMapInCloud(moduleMap);
                             moduleNameTextView.setText(newName.getText().toString());
-
                         } else {
                             Toast.makeText(EditSelectedModule.this, "A module with that name already exists. Please choose a different name!", Toast.LENGTH_SHORT).show();
                         }
@@ -158,13 +149,7 @@ public class EditSelectedModule extends AppCompatActivity {
             public void onClick(View v) {
                 AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
                 alert.setTitle("Edit description of the module");
-                String current = "";
-//                try {
-//                    current = module.getString("Description");
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-                current = moduleMap.get("description").toString();
+                String current = moduleMap.get("description").toString();
                 final EditText newDesc = new EditText(getApplicationContext());
                 newDesc.setMaxLines(4);
                 newDesc.setTextColor(Color.BLACK);
@@ -193,11 +178,9 @@ public class EditSelectedModule extends AppCompatActivity {
                         }
 
                         if (!failed[0]) {
-//                                module.remove("Description");
                             moduleMap.remove("description");
-//                                f.updateModule(getApplicationContext(), module.put("Description", newDesc.getText().toString()));
                             moduleMap.put("description", newDesc.getText().toString());
-                            c.overWriteModuleHashMapInCloud(moduleMap);
+                            c.saveModuleHashMapInCloud(moduleMap);
                             descTextView.setText(newDesc.getText().toString());
                         }
                         dialog.dismiss();
@@ -226,12 +209,10 @@ public class EditSelectedModule extends AppCompatActivity {
         saveButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent backHome = new Intent(EditSelectedModule.this, Home.class);
                 backHome.putExtra("User", userMap);
                 startActivity(backHome);
                 finish();
-
             }
         });
 
@@ -257,24 +238,10 @@ public class EditSelectedModule extends AppCompatActivity {
         final ArrayList<String> slidesNames = new ArrayList<>();
 
         for (int i = 1; i <= noOfSlides; i++) {
-            //
-//                String tempString;
-//                String[] tempArray = new String[1];
-//                try {
-//                    tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
-//                    if (tempString.contains(",")) {
-//                        tempArray = tempString.split(",");
-//                    } else {
-//                        tempArray[0] = tempString;
-//                    }
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
 
-            System.out.println(moduleMap.toString());
             HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
 
-            if (Integer.parseInt(typesMap.get(""+i)) == 2) {
+            if (Integer.parseInt(typesMap.get("Slide_" + i)) == 2) {
 
                 String tableRaw = "";
 
@@ -300,7 +267,6 @@ public class EditSelectedModule extends AppCompatActivity {
 
 
             } else {
-
 
                 if (moduleMap.get("Slide_" + i).toString().length() >= 80) {
                     slidesNames.add("Slide " + i + ": " + moduleMap.get("Slide_" + i).toString().substring(0, 80) + "...");
@@ -337,251 +303,224 @@ public class EditSelectedModule extends AppCompatActivity {
                         if (!view.isSelected()) {
                             view.setSelected(true);
 
-//                            String tempString;
-//                            String[] tempArray = new String[1];
-//                            try {
-//                                tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
-//                                if (tempString.contains(",")) {
-//                                    tempArray = tempString.split(",");
-//                                } else {
-//                                    tempArray[0] = tempString;
-//                                }
-//                            } catch (JSONException e) {
-//                                e.printStackTrace();
-//                            }
-
                             final HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
 
-
                             final int slideNumber = position + 1;
-
-//                            final String[] finalTempArray = tempArray;
 
                             addSlideButt.setEnabled(false);
                             editSlideButt.setEnabled(true);
                             editSlideButt.setOnClickListener(new View.OnClickListener() {
                                 @Override
                                 public void onClick(View v) {
-                                    // start editing selected slide
 
                                     int posOffset = position + 1;
 
-
-                                    switch (Integer.parseInt(typesMap.get("" + posOffset))) {
+                                    switch (Integer.parseInt(typesMap.get("Slide_" + posOffset))) {
                                         case 1:
-
                                             Intent editTextSlide = new Intent(EditSelectedModule.this, MakeTextSlide.class);
-                                            editTextSlide.putExtra("Module frame ready", moduleMap);
-                                            editTextSlide.putExtra("Slide to edit", "" + slideNumber);
-                                            startActivityForResult(editTextSlide, 1);
-
+                                            editTextSlide.putExtra("Module", moduleMap);
+                                            editTextSlide.putExtra("User", userMap);
+                                            editTextSlide.putExtra("Slide To Edit", "" + posOffset);
+                                            startActivityForResult(editTextSlide, EDIT_MODULE_EDIT_TEXT_SLIDE);
                                             break;
                                         case 2:
 
                                             Intent editTableSlide = new Intent(EditSelectedModule.this, MakeTableSlide.class);
-                                            editTableSlide.putExtra("Module frame ready", moduleMap);
-                                            editTableSlide.putExtra("Slide to edit", "" + slideNumber);
-                                            startActivityForResult(editTableSlide, 1);
+                                            editTableSlide.putExtra("Module", moduleMap);
+                                            editTableSlide.putExtra("User", userMap);
+                                            editTableSlide.putExtra("Slide To Edit", "" + posOffset);
+                                            startActivityForResult(editTableSlide, EDIT_MODULE_EDIT_TABLE_SLIDE);
                                             break;
                                     }
 
                                 }
                             });
-                            moveSlideButt.setEnabled(true);
-                            moveSlideButt.setOnClickListener(
-                                    new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            final int number = position + 1;
-                                            AlertDialog.Builder b = new AlertDialog.Builder(EditSelectedModule.this);
-                                            b.setTitle("Move Slide " + number + " in the place of...");
-                                            String[] slides = new String[slidesNames.size()];
 
-                                            for (int i = 0; i < slidesNames.size(); i++) {
-                                                slides[i] = slidesNames.get(i);
-                                            }
+                            if (Integer.parseInt(moduleMap.get("noOfSlides").toString()) <= 1) {
+                                moveSlideButt.setEnabled(false);
+                            } else {
+                                moveSlideButt.setEnabled(true);
+                                moveSlideButt.setOnClickListener(
+                                        new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                final int number = position + 1;
+                                                AlertDialog.Builder b = new AlertDialog.Builder(EditSelectedModule.this);
+                                                b.setTitle("Move Slide " + number + " in the place of...");
+                                                String[] slides = new String[slidesNames.size()];
 
-                                            b.setItems(slides,
-                                                    new DialogInterface.OnClickListener() {
+                                                for (int i = 0; i < slidesNames.size(); i++) {
+                                                    slides[i] = slidesNames.get(i);
+                                                }
 
-                                                        @Override
-                                                        public void onClick(DialogInterface dialog, int index) {
+                                                b.setItems(slides,
+                                                        new DialogInterface.OnClickListener() {
+
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int index) {
 
                                 /*
                                 The following algorithm is used to reorder the slides in the module.
                                 */
 
-                                                            //Add all slide strings & their respective slide types
-                                                            //to 2 ArrayLists
-                                                            ArrayList<String> allSlidesString = new ArrayList<>();
-                                                            ArrayList<Integer> newTypesArray = new ArrayList<>();
+                                                                //Add all slide strings & their respective slide types
+                                                                //to 2 ArrayLists
+                                                                ArrayList<String> allSlidesString = new ArrayList<>();
+                                                                ArrayList<Integer> newTypesArray = new ArrayList<>();
 
-                                                            // ID of the module
-                                                            String id = moduleMap.get("id").toString();
+                                                                // ID of the module
+                                                                String id = moduleMap.get("id").toString();
 
-                                                            // Amount of slides in the module
-                                                            int count = Integer.parseInt(moduleMap.get("noOfSlides").toString());
+                                                                // Amount of slides in the module
+                                                                int count = Integer.parseInt(moduleMap.get("noOfSlides").toString());
 
-                                                            // Slides copied to the ArrayList
-                                                            for (int i = 1; i <= count; i++) {
-                                                                allSlidesString.add(moduleMap.get("Slide_" + i).toString());
+                                                                // Slides copied to the ArrayList
+                                                                for (int i = 1; i <= count; i++) {
+                                                                    allSlidesString.add(moduleMap.get("Slide_" + i).toString());
+                                                                }
+
+                                                                // Retrieving slide type information
+                                                                HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+
+                                                                // Copying slide types in the ArrayList
+                                                                for (int i = 1; i <= count; i++) {
+                                                                    newTypesArray.add(Integer.parseInt(typesMap.get("Slide_" + i)));
+                                                                }
+
+
+                                                                // Store the String we want to move and its type separately
+                                                                String tempContent = allSlidesString.get(position);
+                                                                int tempType = newTypesArray.get(position);
+
+                                                                // Remove that element and its type from both ArrayLists
+                                                                allSlidesString.remove(position);
+                                                                newTypesArray.remove(position);
+
+
+                                                                if (index == allSlidesString.size()) {
+                                                                    allSlidesString.add("");
+                                                                    newTypesArray.add(0);
+                                                                }
+
+                                                                // Store the String which is in the position we're moving the
+                                                                // Slide to and its respective slide type
+                                                                String temp = allSlidesString.get(index);
+                                                                int typeOfSlideAtTarget = newTypesArray.get(index);
+
+                                                                // Create 2 new temporary ArrayLists where up to the target index
+                                                                // everything is as in the original list
+                                                                ArrayList<String> tempList = new ArrayList<>();
+                                                                ArrayList<Integer> tempTypeList = new ArrayList<>();
+                                                                for (int i = 0; i < index; i++) {
+                                                                    tempList.add(allSlidesString.get(i));
+                                                                    tempTypeList.add(newTypesArray.get(i));
+                                                                }
+
+                                                                // Add the slide String we're moving after the first part in the temp list
+                                                                // along with the slide's type
+                                                                tempList.add(tempContent);
+                                                                tempTypeList.add(tempType);
+
+                                                                // Add the slide String which was originally at the position we're
+                                                                // moving to along with its type
+                                                                tempList.add(temp);
+                                                                tempTypeList.add(typeOfSlideAtTarget);
+
+
+                                                                // Copy the rest of the elements from the original list
+                                                                // to the temporary list after the position we've just
+                                                                // inserted the new element and the original element at that position
+                                                                // along with all the slides' respective types
+                                                                for (int i = index + 1; i < allSlidesString.size(); i++) {
+                                                                    tempList.add(allSlidesString.get(i));
+                                                                    tempTypeList.add(newTypesArray.get(i));
+                                                                }
+
+                                                                // Remove old Slide Type information
+                                                                moduleMap.remove("typesOfSlides");
+
+                                                                HashMap<String, String> newTypesMap = new HashMap<String, String>();
+
+                                                                // Insert new Slide data & Slide Type information in Module
+                                                                for (int i = 0; i < tempList.size(); i++) {
+                                                                    int no = i + 1;
+                                                                    moduleMap.remove("Slide_" + no);
+                                                                    moduleMap.put("Slide_" + no, tempList.get(i));
+                                                                    if (tempTypeList.get(i) != 0)
+                                                                        newTypesMap.put("Slide_" + no, tempTypeList.get(i).toString());
+                                                                }
+
+                                                                moduleMap.remove("typesOfSlides");
+                                                                moduleMap.put("typesOfSlides", newTypesMap);
+
+                                                                // Update module in the database
+                                                                c.overWriteModuleHashMapInCloud(moduleMap);
+
+                                                                Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
+                                                                restartAct.putExtra("User", userMap);
+                                                                restartAct.putExtra("Module", moduleMap);
+                                                                startActivity(restartAct);
+                                                                dialog.dismiss();
+                                                                finish();
                                                             }
 
-                                                            // Retrieving slide type information
-                                                            HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
-
-//                                                            String tempString;
-//                                                            String[] tempArray = new String[1];
-//                                                            try {
-//                                                                tempString = module.getString("Types of Slides").replace("[", "").replace("]", "");
-//                                                                if (tempString.contains(",")) {
-//                                                                    tempArray = tempString.split(",");
-//                                                                } else {
-//                                                                    tempArray[0] = tempString;
-//                                                                }
-//                                                            } catch (JSONException e) {
-//                                                                e.printStackTrace();
-//                                                            }
-
-                                                            // Copying slide types in the ArrayList
-                                                            for (int i = 1; i <= count; i++) {
-                                                                newTypesArray.add(Integer.parseInt(typesMap.get("" + i)));
-                                                            }
-
-
-                                                            // Store the String we want to move and its type separately
-                                                            String tempContent = allSlidesString.get(position);
-                                                            int tempType = newTypesArray.get(position);
-
-                                                            // Remove that element and its type from both ArrayLists
-                                                            allSlidesString.remove(position);
-                                                            newTypesArray.remove(position);
-
-
-                                                            if (index == allSlidesString.size()) {
-                                                                allSlidesString.add("");
-                                                                newTypesArray.add(0);
-                                                            }
-
-                                                            // Store the String which is in the position we're moving the
-                                                            // Slide to and its respective slide type
-                                                            String temp = allSlidesString.get(index);
-                                                            int typeOfSlideAtTarget = newTypesArray.get(index);
-
-                                                            // Create 2 new temporary ArrayLists where up to the target index
-                                                            // everything is as in the original list
-                                                            ArrayList<String> tempList = new ArrayList<>();
-                                                            ArrayList<Integer> tempTypeList = new ArrayList<>();
-                                                            for (int i = 0; i < index; i++) {
-                                                                tempList.add(allSlidesString.get(i));
-                                                                tempTypeList.add(newTypesArray.get(i));
-                                                            }
-
-                                                            // Add the slide String we're moving after the first part in the temp list
-                                                            // along with the slide's type
-                                                            tempList.add(tempContent);
-                                                            tempTypeList.add(tempType);
-
-                                                            // Add the slide String which was originally at the position we're
-                                                            // moving to along with its type
-                                                            tempList.add(temp);
-                                                            tempTypeList.add(typeOfSlideAtTarget);
-
-
-                                                            // Copy the rest of the elements from the original list
-                                                            // to the temporary list after the position we've just
-                                                            // inserted the new element and the original element at that position
-                                                            // along with all the slides' respective types
-                                                            for (int i = index + 1; i < allSlidesString.size(); i++) {
-                                                                tempList.add(allSlidesString.get(i));
-                                                                tempTypeList.add(newTypesArray.get(i));
-                                                            }
-
-                                                            // Remove old Slide Type information
-                                                            moduleMap.remove("typesOfSlides");
-
-                                                            HashMap<String, String> newTypesMap = new HashMap<String, String>();
-
-                                                            // Insert new Slide data & Slide Type information in Module
-                                                            for (int i = 0; i < tempList.size(); i++) {
-                                                                int no = i + 1;
-                                                                moduleMap.remove("Slide_" + no);
-                                                                moduleMap.put("Slide_" + no, tempList.get(i));
-//                                                                    module.put("Slide " + no, tempList.get(i));
-                                                                if (tempTypeList.get(i) != 0)
-                                                                    newTypesMap.put("" + no, tempTypeList.get(i).toString());
-//                                                                        module.accumulate("Types of Slides", tempTypeList.get(i));
-                                                            }
-
-                                                            moduleMap.remove("typesOfSlides");
-                                                            moduleMap.put("typesOfSlides", newTypesMap);
-
-
-                                                            // Update module in the database
-//                                                            f.updateModule(getApplicationContext(), module);
-                                                            c.overWriteModuleHashMapInCloud(moduleMap);
-
-                                                            Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
-                                                            restartAct.putExtra("User String", userMap);
-                                                            restartAct.putExtra("Module", moduleMap);
-                                                            startActivity(restartAct);
-                                                            dialog.dismiss();
-                                                            finish();
                                                         }
 
-                                                    }
-
-                                            );
-                                            b.show();
+                                                );
+                                                b.show();
+                                            }
                                         }
-                                    }
 
-                            );
-                            deleteSlideButt.setEnabled(true);
-                            deleteSlideButt.setOnClickListener(
-                                    new View.OnClickListener()
+                                );
+                            }
+                            if (Integer.parseInt(moduleMap.get("noOfSlides").toString()) <= 1) {
+                                deleteSlideButt.setEnabled(false);
+                            } else {
+                                deleteSlideButt.setEnabled(true);
+                                deleteSlideButt.setOnClickListener(
+                                        new View.OnClickListener()
 
-                                    {
-                                        @Override
-                                        public void onClick(View v) {
-                                            int indexToDelete = position;
-                                            final int filenameNumber = indexToDelete + 1;
+                                        {
+                                            @Override
+                                            public void onClick(View v) {
+                                                int indexToDelete = position;
+                                                final int filenameNumber = indexToDelete + 1;
 
-                                            AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
-                                            alert.setTitle("Are you sure you want to delete Slide " + filenameNumber);
-                                            alert.setPositiveButton("Yes, delete", new DialogInterface.OnClickListener() {
-                                                        public void onClick(DialogInterface dialog, int whichButton) {
+                                                AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
+                                                alert.setTitle("Are you sure you want to delete Slide " + filenameNumber);
+                                                alert.setPositiveButton("Yes, delete", new DialogInterface.OnClickListener() {
+                                                            public void onClick(DialogInterface dialog, int whichButton) {
 
-                                                            // f.removeSlide(getApplicationContext(), module, position);
-                                                            moduleMap = f.removeSlide(getApplicationContext(), moduleMap, position);
-                                                            c.overWriteModuleHashMapInCloud(moduleMap);
+                                                                // f.removeSlide(getApplicationContext(), module, position);
+                                                                moduleMap = f.removeSlide(getApplicationContext(), moduleMap, position);
+                                                                c.overWriteModuleHashMapInCloud(moduleMap);
 
-                                                            Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
-                                                            restartAct.putExtra("User", userMap);
-                                                            restartAct.putExtra("Module", moduleMap);
-                                                            startActivity(restartAct);
-                                                            dialog.dismiss();
-                                                            finish();
+                                                                Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
+                                                                restartAct.putExtra("User", userMap);
+                                                                restartAct.putExtra("Module", moduleMap);
+                                                                startActivity(restartAct);
+                                                                dialog.dismiss();
+                                                                finish();
+                                                            }
                                                         }
-                                                    }
 
-                                            );
+                                                );
 
-                                            alert.setNegativeButton("No", new DialogInterface.OnClickListener()
+                                                alert.setNegativeButton("No", new DialogInterface.OnClickListener()
 
-                                                    {
-                                                        public void onClick(DialogInterface dialog,
-                                                                            int whichButton) {
-                                                            dialog.dismiss();
+                                                        {
+                                                            public void onClick(DialogInterface dialog,
+                                                                                int whichButton) {
+                                                                dialog.dismiss();
+                                                            }
                                                         }
-                                                    }
 
-                                            );
-                                            alert.show();
+                                                );
+                                                alert.show();
+                                            }
                                         }
-                                    }
-
-                            );
+                                );
+                            }
                         }
                         return true;
                     }
@@ -597,15 +536,10 @@ public class EditSelectedModule extends AppCompatActivity {
                     public void onClick(View v) {
 
                         Intent addNewSlide = new Intent(EditSelectedModule.this, AddSlide.class);
-                        addNewSlide.putExtra("Module frame ready", moduleMap);
-
-                        int nextIndex = Integer.parseInt(moduleMap.get("noOfSlides").toString());
-
-                        nextIndex++;
-
-                        addNewSlide.putExtra("Index of new slide", "" + nextIndex);
-                        startActivityForResult(addNewSlide, 1);
-
+                        addNewSlide.putExtra("Module", moduleMap);
+                        addNewSlide.putExtra("User", userMap);
+                        addNewSlide.putExtra("Adding Slide To Existing Module", true);
+                        startActivityForResult(addNewSlide, EDIT_MODULE_ADD_SLIDE);
                     }
                 }
 
@@ -627,30 +561,54 @@ public class EditSelectedModule extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        switch (resultCode) {
-            case RESULT_CANCELED:
-                Toast.makeText(EditSelectedModule.this, "Editing slide cancelled", Toast.LENGTH_SHORT).show();
-                break;
-            case RESULT_OK:
-                Toast.makeText(EditSelectedModule.this, "Slide updated.", Toast.LENGTH_SHORT).show();
-//                try {
-//                    module = new JSONObject(data.getStringExtra("Module edited"));
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
+        if (resultCode == RESULT_CANCELED) {
+            Toast.makeText(EditSelectedModule.this, "Cancelled", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-                moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module edited");
-                c.overWriteModuleHashMapInCloud(moduleMap);
+        moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module");
+        userMap = (HashMap<String, Object>) data.getSerializableExtra("User");
 
-//                f.updateModule(getApplicationContext(), module);
-
-
+        if (requestCode == EDIT_MODULE_ADD_SLIDE) {
+            if (resultCode == RESULT_OK) {
                 Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
-                restartAct.putExtra("User String", userMap);
+                restartAct.putExtra("User", userMap);
                 restartAct.putExtra("Module", moduleMap);
+                c.overWriteModuleHashMapInCloud(moduleMap);
                 startActivity(restartAct);
                 finish();
-                break;
+            }
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(), "Adding slides to module cancelled.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (requestCode == EDIT_MODULE_EDIT_TEXT_SLIDE) {
+            if (resultCode == RESULT_OK) {
+                Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
+                restartAct.putExtra("User", userMap);
+                restartAct.putExtra("Module", moduleMap);
+                c.overWriteModuleHashMapInCloud(moduleMap);
+                startActivity(restartAct);
+                finish();
+            }
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(), "Editing slide cancelled.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if (requestCode == EDIT_MODULE_EDIT_TABLE_SLIDE) {
+            if (resultCode == RESULT_OK) {
+                Intent restartAct = new Intent(EditSelectedModule.this, EditSelectedModule.class);
+                restartAct.putExtra("User", userMap);
+                restartAct.putExtra("Module", moduleMap);
+                c.overWriteModuleHashMapInCloud(moduleMap);
+                startActivity(restartAct);
+                finish();
+            }
+            if (resultCode == RESULT_CANCELED) {
+                Toast.makeText(getApplicationContext(), "Editing slide cancelled.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

@@ -937,19 +937,22 @@ public class User {
      * Trainer who is assigned to be Training the module whose ID is moduleID;
      *
      * @param context
-     * @param user
      * @param moduleID
      * @return
      */
-    public int getWhoTrainsMeThis(Context context, JSONObject user, int moduleID) {
-        int trainerID = 0;
+    public String getWhoTrainsMeThis(Context context, HashMap<String, Object> userMap, String moduleID) {
 
-        int index = 0;
+        String tutorsID = "";
 
-        // take index of module in "Learning", that index of "Trained by" will be the return val
+        HashMap<String, String> trainedByMap = (HashMap<String, String>) userMap.get("trainedBy");
+        Set<String> myTrainersIDs = trainedByMap.keySet();
 
+        for (String s : myTrainersIDs) {
+            if (trainedByMap.get(s).equals(moduleID))
+                tutorsID = s;
+        }
 
-        return trainerID;
+        return tutorsID;
     }
 
     /**
@@ -1163,7 +1166,7 @@ public class User {
 
             String temp = oldTrainedBy.get(tutorID) + ", " + moduleMap.get("id");
             oldTrainedBy.remove(tutorID);
-            oldTrainedBy.put(tutorID,temp);
+            oldTrainedBy.put(tutorID, temp);
 
         } else {
 
@@ -1209,111 +1212,34 @@ public class User {
      * Updates User JSON Progress entry stored for the given module by overwriting and saving the
      * stored value IF it is different from the stored value.
      *
-     * @param context
-     * @param user
-     * @param module
      * @param lastSlide
      */
-    public void updateProgress(Context context, JSONObject user, JSONObject module, int lastSlide) {
-
-
-        // LOCAL UPDATE
-
-        boolean changed = false;
-        String progressString = "";
-        int moduleID = 0;
-
-        try {
-            moduleID = Integer.parseInt(module.getString("ID"));
-            progressString = user.getString("Progress").replace("[", "").replace("]", "").replace("\"", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        // module IDs/theirLastSlidesOpened
-        String[] perModule = new String[1];
-
-        if (progressString.contains(",")) {
-            perModule = progressString.split(",");
-        } else { // only 1 module currenty being learnt
-            perModule[0] = progressString;
-        }
-
-        // module IDs
-        String[] modules = new String[perModule.length];
-        for (int i = 0; i < perModule.length; i++) {
-            modules[i] = perModule[i].split("/")[0].replace("#", "");
-        }
-
-        // lastSides
-        String[] lastSlides = new String[perModule.length];
-        for (int i = 0; i < perModule.length; i++) {
-            lastSlides[i] = perModule[i].split("/")[1];
-        }
-
-        for (int i = 0; i < perModule.length; i++) {
-            try {
-                if (Integer.parseInt(perModule[i].split("#")[0]) == moduleID) {
-                    if (Integer.parseInt(perModule[i].split("#")[1]) < lastSlide) {
-                        String firstHalf = perModule[i].split("#")[0];
-                        perModule[i] = firstHalf + "#" + lastSlide;
-                        changed = true;
-                    }
-                }
-            } catch (NumberFormatException e) {
-                String firstHalf = perModule[i].split("#")[0];
-                perModule[i] = firstHalf + "#" + 0;
-                changed = true;
+    public void updateProgress(HashMap<String, Object> userMap, HashMap<String, Object> moduleMap, int lastSlide) {
+        HashMap<String, String> progressMap = (HashMap<String, String>) userMap.get("progress");
+        Set<String> modIDsLearning = progressMap.keySet();
+        for (String s : modIDsLearning) {
+            if (moduleMap.get("id").toString().equals(s)) {
+                String name = progressMap.get(s).split("_")[0];
+                String totalSlides = progressMap.get(s).split("_")[1];
+                String updatedLastSlide = String.valueOf(lastSlide);
+                progressMap.remove(s);
+                progressMap.put(s, name + "_" + totalSlides + "_" + updatedLastSlide);
             }
         }
-
-        user.remove("Progress");
-
-        for (int i = 0; i < perModule.length; i++) {
-            try {
-                user.accumulate("Progress", perModule[i]);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-
-        // save User data if Progress was updated
-        if (changed) saveUserLocally(context, user);
-
-
-        // CLOUD UPDATE
-
-        // TODO
+        Cloud c = new Cloud();
+        c.saveUserHashMapInCloud(userMap);
     }
 
-    public int getLastSlideViewed(Context context, JSONObject user, int moduleID) {
+    public int getLastSlideViewed(Context context, HashMap<String, Object> userMap, String moduleID) {
         int lastSlide = 0;
 
-        String progressString = "";
+        HashMap<String, String> progressMap = (HashMap<String, String>) userMap.get("progress");
+        Set<String> modIDS = progressMap.keySet();
 
-        try {
-            progressString = user.getString("Progress").replace("[", "").replace("]", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        String[] tempProgress = new String[1];
-
-        if (progressString.contains(",")) {
-            tempProgress = progressString.split(",");
-        } else {
-            tempProgress[0] = progressString;
-        }
-
-        for (int i = 0; i < tempProgress.length; i++) {
-            try {
-                if (Integer.parseInt(tempProgress[i].split("#")[0]) == moduleID) {
-                    lastSlide = Integer.parseInt(tempProgress[i].split("#")[1]);
-                }
-            } catch (NumberFormatException e) {
-                lastSlide = 0;
+        for (String s : modIDS) {
+            if (s.equals(moduleID)) {
+                lastSlide = Integer.parseInt(progressMap.get(s).split("_")[2]);
             }
-
         }
 
         return lastSlide;

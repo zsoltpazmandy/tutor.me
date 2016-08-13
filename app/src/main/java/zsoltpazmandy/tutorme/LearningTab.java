@@ -1,40 +1,46 @@
 package zsoltpazmandy.tutorme;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.firebase.auth.FirebaseAuth;
-
-import org.json.JSONObject;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
 
 public class LearningTab extends Fragment {
 
-    private JSONObject user = new JSONObject();
-    private User u;
     private Module f;
-    private FirebaseAuth mAuth;
-    private String uID;
 
-    private ArrayList<String> getModsLearningIDs;
     private ArrayList<String> modsLearningNames;
     private ArrayList<String> modsLearningTotSlides;
     private ArrayList<String> modsLearningLastSlides;
+    private Set<String> modIDsLearning = null;
+    private ArrayList<HashMap<String, Object>> modules = null;
+
+    private TextView learningView = null;
+    private Button browseAllButt = null;
+    private ListView learningList = null;
 
     private HashMap<String, Object> userMap = null;
 
@@ -45,10 +51,6 @@ public class LearningTab extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mAuth = FirebaseAuth.getInstance();
-        uID = mAuth.getCurrentUser().getUid();
-
-        u = new User(getActivity().getApplicationContext());
         f = new Module();
 
         if ((getActivity().getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
@@ -56,74 +58,13 @@ public class LearningTab extends Fragment {
             return;
         }
 
-        modsLearningNames = new ArrayList<>();
-        getModsLearningIDs = new ArrayList<>();
-        modsLearningTotSlides = new ArrayList<>();
-        modsLearningLastSlides = new ArrayList<>();
-
-//        String[] progressArray = new String[0];
-
-//        try {
-//            this.user = new JSONObject(getActivity().getIntent().getStringExtra("User"));
-//            progressArray = u.getStringFromJSON(getActivity().getApplicationContext(), user, "Progress");
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-
         userMap = (HashMap<String, Object>) getActivity().getIntent().getSerializableExtra("User");
 
-        HashMap<String, String> userProgress = (HashMap<String, String>) userMap.get("progress");
-
-        if (userProgress.size() == 1 && userProgress.containsKey("none")){
-            modsLearningNames.add("");
-        } else {
-            Set<String> modIDsLearning = userProgress.keySet();
-            for(String s : modIDsLearning){ // needs progress format as: ../progress/hashmaps of key: 000000, value: Name_X_Y  | where x = totalslides, y = last slide
-                modsLearningNames.add(userProgress.get(s).split("_")[0]);
-                modsLearningTotSlides.add(userProgress.get(s).split("_")[1]);
-                modsLearningLastSlides.add(userProgress.get(s).split("_")[2]);
-            }
-        }
-
-//            // if there has been any registered progress
-//            if (!progressArray[0].equals("")) {
-//
-//                // for every module's progress string
-//                for (String s : progressArray) {
-//
-//                    // 6-digit ID put in arraylist
-//                    getModsLearningIDs.add(s.substring(0, 6));
-//                    String rawProg = s.substring(6);
-//
-//                    if (rawProg.split("_").length == 3) { // name contains no underscores
-//                        modsLearningNames.add(rawProg.split("_")[0]);
-//                        modsLearningTotSlides.add(rawProg.split("_")[1]);
-//                        modsLearningLastSlides.add(rawProg.split("_")[2]);
-//                    } else { // if name contains underscores
-//
-//                        // the last index in the arraylist, where the name is rebuilt
-//                        int index = modsLearningNames.size();
-//
-//                        // if this isn't the first entry in the arraylist, the index of insertion is the last position: size-1
-//                        if (modsLearningNames.size() != 0)
-//                            index--;
-//
-//                        // index where the name ends, total & last slides begin
-//                        int indexOfTotal = rawProg.split("_").length - 1;
-//                        int indexOfLast = rawProg.split("_").length;
-//
-//                        // rebuild name
-//                        for (int i = 0; i < rawProg.split("_").length - 2; i++) {
-//                            modsLearningNames.add(index, rawProg.split("_")[i]);
-//                        }
-//
-//                        modsLearningTotSlides.add(rawProg.split("_")[indexOfTotal]);
-//                        modsLearningLastSlides.add(rawProg.split("_")[indexOfTotal + 1]);
-//                    }
-//                }
-//            } else {
-//                modsLearningNames.add("");
-//            }
+        modsLearningNames = new ArrayList<>();
+        modsLearningTotSlides = new ArrayList<>();
+        modsLearningLastSlides = new ArrayList<>();
+        modules = new ArrayList<>();
+        modIDsLearning = new HashSet<String>();
     }
 
     @Nullable
@@ -136,12 +77,20 @@ public class LearningTab extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setupElements();
+
+        setUpProgress();
+
+        AsyncGetMyModules getMyModules = new AsyncGetMyModules();
+        getMyModules.execute();
+
+
         setupLearningTab();
-        setUpBrowseButt();
     }
 
-    private void setUpBrowseButt() {
-        Button browseAllButt = (Button) getActivity().findViewById(R.id.viewLibButt);
+    private void setupElements() {
+        learningView = (TextView) getActivity().findViewById(R.id.learning_tab_currently_learning_top);
+        browseAllButt = (Button) getActivity().findViewById(R.id.viewLibButt);
         browseAllButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -151,102 +100,36 @@ public class LearningTab extends Fragment {
                 getActivity().finish();
             }
         });
+
+        learningList = (ListView) getActivity().findViewById(R.id.learning_tab_currently_learning_list);
     }
 
-    private void setupLearningTab() {
 
-        TextView learningView = (TextView) getActivity().findViewById(R.id.learning_tab_currently_learning_top);
-//  v1
-//        ArrayList<String> learningIDs = new ArrayList<>();
-//
-//        for (String s : u.getLearning(getActivity().getApplicationContext(), user)) {
-//            learningIDs.add(s);
-//        }
-//
-//        if (learningIDs.size() == 0) {
-//            assert learningView != null;
-//            learningView.setText(R.string.no_module_taken_yet);
-//        } else {
-//            assert learningView != null;
-//            learningView.setText(R.string.i_m_currently_learning);
-//
-//            List<String> currentModules = u.getLearning(getActivity().getApplicationContext(), user);
-//
-//            ListView learningList = (ListView) getActivity().findViewById(R.id.learning_tab_currently_learning_list);
-//
-//            ArrayList<String> learningModules = new ArrayList<>();
-//
-//            for (String s : currentModules) {
-//                try {
+    private void setUpProgress() {
+        HashMap<String, String> userProgress = (HashMap<String, String>) userMap.get("progress");
+        if (userProgress.size() == 1 && userProgress.containsKey("none")) {
+            modsLearningNames.add("");
+        } else {
+            modIDsLearning = userProgress.keySet();
+            for (String s : modIDsLearning) { // needs progress format as: ../progress/hashmaps of key: 000000, value: Name_X_Y  | where x = totalslides, y = last slide
+                modsLearningNames.add(userProgress.get(s).split("_")[0]);
+                modsLearningTotSlides.add(userProgress.get(s).split("_")[1]);
+                modsLearningLastSlides.add(userProgress.get(s).split("_")[2]);
+            }
+        }
+    }
 
-//                    double progress =
-//                                  u.getLastSlideViewed(
-//                                  getActivity().getApplicationContext(),
-//                                  user,
-//                                  Integer.parseInt(s.replace("#","").replace("\"","")));
 
-//                    double totalSlides =
-//                                  f.getSlideCount(getActivity().getApplicationContext(),
-//                                  Integer.parseInt(s.replace("#","").replace("\"","")));
-
-//                    double tempDouble =
-//                                  (progress / totalSlides) * 100;
-
-//                    long percentCompleted =
-//                                  Math.round(tempDouble);
-
-//                    learningModules.add(
-//                                  f.getModuleByID(getActivity().getApplicationContext(),
-//                       Integer.parseInt(s.replace("#","").replace("\"",""))).getString("Name") + "\n(" + percentCompleted + "%)");
-
-//                } catch (JSONException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//            learningModules = showMostRecentFirst(learningModules);
-//
-//            final ListAdapter currentModulesAdapter = new ArrayAdapter<String>(getActivity(),
-//                    android.R.layout.simple_list_item_1, learningModules);
-//
-//            assert learningList != null;
-//            learningList.setAdapter(currentModulesAdapter);
-//
-//            learningList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//                @Override
-//                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                    String selectedModule = String.valueOf(currentModulesAdapter.getItem(position));
-//                    selectedModule = selectedModule.split("\n")[0]; // get rid of progress tag
-//
-//                    JSONObject module = null;
-//
-//                    try {
-//                        module = f.getModuleByName(getActivity().getApplicationContext(), selectedModule);
-//                    } catch (IOException e) {
-//                        e.printStackTrace();
-//                    } catch (JSONException e) {
-//                        e.printStackTrace();
-//                    }
-//
-//                    Intent openModule = new Intent(getActivity(), ModuleProgress.class);
-//                    openModule.putExtra("User", user.toString());
-//                    openModule.putExtra("Module", module.toString());
-//                    startActivity(openModule);
-//                    getActivity().finish();
-//                }
-//            });
-//        }
-
-        // setup display
+    public void setupLearningTab() {
         if (modsLearningNames.get(0).equals("")) {
             learningView.setText(R.string.no_module_taken_yet);
             return;
+        } else {
+            learningView.setText(R.string.i_m_currently_learning);
         }
-        learningView.setText(R.string.i_m_currently_learning);
 
         if (modsLearningNames.size() > 0) {
 
-            // Strings to be displayed in the list (Names, progresses)
             ArrayList<String> learningDisplayArray = new ArrayList<>();
             for (int i = 0; i < modsLearningNames.size(); i++) {
                 double progress = Double.valueOf(modsLearningLastSlides.get(i).replaceAll("\"", ""));
@@ -256,43 +139,109 @@ public class LearningTab extends Fragment {
                 learningDisplayArray.add(modsLearningNames.get(i) + "\n(" + percentCompleted + "%)");
             }
 
-            // Order them Desc
-            learningDisplayArray = showMostRecentFirst(learningDisplayArray);
+//            learningDisplayArray = showMostRecentFirst(learningDisplayArray);
 
-            // Assemble the listview & the adapter
-            ListView learningList = (ListView) getActivity().findViewById(R.id.learning_tab_currently_learning_list);
             final ListAdapter currentModulesAdapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1, learningDisplayArray);
             learningList.setAdapter(currentModulesAdapter);
+            learningList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    HashMap<String, Object> selectedModule = (HashMap<String, Object>) modules.get(position);
+
+                    Intent openModule = new Intent(getActivity(), ModuleProgress.class);
+                    openModule.putExtra("User", userMap);
+                    openModule.putExtra("Module", selectedModule);
+                    startActivity(openModule);
+                    getActivity().finish();
+                }
+            });
 
         }
 
     }
 
-    public ArrayList<String> showMostRecentFirst(ArrayList<String> modules) {
+    public ArrayList<String> showMostRecentFirst(ArrayList<String> moduleNames) {
 
+
+        // order module names descending
         ArrayList<String> orderedDesc = new ArrayList<>();
 
         TreeSet<Integer> tempTree = new TreeSet<>();
 
-        for (String s : modules) {
+        for (String s : moduleNames) {
 
             String temp = s.substring(s.length() - 5, s.length() - 2).replace("(", "").replace(")", "").replace("%", "").replace("\n", "");
             int i = Integer.parseInt(temp);
             tempTree.add(i);
         }
-
         NavigableSet<Integer> result = tempTree.descendingSet();
-
         for (int i : result) {
-            for (int j = 0; j < modules.size(); j++) {
-                String temp2 = modules.get(j).substring(modules.get(j).length() - 5, modules.get(j).length() - 2).replace("(", "").replace(")", "").replace("%", "").replace("\n", "");
+            for (int j = 0; j < moduleNames.size(); j++) {
+                String temp2 = moduleNames.get(j).substring(moduleNames.get(j).length() - 5, moduleNames.get(j).length() - 2).replace("(", "").replace(")", "").replace("%", "").replace("\n", "");
                 if (Integer.parseInt(temp2) == i) {
-                    orderedDesc.add(modules.get(j));
+                    orderedDesc.add(moduleNames.get(j));
                 }
             }
         }
-
         return orderedDesc;
+    }
+
+    class AsyncGetMyModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
+
+        @Override
+        protected String doInBackground(String... uid) {
+
+            final DatabaseReference modulesRoot = FirebaseDatabase.getInstance().getReference().child("/modules");
+            modulesRoot.addListenerForSingleValueEvent(new ValueEventListener() {
+                                                           @Override
+                                                           public void onDataChange(DataSnapshot dataSnapshot) {
+                                                               for (String s : modIDsLearning) {
+
+                                                                   HashMap<String, Object> modMap = new HashMap<String, Object>();
+
+                                                                   modMap.put("name", dataSnapshot.child(s).child("name").getValue().toString());
+                                                                   modMap.put("description", dataSnapshot.child(s).child("description").getValue().toString());
+                                                                   modMap.put("id", dataSnapshot.child(s).child("id").getValue().toString());
+                                                                   modMap.put("author", dataSnapshot.child(s).child("author").getValue().toString());
+                                                                   modMap.put("pro", dataSnapshot.child(s).child("pro").getValue().toString());
+                                                                   modMap.put("author", dataSnapshot.child(s).child("author").getValue().toString());
+                                                                   modMap.put("noOfSlides", dataSnapshot.child(s).child("noOfSlides").getValue().toString());
+                                                                   modMap.put("authorName", dataSnapshot.child(s).child("authorName").getValue().toString());
+
+                                                                   int amountOfSlides = Integer.parseInt(dataSnapshot.child(s).child("noOfSlides").getValue().toString());
+
+                                                                   for (int j = 1; j <= amountOfSlides; j++) {
+                                                                       modMap.put("Slide_" + j, dataSnapshot.child(s).child("Slide_" + j).getValue().toString());
+                                                                   }
+
+                                                                   HashMap<String, String> reviewMap = (HashMap) dataSnapshot.child(s).child("reviews").getValue();
+                                                                   modMap.put("reviews", reviewMap);
+
+                                                                   HashMap<String, String> trainersMap = (HashMap) dataSnapshot.child(s).child("trainers").getValue();
+                                                                   modMap.put("trainers", trainersMap);
+
+                                                                   HashMap<String, String> typesMap = (HashMap) dataSnapshot.child(s).child("typesOfSlides").getValue();
+                                                                   modMap.put("typesOfSlides", typesMap);
+
+                                                                   modules.add(modMap);
+                                                               }
+                                                               publishProgress(modules);
+                                                           }
+
+                                                           @Override
+                                                           public void onCancelled(DatabaseError databaseError) {
+                                                           }
+                                                       }
+            );
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... modulesArray) {
+            super.onProgressUpdate(modulesArray);
+            modules = modulesArray[0];
+        }
     }
 }

@@ -29,7 +29,6 @@ import java.util.Set;
 public class EditModules extends AppCompatActivity {
 
     JSONObject user = null;
-    Module f = new Module();
     private ArrayList<String> IDsAuthoredByThisUser = null;
     private ArrayList<HashMap<String, Object>> myModules = null;
     private ListAdapter modulesListAdapter = null;
@@ -52,14 +51,7 @@ public class EditModules extends AppCompatActivity {
 
         allModuleNames = new ArrayList<>();
 
-
         User u = new User(getApplicationContext());
-
-//        try {
-//            user = new JSONObject(getIntent().getStringExtra("User String"));
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -80,7 +72,6 @@ public class EditModules extends AppCompatActivity {
         getMyAuthoredNames();
         getModules = new AsyncGetMyModules();
         getModules.execute();
-
 
     }
 
@@ -155,32 +146,6 @@ public class EditModules extends AppCompatActivity {
         finish();
     }
 
-//    public JSONObject getModule(int index) {
-//        JSONObject module = new JSONObject();
-//
-//        HashMap<String, String> moduleMap = myModules.get(index);
-//
-//        try {
-//            module.put("Name", moduleMap.get("name"));
-//            module.put("Description", moduleMap.get("description"));
-//            module.put("ID", moduleMap.get("id"));
-//            module.put("Author", moduleMap.get("author"));
-//            module.put("PRO", moduleMap.get("pro"));
-//            module.put("No. of Slides", moduleMap.get("noOfSlides"));
-//            module.put("Types of Slides", moduleMap.get("typesOfSlides"));
-//
-//
-//            for (int i = 1; i <= Integer.parseInt(moduleMap.get("noOfSlides")); i++) {
-//                module.put("Slide " + i, moduleMap.get("Slide_" + i));
-//            }
-//
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return module;
-//    }
-
     class AsyncGetMyModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, JSONObject> {
         @Override
         protected JSONObject doInBackground(String... uid) {
@@ -205,7 +170,7 @@ public class EditModules extends AppCompatActivity {
 
                         HashMap<String, String> typeMap = new HashMap<String, String>();
                         for (int i = 1; i <= Integer.parseInt(dataSnapshot.child(s).child("noOfSlides").getValue().toString()); i++) {
-                            typeMap.put("" + i, dataSnapshot.child(s).child("typesOfSlides").child("" + i).getValue().toString());
+                            typeMap.put("Slide_" + i, dataSnapshot.child(s).child("typesOfSlides").child("Slide_" + i).getValue().toString());
                         }
                         modMap.put("typesOfSlides", typeMap);
 

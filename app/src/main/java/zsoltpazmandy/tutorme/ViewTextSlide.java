@@ -10,17 +10,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.HashMap;
 
 public class ViewTextSlide extends AppCompatActivity {
 
-    JSONObject user = null;
-    JSONObject tutor = null;
-    JSONObject module = null;
     int slideNumber = 0;
     int totalslides = 0;
     Module f = new Module();
+
+    private HashMap<String, Object> userMap = null;
+    private HashMap<String, Object> moduleMap = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,39 +33,25 @@ public class ViewTextSlide extends AppCompatActivity {
         User u = new User(getApplicationContext());
         Cloud c = new Cloud();
 
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
+
         TextView slideCountText = (TextView) findViewById(R.id.view_text_slide_top_slidecounttext);
         Button saveQuit = (Button) findViewById(R.id.view_text_slide_savenquit_butt);
         Button askTutor = (Button) findViewById(R.id.view_text_slide_asktutor_butt);
         final Button prevButt = (Button) findViewById(R.id.view_text_bottom_prev_butt);
         Button nextButt = (Button) findViewById(R.id.view_text_bottom_next_butt);
 
-        try {
-            this.user = new JSONObject(getIntent().getStringExtra("User"));
-            this.module = new JSONObject(getIntent().getStringExtra("Module"));
-            this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
+        this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
 
-            if (this.slideNumber == 0) this.slideNumber = 1;
+        if (this.slideNumber == 0) this.slideNumber = 1;
 
+        u.updateProgress(userMap, moduleMap, slideNumber);
 
-            System.out.println("updating now");
-            u.updateProgress(getApplicationContext(), user, module, slideNumber);
-            String moduleID;
-            String nameOfModule;
-            String totalSlides;
-
-            moduleID = module.getString("ID");
-            nameOfModule = module.getString("Name");
-            totalSlides = module.getString("No. of Slides");
-
-            c.updateProgress(moduleID, nameOfModule, totalSlides, String.valueOf(slideNumber));
-
-            this.totalslides = module.getInt("No. of Slides");
-            this.setTitle(module.getString("Name"));
-            assert slideCountText != null;
-            slideCountText.setText("Slide " + slideNumber + "/" + totalslides);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        this.totalslides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
+        this.setTitle(moduleMap.get("name").toString());
+        assert slideCountText != null;
+        slideCountText.setText("Slide " + slideNumber + "/" + totalslides);
 
         assert saveQuit != null;
         assert askTutor != null;
@@ -77,17 +62,11 @@ public class ViewTextSlide extends AppCompatActivity {
         saveQuit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User u = new User(getApplicationContext());
 
-                JSONObject userUpdate = null;
-                try {
-                    userUpdate = u.getUser(getApplicationContext(), Integer.parseInt(user.getString("ID")));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
+                Cloud c = new Cloud();
+                c.saveUserHashMapInCloud(userMap);
                 Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
-                returnHome.putExtra("User", userUpdate.toString());
+                returnHome.putExtra("User", userMap);
                 startActivity(returnHome);
                 finish();
             }
@@ -98,7 +77,7 @@ public class ViewTextSlide extends AppCompatActivity {
             public void onClick(View v) {
 
                 slideNumber--;
-                int type =0;// f.getSlideType(getApplicationContext(), module, slideNumber);
+                int type = 0;// f.getSlideType(getApplicationContext(), module, slideNumber);
 
                 Intent prevSlide = null;
                 switch (type) {
@@ -112,8 +91,8 @@ public class ViewTextSlide extends AppCompatActivity {
                         break;
                 }
 
-                prevSlide.putExtra("User", user.toString());
-                prevSlide.putExtra("Module", module.toString());
+                prevSlide.putExtra("User", userMap);
+                prevSlide.putExtra("Module", moduleMap);
                 prevSlide.putExtra("Slide Number", "" + slideNumber);
                 startActivity(prevSlide);
                 finish();
@@ -124,27 +103,12 @@ public class ViewTextSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                User u = new User(getApplicationContext());
-
-                int IDofTutor = 0;
-
-                try {
-                    IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, module.getInt("ID"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-                try {
-                    tutor = u.getUser(getApplicationContext(), IDofTutor);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                Intent startChat = new Intent(ViewTextSlide.this, Chat.class);
-                startChat.putExtra("User", user.toString());
-                startChat.putExtra("Tutor", tutor.toString());
-                startActivity(startChat);
+//
+//
+//                Intent startChat = new Intent(ViewTextSlide.this, Chat.class);
+//                startChat.putExtra("User", user.toString());
+//                startChat.putExtra("Tutor", tutor.toString());
+//                startActivity(startChat);
             }
         });
 
@@ -167,8 +131,8 @@ public class ViewTextSlide extends AppCompatActivity {
                         break;
                 }
 
-                nextSlide.putExtra("User", user.toString());
-                nextSlide.putExtra("Module", module.toString());
+                nextSlide.putExtra("User", userMap);
+                nextSlide.putExtra("Module", moduleMap);
                 nextSlide.putExtra("Slide Number", "" + slideNumber);
                 startActivity(nextSlide);
                 finish();
@@ -188,18 +152,10 @@ public class ViewTextSlide extends AppCompatActivity {
             nextButt.setEnabled(true);
         }
 
-        String slideText = "";
-
-        try {
-
-            slideText = module.getString("Slide " + slideNumber);
-            TextView slideTextView = (TextView) findViewById(R.id.view_text_view);
-            assert slideTextView != null;
-            slideTextView.setText(slideText);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        String slideText = moduleMap.get("Slide_" + slideNumber).toString();
+        TextView slideTextView = (TextView) findViewById(R.id.view_text_view);
+        assert slideTextView != null;
+        slideTextView.setText(slideText);
 
     }
 
@@ -209,18 +165,8 @@ public class ViewTextSlide extends AppCompatActivity {
     public void onBackPressed() {
         if (wantsToQuitLearning) {
 
-            User u = new User(getApplicationContext());
-
-            JSONObject userUpdate = null;
-
-            try {
-                userUpdate = u.getUser(getApplicationContext(), Integer.parseInt(this.user.getString("ID")));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
             Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
-            returnHome.putExtra("User", userUpdate.toString());
+            returnHome.putExtra("User", userMap);
             startActivity(returnHome);
             finish();
 

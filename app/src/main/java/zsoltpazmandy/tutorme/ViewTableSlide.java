@@ -10,15 +10,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class ViewTableSlide extends AppCompatActivity {
 
-    JSONObject user = null;
-    JSONObject module = null;
+
+    private HashMap<String, Object> userMap = null;
+    private HashMap<String, Object> moduleMap = null;
     int slideNumber = 0;
     int totalslides = 0;
     Module f = new Module();
@@ -40,24 +39,20 @@ public class ViewTableSlide extends AppCompatActivity {
         Button prevButt = (Button) findViewById(R.id.view_table_bottom_prev_butt);
         Button nextButt = (Button) findViewById(R.id.view_table_bottom_next_butt);
 
-        try {
-            this.user = new JSONObject(getIntent().getStringExtra("User"));
-            this.module = new JSONObject(getIntent().getStringExtra("Module"));
-            this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
+        this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
 
-            if (this.slideNumber == 0) {
-                this.slideNumber = 1;
-            }
-
-            u.updateProgress(getApplicationContext(), user, module, slideNumber);
-
-            this.totalslides = module.getInt("No. of Slides");
-            this.setTitle(module.getString("Name"));
-            assert slideCountText != null;
-            slideCountText.setText("Slide " + slideNumber + "/" + totalslides);
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (this.slideNumber == 0) {
+            this.slideNumber = 1;
         }
+
+        u.updateProgress(userMap, moduleMap, slideNumber);
+
+        this.totalslides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
+        this.setTitle(moduleMap.get("name").toString());
+        assert slideCountText != null;
+        slideCountText.setText("Slide " + slideNumber + "/" + totalslides);
 
         assert saveQuit != null;
         assert askTutor != null;
@@ -66,17 +61,9 @@ public class ViewTableSlide extends AppCompatActivity {
         saveQuit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                User u = new User(getApplicationContext());
-
-                JSONObject userUpdate = null;
-                try {
-                    userUpdate = u.getUser(getApplicationContext(), Integer.parseInt(user.getString("ID")));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
                 Intent returnHome = new Intent(ViewTableSlide.this, Home.class);
-                returnHome.putExtra("User", userUpdate.toString());
+                returnHome.putExtra("User", userMap.toString());
                 startActivity(returnHome);
                 finish();
             }
@@ -101,8 +88,8 @@ public class ViewTableSlide extends AppCompatActivity {
                         break;
                 }
 
-                prevSlide.putExtra("User", user.toString());
-                prevSlide.putExtra("Module", module.toString());
+                prevSlide.putExtra("User", userMap);
+                prevSlide.putExtra("Module", moduleMap);
                 prevSlide.putExtra("Slide Number", "" + slideNumber);
                 startActivity(prevSlide);
                 finish();
@@ -134,8 +121,8 @@ public class ViewTableSlide extends AppCompatActivity {
                         break;
                 }
 
-                nextSlide.putExtra("User", user.toString());
-                nextSlide.putExtra("Module", module.toString());
+                nextSlide.putExtra("User", userMap);
+                nextSlide.putExtra("Module", moduleMap);
                 nextSlide.putExtra("Slide Number", "" + slideNumber);
                 startActivity(nextSlide);
                 finish();
@@ -163,14 +150,8 @@ public class ViewTableSlide extends AppCompatActivity {
             tableSlide.add(i, "");
         }
 
-        try {
-
-            tableRaw = module.getString("Slide " + slideNumber);
-            tableRaw = tableRaw.replace("[", "").replace("]", "").replace("\"", "");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        tableRaw = moduleMap.get("Slide_" + slideNumber).toString();
+        tableRaw = tableRaw.replace("[", "").replace("]", "").replace("\"", "");
 
         String[] temp = new String[20];
         temp = tableRaw.split(",");
@@ -269,18 +250,8 @@ public class ViewTableSlide extends AppCompatActivity {
     public void onBackPressed() {
         if (wantsToQuitLearning) {
 
-            User u = new User(getApplicationContext());
-
-            JSONObject userUpdate = null;
-
-            try {
-                userUpdate = u.getUser(getApplicationContext(), Integer.parseInt(this.user.getString("ID")));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
             Intent returnHome = new Intent(ViewTableSlide.this, Home.class);
-            returnHome.putExtra("User", userUpdate.toString());
+            returnHome.putExtra("User", userMap);
             startActivity(returnHome);
             finish();
 

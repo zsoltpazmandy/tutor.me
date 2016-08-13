@@ -11,16 +11,13 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.HashMap;
 
 public class ModuleProgress extends AppCompatActivity {
 
-    JSONObject user = null;
-    JSONObject tutor = null;
-    HashMap<String,Object> modMap = null;
+    HashMap<String, Object> modMap = null;
+    HashMap<String, Object> userMap = null;
+    private int lastSlide = 0;
 
 
     @Override
@@ -32,15 +29,10 @@ public class ModuleProgress extends AppCompatActivity {
 
         final Module f = new Module();
 
-        modMap = (HashMap<String,Object>) getIntent().getSerializableExtra("Module");
+        modMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
-        try {
-            this.user = new JSONObject(getIntent().getStringExtra("User"));
-//            this.module = new JSONObject(getIntent().getStringExtra("Module"));
-            this.setTitle("Module information");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        this.setTitle("Module information");
 
         TextView nameOfModule = (TextView) findViewById(R.id.view_module_name_of_module_view);
         TextView nameOfAuth = (TextView) findViewById(R.id.view_module_author_of_module_view);
@@ -54,83 +46,77 @@ public class ModuleProgress extends AppCompatActivity {
         final TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
         Button startButt = (Button) findViewById(R.id.view_module_start_butt);
 
-        try {
-            nameOfModule.setText(modMap.get("name").toString());
-            nameOfAuth.setText("written by " + modMap.get("author"));
-            moduleRating.setText("Module *****");
-            authRating.setText("Author *****");
+        nameOfModule.setText(modMap.get("name").toString());
+        nameOfAuth.setText("written by " + modMap.get("authorName"));
+        moduleRating.setText("Module *****");
+        authRating.setText("Author *****");
 
-            final User u = new User(getApplicationContext());
-            int IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), user, Integer.parseInt(modMap.get("id").toString()));
-            tutor = u.getUser(getApplicationContext(), IDofTutor);
-            String nameOfTutor = u.getUsername(getApplicationContext(), tutor);
-            final int lastSlide = u.getLastSlideViewed(getApplicationContext(), user, Integer.parseInt(modMap.get("id").toString()));
+        final User u = new User(getApplicationContext());
+        String IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), userMap, modMap.get("id").toString());
+        lastSlide = u.getLastSlideViewed(getApplicationContext(), userMap, modMap.get("id").toString());
 
-            tutorName.setText("Your tutor: " + nameOfTutor);
-            tutorRating.setText("Tutor *****");
-            progressBar.setMax(Integer.parseInt(modMap.get("noOfSlides").toString()));
-            progressBar.setProgress(lastSlide);
-            progressText.setText("" + lastSlide + " of " + modMap.get("noOfSlides") + " slides.");
-            moduleDesc.setText(modMap.get("description").toString());
+        tutorName.setText("Your tutor: " + IDofTutor);
+        tutorRating.setText("Tutor *****");
+        progressBar.setMax(Integer.parseInt(modMap.get("noOfSlides").toString()));
+        progressBar.setProgress(lastSlide);
+        progressText.setText("" + lastSlide + " of " + modMap.get("noOfSlides") + " slides.");
+        moduleDesc.setText(modMap.get("description").toString());
 
-            boolean review = false;
+        boolean review = false;
 
-            if (lastSlide < Integer.parseInt(modMap.get("noOfSlides").toString())) {
-                if (lastSlide == 0) {
-                    startButt.setText("Start");
-                    startButt.setEnabled(true);
-                } else {
-                    startButt.setText("Continue");
-                    startButt.setEnabled(true);
-                }
+        if (lastSlide < Integer.parseInt(modMap.get("noOfSlides").toString())) {
+            if (lastSlide == 0) {
+                startButt.setText("Start");
+                startButt.setEnabled(true);
             } else {
-                startButt.setText("Review");
-                review = true;
+                startButt.setText("Continue");
+                startButt.setEnabled(true);
             }
-
-            assert startButt != null;
-            final boolean finalReview = review;
-            startButt.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Toast.makeText(ModuleProgress.this, "Opening Module", Toast.LENGTH_SHORT).show();
-
-                    int type = 0;
-
-                    type = f.getSlideType(getApplicationContext(),
-                            modMap,
-                            u.getLastSlideViewed(getApplicationContext(), user, Integer.parseInt(modMap.get("id").toString())));
-
-                    Intent startModule = null;
-                    switch (type) {
-                        case 0:
-                            return;
-                        case 1:
-                            startModule = new Intent(ModuleProgress.this, ViewTextSlide.class);
-                            break;
-                        case 2:
-                            startModule = new Intent(ModuleProgress.this, ViewTableSlide.class);
-                            break;
-                    }
-
-                    startModule.putExtra("User", user.toString());
-//                    startModule.putExtra("Module", module.toString());
-
-                    if (finalReview) {
-                        startModule.putExtra("Slide Number", "" + 0);
-                    } else {
-                        startModule.putExtra("Slide Number", "" + lastSlide);
-                    }
-                    startActivity(startModule);
-                    finish();
-
-                }
-            });
-
-
-        } catch (JSONException e) {
-            e.printStackTrace();
+        } else {
+            startButt.setText("Review");
+            review = true;
         }
+
+        assert startButt != null;
+        final boolean finalReview = review;
+        startButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(ModuleProgress.this, "Opening Module", Toast.LENGTH_SHORT).show();
+
+                HashMap<String, String> typesMap = (HashMap<String, String>) modMap.get("typesOfSlides");
+
+                if(lastSlide == 0){
+                    lastSlide = 1;
+                }
+
+                int type = Integer.parseInt(typesMap.get("Slide_" + lastSlide));
+
+                Intent startModule = null;
+                switch (type) {
+                    case 0:
+                        return;
+                    case 1:
+                        startModule = new Intent(ModuleProgress.this, ViewTextSlide.class);
+                        break;
+                    case 2:
+                        startModule = new Intent(ModuleProgress.this, ViewTableSlide.class);
+                        break;
+                }
+
+                startModule.putExtra("User", userMap);
+                startModule.putExtra("Module", modMap);
+
+                if (finalReview) {
+                    startModule.putExtra("Slide Number", "" + 0);
+                } else {
+                    startModule.putExtra("Slide Number", "" + lastSlide);
+                }
+                startActivity(startModule);
+                finish();
+
+            }
+        });
 
 
     }
@@ -141,18 +127,8 @@ public class ModuleProgress extends AppCompatActivity {
     public void onBackPressed() {
         if (wantsToQuitLearning) {
 
-            User u = new User(getApplicationContext());
-
-            JSONObject userUpdate = null;
-
-            try {
-                userUpdate = u.getUser(getApplicationContext(), Integer.parseInt(this.user.getString("ID")));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
             Intent returnHome = new Intent(ModuleProgress.this, Home.class);
-            returnHome.putExtra("User", userUpdate.toString());
+            returnHome.putExtra("User", userMap);
             startActivity(returnHome);
             finish();
 
@@ -168,7 +144,6 @@ public class ModuleProgress extends AppCompatActivity {
             }
         }, 1000);
     }
-
 
 
 }
