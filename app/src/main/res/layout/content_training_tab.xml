@@ -34,16 +34,6 @@
             android:text="@string/training_tab_edit_modules"
             />
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/training_tab_populate_library_butt"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:text="[ ! populate library ! ]"
-            android:textColor="#AD0000"
-            />
-
     </LinearLayout>
 
 

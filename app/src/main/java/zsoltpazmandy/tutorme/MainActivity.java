@@ -24,10 +24,8 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -85,22 +83,6 @@ public class MainActivity extends AppCompatActivity {
         setupFields();
         setupLoginButton();
         setupSignupButton();
-        setupResetButton();
-    }
-
-    private void setupResetButton() {
-        resetUserBaseButt = (Button) findViewById(R.id.resetUserBase_butt);
-        resetUserBaseButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    u.purgeUserRecords(getApplicationContext());
-                    u.resetCounter(getApplicationContext());
-                } catch (IOException | JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     private void setupSignupButton() {

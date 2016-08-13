@@ -161,7 +161,7 @@
                             android:layout_marginLeft="@dimen/activity_horizontal_margin"
                             android:layout_marginRight="@dimen/activity_horizontal_margin"
                             android:gravity="center"
-                            android:text="Slides"
+                            android:text="Edit slides"
                             android:textSize="@dimen/profile_setup_text_size"
                             android:textStyle="bold" />
 
@@ -248,7 +248,6 @@
                         android:layout_height="wrap_content"
                         android:layout_above="@id/edit_selected_bottom_butts_rl"
                         android:layout_below="@id/edit_selected_slide_name_ll"
-                        android:layout_marginLeft="@dimen/activity_horizontal_margin"
                         android:layout_toLeftOf="@id/edit_selected_slides_butts"
                         android:background="@android:color/darker_gray"
                         android:orientation="vertical"

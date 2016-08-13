@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">tutor.me</string>
     <string name="action_settings">Settings</string>
-    <string name="sign_up_butt">Sign me up!</string>
+    <string name="sign_up_butt">Sign up</string>
     <string name="log_in_butt">Log in</string>
     <string name="create_mod_butt">Create Module</string>
     <string name="title_activity_create_mod">Create Module</string>

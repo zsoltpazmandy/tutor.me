@@ -32,13 +32,27 @@ public class EditSelectedModule extends AppCompatActivity {
     private final int EDIT_MODULE_EDIT_TEXT_SLIDE = 7;
     private final int EDIT_MODULE_EDIT_TABLE_SLIDE = 8;
 
-    Module f = new Module();
-    Cloud c = new Cloud();
+    private Module f = new Module();
+    private Cloud c = new Cloud();
 
     private HashMap<String, Object> userMap = null;
     private HashMap<String, Object> moduleMap = null;
     private HashMap<String, Object> allModNames = null;
     private ArrayList<String> allModNamesList = null;
+
+    private TextView moduleNameLabel = null;
+    private TextView moduleNameTextView = null;
+    private Button editNameButt = null;
+    private TextView descLabel = null;
+    private TextView descTextView = null;
+    private Button editDescButt = null;
+    private TextView slidesLabel = null;
+    private Button addSlideButt = null;
+    private Button editSlideButt = null;
+    private Button moveSlideButt = null;
+    private Button deleteSlideButt = null;
+    private ListView slidesOfModuleListView = null;
+    private Button saveButt = null;
 
 
     @Override
@@ -54,45 +68,19 @@ public class EditSelectedModule extends AppCompatActivity {
             allModNamesList = (ArrayList<String>) getIntent().getSerializableExtra("All Module Names");
         }
 
-
-        final TextView moduleNameLabel = (TextView) findViewById(R.id.edit_selected_name_label);
-        assert moduleNameLabel != null;
-
-        final TextView moduleNameTextView = (TextView) findViewById(R.id.edit_selected_module_top_hint);
-        assert moduleNameTextView != null;
-
-        Button editNameButt = (Button) findViewById(R.id.edit_selected_change_module_name_butt);
-        assert editNameButt != null;
-
-        TextView descLabel = (TextView) findViewById(R.id.edit_selected_desc_label);
-        assert descLabel != null;
-
-        final TextView descTextView = (TextView) findViewById(R.id.edit_selected_module_desc);
-        assert descTextView != null;
-
-        Button editDescButt = (Button) findViewById(R.id.edit_selected_change_module_desc_butt);
-        assert editDescButt != null;
-
-        TextView slidesLabel = (TextView) findViewById(R.id.edit_selected_slide_label);
-        assert slidesLabel != null;
-
-        final Button addSlideButt = (Button) findViewById(R.id.edit_selected_module_add_slide_butt);
-        assert addSlideButt != null;
-
-        final Button editSlideButt = (Button) findViewById(R.id.edit_selected_module_edit_slides_butt);
-        assert editSlideButt != null;
-
-        final Button moveSlideButt = (Button) findViewById(R.id.edit_selected_module_move_slides_butt);
-        assert moveSlideButt != null;
-
-        final Button deleteSlideButt = (Button) findViewById(R.id.edit_selected_module_del_slide_butt);
-        assert deleteSlideButt != null;
-
-        ListView slidesOfModuleListView = (ListView) findViewById(R.id.edit_selected_module_slideslist_view);
-        assert slidesOfModuleListView != null;
-
-        Button saveButt = (Button) findViewById(R.id.edit_selected_save_butt);
-        assert saveButt != null;
+        moduleNameLabel = (TextView) findViewById(R.id.edit_selected_name_label);
+        moduleNameTextView = (TextView) findViewById(R.id.edit_selected_module_top_hint);
+        editNameButt = (Button) findViewById(R.id.edit_selected_change_module_name_butt);
+        descLabel = (TextView) findViewById(R.id.edit_selected_desc_label);
+        descTextView = (TextView) findViewById(R.id.edit_selected_module_desc);
+        editDescButt = (Button) findViewById(R.id.edit_selected_change_module_desc_butt);
+        slidesLabel = (TextView) findViewById(R.id.edit_selected_slide_label);
+        addSlideButt = (Button) findViewById(R.id.edit_selected_module_add_slide_butt);
+        editSlideButt = (Button) findViewById(R.id.edit_selected_module_edit_slides_butt);
+        moveSlideButt = (Button) findViewById(R.id.edit_selected_module_move_slides_butt);
+        deleteSlideButt = (Button) findViewById(R.id.edit_selected_module_del_slide_butt);
+        slidesOfModuleListView = (ListView) findViewById(R.id.edit_selected_module_slideslist_view);
+        saveButt = (Button) findViewById(R.id.edit_selected_save_butt);
 
         editNameButt.setOnClickListener(new View.OnClickListener() {
             @Override

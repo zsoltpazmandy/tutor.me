@@ -47,8 +47,6 @@ public class TrainingTab extends Fragment {
             assert createButt != null;
             Button editModButt = (Button) getActivity().findViewById(R.id.training_tab_edit_module_butt);
             assert editModButt != null;
-            Button populateFake = (Button) getActivity().findViewById(R.id.training_tab_populate_library_butt);
-            assert populateFake != null;
 
             createButt.setOnClickListener(new View.OnClickListener() {
                 @Override

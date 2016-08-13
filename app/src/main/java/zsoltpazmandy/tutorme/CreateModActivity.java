@@ -26,6 +26,7 @@ import java.util.Iterator;
 public class CreateModActivity extends AppCompatActivity {
 
     private User u;
+    private Cloud c;
 
     private ArrayList<HashMap<String, Object>> modules = null;
     private ArrayList<String> modulesNamesList = null;
@@ -35,15 +36,12 @@ public class CreateModActivity extends AppCompatActivity {
     private HashMap<String, Object> userMap = null;
     private HashMap<String, Object> moduleMap = null;
     private final int CREATE_MODULE_ADD_SLIDE = 1;
-    private final int EDIT_MODULE_ADD_SLIDE = 2;
-    private final int CREATE_MODULE_ADD_TEXT_SLIDE = 3;
-    private final int CREATE_MODULE_ADD_TABLE_SLIDE = 4;
-    private final int EDIT_MODULE_ADD_TEXT_SLIDE = 5;
-    private final int EDIT_MODULE_ADD_TABLE_SLIDE = 6;
-    private final int EDIT_MODULE_EDIT_TEXT_SLIDE = 7;
-    private final int EDIT_MODULE_EDIT_TABLE_SLIDE = 8;
 
-    Button nextButt = null;
+    private Button nextButt = null;
+    private TextView moduleNameTag = null;
+    private TextView moduleDescTag = null;
+    private EditText moduleNameEdit = null;
+    private EditText moduleDescEdit = null;
 
 
     @Override
@@ -54,28 +52,23 @@ public class CreateModActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         u = new User(getApplicationContext());
+        c = new Cloud();
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
         }
 
-        final Module f = new Module();
-
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
         moduleMap = new HashMap<String, Object>();
 
-        TextView moduleNameTag = (TextView) findViewById(R.id.moduleNameTag);
-        final EditText moduleNameEdit = (EditText) findViewById(R.id.moduleNameEdit);
-        TextView moduleDescTag = (TextView) findViewById(R.id.moduleDescriptionTag);
-        final EditText moduleDescEdit = (EditText) findViewById(R.id.moduleDescriptionEdit);
-
-        Button reset = (Button) findViewById(R.id.resetLib);
-        assert reset != null;
+        moduleNameTag = (TextView) findViewById(R.id.moduleNameTag);
+        moduleNameEdit = (EditText) findViewById(R.id.moduleNameEdit);
+        moduleDescTag = (TextView) findViewById(R.id.moduleDescriptionTag);
+        moduleDescEdit = (EditText) findViewById(R.id.moduleDescriptionEdit);
 
         nextButt = (Button) findViewById(R.id.moduleBeginButton);
-        assert nextButt != null;
         nextButt.setText("Next");
         nextButt.setEnabled(false);
         nextButt.setOnClickListener(new View.OnClickListener() {
@@ -168,7 +161,6 @@ public class CreateModActivity extends AppCompatActivity {
                 HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
                 moduleMap.put("noOfSlides", "" + typesMap.keySet().size());
 
-                Cloud c = new Cloud();
                 c.overWriteModuleHashMapInCloud(moduleMap);
                 c.addToAuthored(userMap, moduleMap);
                 c.addToTraining(userMap, moduleMap.get("id").toString());
@@ -247,14 +239,11 @@ public class CreateModActivity extends AppCompatActivity {
     }
 
     public boolean isNameTaken(String name) {
-        boolean isTaken = false;
-
         for (String s : modulesNamesList) {
             if (name.equals(s))
-                isTaken = true;
+                return true;
         }
-
-        return isTaken;
+        return false;
     }
 
     private void setUpFields() {

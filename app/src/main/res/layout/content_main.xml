@@ -37,9 +37,8 @@
                 android:id="@+id/username_textfield"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.8"
+                android:layout_weight="1"
                 android:hint="@string/login_email_hint" />
-
 
         </LinearLayout>
 
@@ -57,7 +56,7 @@
                 android:id="@+id/password_textfield"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.8"
+                android:layout_weight="1"
                 android:hint="@string/login_pass_hint"
                 android:inputType="textPassword"
                 android:maxLength="10" />
@@ -71,28 +70,13 @@
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
             android:text="@string/log_in_butt" />
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/login_butt"
-            android:id="@+id/divider"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:background="@android:color/darker_gray"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"/>
         <Button
             android:id="@+id/signUpButt"
+            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.2"
-            android:layout_below="@id/divider"
-            android:textColor="#AD0000"
+            android:layout_below="@id/login_butt"
             android:text="@string/sign_up_butt" />
-        <Button
-            android:id="@+id/resetUserBase_butt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/signUpButt"
-            android:text="[ ! reset userbase ! ]"
-            android:textColor="#AD0000" />
     </RelativeLayout>
 </ScrollView>

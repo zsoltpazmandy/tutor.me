@@ -148,7 +148,7 @@ public class AddSlide extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(resultCode==RESULT_CANCELED){
+        if (resultCode == RESULT_CANCELED) {
             setResult(RESULT_CANCELED);
             finish();
             return;
@@ -158,7 +158,7 @@ public class AddSlide extends AppCompatActivity {
         userMap = (HashMap<String, Object>) data.getSerializableExtra("User");
 
         if (requestCode == EDIT_MODULE_ADD_SLIDE) {
-            if(requestCode == RESULT_OK){
+            if (requestCode == RESULT_OK) {
                 Intent slideAdded = new Intent(AddSlide.this, CreateModActivity.class);
                 slideAdded.putExtra("User", userMap);
                 slideAdded.putExtra("Module", moduleMap);
@@ -168,7 +168,7 @@ public class AddSlide extends AppCompatActivity {
                 setResult(RESULT_CANCELED);
                 finish();
             }
-        } else if (requestCode == CREATE_MODULE_ADD_SLIDE){
+        } else if (requestCode == CREATE_MODULE_ADD_SLIDE) {
             if (resultCode == RESULT_OK) {
                 Intent textSlideAdded = new Intent(AddSlide.this, CreateModActivity.class);
                 textSlideAdded.putExtra("User", userMap);
@@ -178,7 +178,7 @@ public class AddSlide extends AppCompatActivity {
             }
         } else if (requestCode == CREATE_MODULE_ADD_TEXT_SLIDE) {
             if (resultCode == RESULT_OK) {
-                if(data.hasExtra("Finished")) {
+                if (data.hasExtra("Finished")) {
                     Intent textSlideAdded = new Intent(AddSlide.this, CreateModActivity.class);
                     textSlideAdded.putExtra("User", userMap);
                     textSlideAdded.putExtra("Module", moduleMap);
@@ -200,7 +200,7 @@ public class AddSlide extends AppCompatActivity {
             }
         } else if (requestCode == CREATE_MODULE_ADD_TABLE_SLIDE) {
             if (resultCode == RESULT_OK) {
-                if(data.hasExtra("Finished")) {
+                if (data.hasExtra("Finished")) {
                     Intent tableSlideAdded = new Intent(AddSlide.this, CreateModActivity.class);
                     tableSlideAdded.putExtra("User", userMap);
                     tableSlideAdded.putExtra("Module", moduleMap);
@@ -222,7 +222,7 @@ public class AddSlide extends AppCompatActivity {
             }
         } else if (requestCode == EDIT_MODULE_ADD_TEXT_SLIDE) {
             if (resultCode == RESULT_OK) {
-                if(data.hasExtra("Finished")) {
+                if (data.hasExtra("Finished")) {
                     Intent textSlideAdded = new Intent(AddSlide.this, EditSelectedModule.class);
                     textSlideAdded.putExtra("User", userMap);
                     textSlideAdded.putExtra("Module", moduleMap);
@@ -237,7 +237,7 @@ public class AddSlide extends AppCompatActivity {
             }
         } else if (requestCode == EDIT_MODULE_ADD_TABLE_SLIDE) {
             if (resultCode == RESULT_OK) {
-                if(data.hasExtra("Finished")) {
+                if (data.hasExtra("Finished")) {
                     Intent tableSlideAdded = new Intent(AddSlide.this, EditSelectedModule.class);
                     tableSlideAdded.putExtra("User", userMap);
                     tableSlideAdded.putExtra("Module", moduleMap);
@@ -253,48 +253,9 @@ public class AddSlide extends AppCompatActivity {
         } else {
             return;
         }
-
-//        switch (resultCode) {
-//            case 1:
-//                if (data.hasExtra("Module edited")) {
-//                    moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module edited");
-//                    userMap = (HashMap<String, Object>) data.getSerializableExtra("User");
-//                    Intent backToEdit = new Intent(AddSlide.this, EditSelectedModule.class);
-//                    backToEdit.putExtra("User", userMap);
-//                    backToEdit.putExtra("Module edited", moduleMap);
-//                    setResult(1, backToEdit);
-//                    finish();
-//                    break;
-//                } else if (data.hasExtra("Slide added to module")) {
-//                    Toast.makeText(this, "Slide added to module", Toast.LENGTH_SHORT).show();
-//                    moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Slide added to module");
-//                    HashMap<String, String> typeMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
-//                    moduleMap.put("noOfSlides", typeMap.keySet().size());
-//                    userMap = (HashMap<String, Object>) data.getSerializableExtra("User");
-//                    break;
-//                }
-//            case 2:
-//                moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Last slide added to module");
-//                Intent moduleComplete = new Intent(AddSlide.this, CreateModActivity.class);
-//                moduleComplete.putExtra("Module complete", moduleMap);
-//                moduleComplete.putExtra("User", userMap);
-//                setResult(1, moduleComplete);
-//                finish();
-//                break;
-//            case 3:
-//                moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module edited");
-//                Intent slideAddedToMod = new Intent(AddSlide.this, EditSelectedModule.class);
-//                slideAddedToMod.putExtra("Module edited", moduleMap);
-//                slideAddedToMod.putExtra("User", userMap);
-//                setResult(RESULT_OK, slideAddedToMod);
-//                finish();
-//                break;
-//            case 4:
-//                setResult(RESULT_CANCELED);
-//                finish();
-//                break;
-//        }
     }
 
-
+    @Override
+    public void onBackPressed() {
+    }
 }

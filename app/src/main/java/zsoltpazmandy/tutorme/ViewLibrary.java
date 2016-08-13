@@ -250,7 +250,6 @@ public class ViewLibrary extends AppCompatActivity {
     public void onBackPressed() {
         super.onBackPressed();
 
-        User u = new User(getApplicationContext());
         Intent returnToHome = new Intent(ViewLibrary.this, Home.class);
         returnToHome.putExtra("User", userMap);
 
