@@ -12,6 +12,8 @@ import java.util.Set;
  */
 public class User {
 
+    private Cloud c;
+
     private String id;
     private String email;
     private String username;
@@ -154,22 +156,6 @@ public class User {
         c.addToTrainersTrainees(tutorID, userMap.get("id").toString(), moduleMap.get("id").toString());
 
         return userMap;
-    }
-
-    public void updateProgress(HashMap<String, Object> userMap, HashMap<String, Object> moduleMap, int lastSlide) {
-        HashMap<String, String> progressMap = (HashMap<String, String>) userMap.get("progress");
-        Set<String> modIDsLearning = progressMap.keySet();
-        for (String s : modIDsLearning) {
-            if (moduleMap.get("id").toString().equals(s)) {
-                String name = progressMap.get(s).split("_")[0];
-                String totalSlides = progressMap.get(s).split("_")[1];
-                String updatedLastSlide = String.valueOf(lastSlide);
-                progressMap.remove(s);
-                progressMap.put(s, name + "_" + totalSlides + "_" + updatedLastSlide);
-            }
-        }
-        Cloud c = new Cloud();
-        c.saveUserHashMapInCloud(userMap);
     }
 
     public int getLastSlideViewed(HashMap<String, Object> userMap, String moduleID) {

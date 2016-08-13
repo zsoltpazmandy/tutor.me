@@ -15,12 +15,24 @@ import java.util.HashMap;
 
 public class ViewTableSlide extends AppCompatActivity {
 
+    private TextView slideCountText;
 
+    private Button saveQuit;
+    private Button askTutor;
+    private Button prevButt;
+    private Button nextButt;
+
+    private User u;
+
+    private Cloud c;
     private HashMap<String, Object> userMap = null;
+
     private HashMap<String, Object> moduleMap = null;
-    int slideNumber = 0;
-    int totalslides = 0;
-    Module f = new Module();
+    private HashMap<String, String> typesMap = null;
+
+    private int slideNumber;
+    private int slideType;
+    private int totalSlides;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,39 +43,44 @@ public class ViewTableSlide extends AppCompatActivity {
 
         overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 
-        User u = new User();
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
 
-        TextView slideCountText = (TextView) findViewById(R.id.view_table_slide_top_slidecounttext);
-        Button saveQuit = (Button) findViewById(R.id.view_table_slide_savenquit_butt);
-        Button askTutor = (Button) findViewById(R.id.view_table_slide_asktutor_butt);
-        Button prevButt = (Button) findViewById(R.id.view_table_bottom_prev_butt);
-        Button nextButt = (Button) findViewById(R.id.view_table_bottom_next_butt);
+        u = new User();
+        c = new Cloud();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
+
+        slideCountText = (TextView) findViewById(R.id.view_table_slide_top_slidecounttext);
+        saveQuit = (Button) findViewById(R.id.view_table_slide_savenquit_butt);
+        askTutor = (Button) findViewById(R.id.view_table_slide_asktutor_butt);
+        prevButt = (Button) findViewById(R.id.view_table_bottom_prev_butt);
+        nextButt = (Button) findViewById(R.id.view_table_bottom_next_butt);
+
         this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
 
         if (this.slideNumber == 0) {
             this.slideNumber = 1;
         }
 
-        u.updateProgress(userMap, moduleMap, slideNumber);
+        c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
 
-        this.totalslides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
+        this.totalSlides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
         this.setTitle(moduleMap.get("name").toString());
-        assert slideCountText != null;
-        slideCountText.setText("Slide " + slideNumber + "/" + totalslides);
+        slideCountText.setText("Slide " + slideNumber + "/" + totalSlides);
 
-        assert saveQuit != null;
-        assert askTutor != null;
-        assert prevButt != null;
-        assert nextButt != null;
         saveQuit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+//                HashMap<String, String> progressMap = (HashMap<String, String>) moduleMap.get("progress");
+//                if (Integer.parseInt(progressMap.get(moduleMap.get("id").toString()).split("_")[2]) < slideNumber)
+//                    c.syncProgress(getApplicationContext(), userMap);
+                c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 Intent returnHome = new Intent(ViewTableSlide.this, Home.class);
-                returnHome.putExtra("User", userMap.toString());
+                returnHome.putExtra("User", userMap);
                 startActivity(returnHome);
                 finish();
             }
@@ -73,11 +90,12 @@ public class ViewTableSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
                 slideNumber--;
-                int type = 0;//f.getSlideType(getApplicationContext(), module, slideNumber);
+                slideType = Integer.parseInt(typesMap.get("Slide_" + slideNumber));
 
                 Intent prevSlide = null;
-                switch (type) {
+                switch (slideType) {
                     case 0:
                         return;
                     case 1:
@@ -99,18 +117,24 @@ public class ViewTableSlide extends AppCompatActivity {
         askTutor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(ViewTableSlide.this, "Messaging tutor operation not yet implemented", Toast.LENGTH_SHORT).show();
+
+//                Intent startChat = new Intent(ViewTableSlide.this, Chat.class);
+//                startChat.putExtra("User", user.toString());
+//                startChat.putExtra("Tutor", tutor.toString());
+//                startActivity(startChat);
             }
         });
 
         nextButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
                 slideNumber++;
-                int type = 0;//f.getSlideType(getApplicationContext(), module, slideNumber);
+                slideType = Integer.parseInt(typesMap.get("Slide_" + slideNumber));
 
                 Intent nextSlide = null;
-                switch (type) {
+                switch (slideType) {
                     case 0:
                         return;
                     case 1:
@@ -136,7 +160,7 @@ public class ViewTableSlide extends AppCompatActivity {
             prevButt.setEnabled(true);
         }
 
-        if (slideNumber == totalslides) {
+        if (slideNumber == totalSlides) {
             nextButt.setEnabled(false);
         } else {
             nextButt.setEnabled(true);

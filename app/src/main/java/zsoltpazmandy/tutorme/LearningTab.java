@@ -42,6 +42,8 @@ public class LearningTab extends Fragment {
 
     private HashMap<String, Object> userMap = null;
 
+    private Cloud c;
+
     public LearningTab() {
     }
 
@@ -55,6 +57,8 @@ public class LearningTab extends Fragment {
         }
 
         userMap = (HashMap<String, Object>) getActivity().getIntent().getSerializableExtra("User");
+        c = new Cloud();
+//        c.syncProgress(getActivity().getApplicationContext(), userMap);
 
         modsLearningNames = new ArrayList<>();
         modsLearningTotSlides = new ArrayList<>();
@@ -72,15 +76,10 @@ public class LearningTab extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         setupElements();
-
         setUpProgress();
-
         AsyncGetMyModules getMyModules = new AsyncGetMyModules();
         getMyModules.execute();
-
-
         setupLearningTab();
     }
 
@@ -107,7 +106,7 @@ public class LearningTab extends Fragment {
             modsLearningNames.add("");
         } else {
             modIDsLearning = userProgress.keySet();
-            for (String s : modIDsLearning) { // needs progress format as: ../progress/hashmaps of key: 000000, value: Name_X_Y  | where x = totalslides, y = last slide
+            for (String s : modIDsLearning) { // needs progress format as: ../progress/hashmaps of key: 000000, value: Name_X_Y  | where x = slideType, y = last slide
                 modsLearningNames.add(userProgress.get(s).split("_")[0]);
                 modsLearningTotSlides.add(userProgress.get(s).split("_")[1]);
                 modsLearningLastSlides.add(userProgress.get(s).split("_")[2]);

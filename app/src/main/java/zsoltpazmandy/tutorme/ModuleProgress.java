@@ -30,9 +30,10 @@ public class ModuleProgress extends AppCompatActivity {
 
     private User u = null;
 
-    HashMap<String, Object> modMap = null;
+    HashMap<String, Object> moduleMap = null;
     HashMap<String, Object> userMap = null;
     private int lastSlide = 0;
+    private boolean isReview;
 
     private TextView nameOfModule = null;
     private TextView nameOfAuth = null;
@@ -57,14 +58,14 @@ public class ModuleProgress extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        modMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
+        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         myTutors = new ArrayList<>();
         IDsOfMyTutors = new HashSet<>();
 
         u = new User();
 
-        IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), userMap, modMap.get("id").toString());
+        IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), userMap, moduleMap.get("id").toString());
 
         getMyTutorIDs();
 
@@ -85,23 +86,21 @@ public class ModuleProgress extends AppCompatActivity {
         TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
         startButt = (Button) findViewById(R.id.view_module_start_butt);
 
-        nameOfModule.setText(modMap.get("name").toString());
-        nameOfAuth.setText("written by " + modMap.get("authorName"));
+        nameOfModule.setText(moduleMap.get("name").toString());
+        nameOfAuth.setText("written by " + moduleMap.get("authorName"));
         moduleRating.setText("Module *****");
         authRating.setText("Author *****");
 
-        lastSlide = u.getLastSlideViewed(userMap, modMap.get("id").toString());
+        lastSlide = u.getLastSlideViewed(userMap, moduleMap.get("id").toString());
 
         tutorName.setText("Loading tutor info...");
         tutorRating.setText("Tutor *****");
-        progressBar.setMax(Integer.parseInt(modMap.get("noOfSlides").toString()));
+        progressBar.setMax(Integer.parseInt(moduleMap.get("noOfSlides").toString()));
         progressBar.setProgress(lastSlide);
-        progressText.setText("" + lastSlide + " of " + modMap.get("noOfSlides") + " slides.");
-        moduleDesc.setText(modMap.get("description").toString());
+        progressText.setText("" + lastSlide + " of " + moduleMap.get("noOfSlides") + " slides.");
+        moduleDesc.setText(moduleMap.get("description").toString());
 
-        boolean review = false;
-
-        if (lastSlide < Integer.parseInt(modMap.get("noOfSlides").toString())) {
+        if (lastSlide < Integer.parseInt(moduleMap.get("noOfSlides").toString())) {
             if (lastSlide == 0) {
                 startButt.setText("Start");
                 startButt.setEnabled(true);
@@ -111,19 +110,18 @@ public class ModuleProgress extends AppCompatActivity {
             }
         } else {
             startButt.setText("Review");
-            review = true;
+            isReview = true;
         }
 
         assert startButt != null;
-        final boolean finalReview = review;
         startButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Toast.makeText(ModuleProgress.this, "Opening Module", Toast.LENGTH_SHORT).show();
 
-                HashMap<String, String> typesMap = (HashMap<String, String>) modMap.get("typesOfSlides");
+                HashMap<String, String> typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
 
-                if(lastSlide == 0){
+                if (lastSlide == 0) {
                     lastSlide = 1;
                 }
 
@@ -142,9 +140,9 @@ public class ModuleProgress extends AppCompatActivity {
                 }
 
                 startModule.putExtra("User", userMap);
-                startModule.putExtra("Module", modMap);
+                startModule.putExtra("Module", moduleMap);
 
-                if (finalReview) {
+                if (isReview) {
                     startModule.putExtra("Slide Number", "" + 0);
                 } else {
                     startModule.putExtra("Slide Number", "" + lastSlide);
@@ -159,11 +157,11 @@ public class ModuleProgress extends AppCompatActivity {
     }
 
     private String getThisTutorName(String iDofTutor) {
-        for(HashMap<String, Object> tutor : myTutors){
+        for (HashMap<String, Object> tutor : myTutors) {
             try {
                 if (tutor.get("id").toString().equals(iDofTutor))
                     return tutor.get("username").toString();
-            } catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 return "is no longer registered :(";
             }
         }
@@ -187,12 +185,13 @@ public class ModuleProgress extends AppCompatActivity {
 
                     HashMap<String, Object> currentTutor = new HashMap<String, Object>();
 
-                    for(String s: IDsOfMyTutors){
+                    for (String s : IDsOfMyTutors) {
                         currentTutor = (HashMap) dataSnapshot.child(s).getValue();
                         myTutors.add(currentTutor);
                     }
                     publishProgress(myTutors);
                 }
+
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                     publishProgress(myTutors);

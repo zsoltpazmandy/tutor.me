@@ -14,12 +14,26 @@ import java.util.HashMap;
 
 public class ViewTextSlide extends AppCompatActivity {
 
-    int slideNumber = 0;
-    int totalslides = 0;
-    Module f = new Module();
+    private TextView slideCountText;
 
+    private Button saveQuit;
+    private Button askTutor;
+    private Button prevButt;
+    private Button nextButt;
+    private String slideText;
+
+    private TextView slideTextView;
+    private User u;
+
+    private Cloud c;
     private HashMap<String, Object> userMap = null;
+
     private HashMap<String, Object> moduleMap = null;
+    private HashMap<String, String> typesMap = null;
+
+    private int slideNumber;
+    private int slideType;
+    private int totalSlides;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,41 +44,59 @@ public class ViewTextSlide extends AppCompatActivity {
 
         overridePendingTransition(R.anim.in_from_right, R.anim.out_to_left);
 
-        User u = new User();
-        Cloud c = new Cloud();
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
+            finish();
+            return;
+        }
 
+        instantiateVars();
+        c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+        updateElements();
+        setUpListeners();
+    }
+
+    private void updateElements() {
+        if (slideNumber == 1) {
+            prevButt.setEnabled(false);
+        } else {
+            prevButt.setEnabled(true);
+        }
+
+        if (slideNumber == totalSlides) {
+            nextButt.setEnabled(false);
+        } else {
+            nextButt.setEnabled(true);
+        }
+    }
+
+    private void instantiateVars() {
+        u = new User();
+        c = new Cloud();
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
-
-        TextView slideCountText = (TextView) findViewById(R.id.view_text_slide_top_slidecounttext);
-        Button saveQuit = (Button) findViewById(R.id.view_text_slide_savenquit_butt);
-        Button askTutor = (Button) findViewById(R.id.view_text_slide_asktutor_butt);
-        final Button prevButt = (Button) findViewById(R.id.view_text_bottom_prev_butt);
-        Button nextButt = (Button) findViewById(R.id.view_text_bottom_next_butt);
-
+        slideCountText = (TextView) findViewById(R.id.view_text_slide_top_slidecounttext);
+        saveQuit = (Button) findViewById(R.id.view_text_slide_savenquit_butt);
+        askTutor = (Button) findViewById(R.id.view_text_slide_asktutor_butt);
+        prevButt = (Button) findViewById(R.id.view_text_bottom_prev_butt);
+        nextButt = (Button) findViewById(R.id.view_text_bottom_next_butt);
         this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
-
         if (this.slideNumber == 0) this.slideNumber = 1;
-
-        u.updateProgress(userMap, moduleMap, slideNumber);
-
-        this.totalslides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
+        this.totalSlides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
         this.setTitle(moduleMap.get("name").toString());
-        assert slideCountText != null;
-        slideCountText.setText("Slide " + slideNumber + "/" + totalslides);
+        slideCountText.setText("Slide " + slideNumber + "/" + totalSlides);
+        slideText = moduleMap.get("Slide_" + slideNumber).toString();
+        slideTextView = (TextView) findViewById(R.id.view_text_view);
+        slideTextView.setText(slideText);
+    }
 
-        assert saveQuit != null;
-        assert askTutor != null;
-        assert prevButt != null;
-        assert nextButt != null;
-
-
+    public void setUpListeners() {
         saveQuit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Cloud c = new Cloud();
-                c.saveUserHashMapInCloud(userMap);
+                //                HashMap<String, String> progressMap = (HashMap<String, String>) moduleMap.get("progress");
+//                if (Integer.parseInt(progressMap.get(moduleMap.get("id").toString()).split("_")[2]) < slideNumber)
+//                    c.syncProgress(getApplicationContext(), userMap);
+                c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
                 returnHome.putExtra("User", userMap);
                 startActivity(returnHome);
@@ -76,11 +108,12 @@ public class ViewTextSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
                 slideNumber--;
-                int type = 0;// f.getSlideType(getApplicationContext(), module, slideNumber);
+                slideType = Integer.parseInt(typesMap.get("Slide_" + slideNumber));
 
                 Intent prevSlide = null;
-                switch (type) {
+                switch (slideType) {
                     case 0:
                         return;
                     case 1:
@@ -103,8 +136,6 @@ public class ViewTextSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-//
-//
 //                Intent startChat = new Intent(ViewTextSlide.this, Chat.class);
 //                startChat.putExtra("User", user.toString());
 //                startChat.putExtra("Tutor", tutor.toString());
@@ -116,11 +147,12 @@ public class ViewTextSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
                 slideNumber++;
-                int type = 0;//f.getSlideType(getApplicationContext(), module, slideNumber);
+                slideType = Integer.parseInt(typesMap.get("Slide_" + slideNumber));
 
                 Intent nextSlide = null;
-                switch (type) {
+                switch (slideType) {
                     case 0:
                         return;
                     case 1:
@@ -138,25 +170,6 @@ public class ViewTextSlide extends AppCompatActivity {
                 finish();
             }
         });
-
-
-        if (slideNumber == 1) {
-            prevButt.setEnabled(false);
-        } else {
-            prevButt.setEnabled(true);
-        }
-
-        if (slideNumber == totalslides) {
-            nextButt.setEnabled(false);
-        } else {
-            nextButt.setEnabled(true);
-        }
-
-        String slideText = moduleMap.get("Slide_" + slideNumber).toString();
-        TextView slideTextView = (TextView) findViewById(R.id.view_text_view);
-        assert slideTextView != null;
-        slideTextView.setText(slideText);
-
     }
 
     boolean wantsToQuitLearning = false;
@@ -164,17 +177,14 @@ public class ViewTextSlide extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (wantsToQuitLearning) {
-
             Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
             returnHome.putExtra("User", userMap);
             startActivity(returnHome);
             finish();
-
         }
 
         this.wantsToQuitLearning = true;
         Toast.makeText(this, "Press 'Back' once more to save your progress & quit learning.", Toast.LENGTH_SHORT).show();
-
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
