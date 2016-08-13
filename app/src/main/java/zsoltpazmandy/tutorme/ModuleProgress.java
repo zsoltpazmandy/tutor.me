@@ -1,6 +1,7 @@
 package zsoltpazmandy.tutorme;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -11,13 +12,42 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ModuleProgress extends AppCompatActivity {
+
+    private ArrayList<HashMap<String, Object>> myTutors = null;
+    private Set<String> IDsOfMyTutors = null;
+
+    private User u = null;
 
     HashMap<String, Object> modMap = null;
     HashMap<String, Object> userMap = null;
     private int lastSlide = 0;
+
+    private TextView nameOfModule = null;
+    private TextView nameOfAuth = null;
+    private TextView moduleRating = null;
+    private TextView authRating = null;
+    private TextView tutorName = null;
+    private TextView tutorRating = null;
+    private TextView progressHeader = null;
+    private ProgressBar progressBar = null;
+    private TextView progressText = null;
+    private TextView moduleDesc = null;
+    private Button startButt = null;
+
+    private String IDofTutor;
+    private String tutorNameString;
 
 
     @Override
@@ -29,31 +59,40 @@ public class ModuleProgress extends AppCompatActivity {
 
         modMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+        myTutors = new ArrayList<>();
+        IDsOfMyTutors = new HashSet<>();
+
+        u = new User();
+
+        IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), userMap, modMap.get("id").toString());
+
+        getMyTutorIDs();
+
+        AsyncGetMyTutors getMyTutors = new AsyncGetMyTutors();
+        getMyTutors.execute();
 
         this.setTitle("Module information");
 
-        TextView nameOfModule = (TextView) findViewById(R.id.view_module_name_of_module_view);
-        TextView nameOfAuth = (TextView) findViewById(R.id.view_module_author_of_module_view);
-        TextView moduleRating = (TextView) findViewById(R.id.view_module_rating);
-        TextView authRating = (TextView) findViewById(R.id.view_author_rating);
-        TextView tutorName = (TextView) findViewById(R.id.view_module_tutors_name);
-        TextView tutorRating = (TextView) findViewById(R.id.view_module_tutors_rating);
-        TextView progressHeader = (TextView) findViewById(R.id.view_module_progress_header);
-        ProgressBar progressBar = (ProgressBar) findViewById(R.id.view_module_progressbar);
-        TextView progressText = (TextView) findViewById(R.id.view_module_progress_text);
-        final TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
-        Button startButt = (Button) findViewById(R.id.view_module_start_butt);
+        nameOfModule = (TextView) findViewById(R.id.view_module_name_of_module_view);
+        nameOfAuth = (TextView) findViewById(R.id.view_module_author_of_module_view);
+        moduleRating = (TextView) findViewById(R.id.view_module_rating);
+        authRating = (TextView) findViewById(R.id.view_author_rating);
+        tutorName = (TextView) findViewById(R.id.view_module_tutors_name);
+        tutorRating = (TextView) findViewById(R.id.view_module_tutors_rating);
+        progressHeader = (TextView) findViewById(R.id.view_module_progress_header);
+        progressBar = (ProgressBar) findViewById(R.id.view_module_progressbar);
+        progressText = (TextView) findViewById(R.id.view_module_progress_text);
+        TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
+        startButt = (Button) findViewById(R.id.view_module_start_butt);
 
         nameOfModule.setText(modMap.get("name").toString());
         nameOfAuth.setText("written by " + modMap.get("authorName"));
         moduleRating.setText("Module *****");
         authRating.setText("Author *****");
 
-        final User u = new User();
-        String IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), userMap, modMap.get("id").toString());
         lastSlide = u.getLastSlideViewed(userMap, modMap.get("id").toString());
 
-        tutorName.setText("Your tutor: " + IDofTutor);
+        tutorName.setText("Loading tutor info...");
         tutorRating.setText("Tutor *****");
         progressBar.setMax(Integer.parseInt(modMap.get("noOfSlides").toString()));
         progressBar.setProgress(lastSlide);
@@ -117,6 +156,63 @@ public class ModuleProgress extends AppCompatActivity {
         });
 
 
+    }
+
+    private String getThisTutorName(String iDofTutor) {
+        for(HashMap<String, Object> tutor : myTutors){
+            try {
+                if (tutor.get("id").toString().equals(iDofTutor))
+                    return tutor.get("username").toString();
+            } catch (NullPointerException e){
+                return "is no longer registered :(";
+            }
+        }
+        return "is no longer registered :(";
+    }
+
+    private void getMyTutorIDs() {
+        HashMap<String, String> trainedByMap = (HashMap<String, String>) userMap.get("trainedBy");
+        IDsOfMyTutors = trainedByMap.keySet();
+    }
+
+    class AsyncGetMyTutors extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
+
+        @Override
+        protected String doInBackground(String... uid) {
+
+            final DatabaseReference usersRoot = FirebaseDatabase.getInstance().getReference().child("/users");
+            usersRoot.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+
+                    HashMap<String, Object> currentTutor = new HashMap<String, Object>();
+
+                    for(String s: IDsOfMyTutors){
+                        currentTutor = (HashMap) dataSnapshot.child(s).getValue();
+                        myTutors.add(currentTutor);
+                    }
+                    publishProgress(myTutors);
+                }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    publishProgress(myTutors);
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... tutors) {
+            super.onProgressUpdate(tutors);
+            myTutors = tutors[0];
+            setUpTutorInfo();
+        }
+
+    }
+
+    private void setUpTutorInfo() {
+        tutorNameString = getThisTutorName(IDofTutor);
+        tutorName.setText("Your tutor: " + tutorNameString);
     }
 
     boolean wantsToQuitLearning = false;

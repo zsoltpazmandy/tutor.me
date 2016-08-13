@@ -153,9 +153,7 @@ public class LearningTab extends Fragment {
                     getActivity().finish();
                 }
             });
-
         }
-
     }
 
     public ArrayList<String> showMostRecentFirst(ArrayList<String> moduleNames) {
