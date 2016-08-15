@@ -1,7 +1,5 @@
 package zsoltpazmandy.tutorme;
 
-import android.content.Context;
-
 import java.util.HashMap;
 import java.util.Set;
 
@@ -19,6 +17,7 @@ public class User {
     private String username;
 
     public User() {
+        c = new Cloud();
     }
 
     public User(String id, String email, String username) {
@@ -61,8 +60,6 @@ public class User {
         learning.put("none", "none");
         HashMap<String, String> progress = new HashMap<>();
         progress.put("none", "none");
-        HashMap<String, String> trainedBy = new HashMap<>();
-        trainedBy.put("none", "none");
 
         HashMap<String, Object> user = new HashMap<>();
         user.put("id", id);
@@ -77,25 +74,18 @@ public class User {
         user.put("training", training);
         user.put("learning", learning);
         user.put("progress", progress);
-        user.put("trainedBy", trainedBy);
 
         return user;
     }
 
 
-    public String getWhoTrainsMeThis(Context context, HashMap<String, Object> userMap, String moduleID) {
-        String tutorsID = "";
-        HashMap<String, String> trainedByMap = (HashMap<String, String>) userMap.get("trainedBy");
-        Set<String> myTrainersIDs = trainedByMap.keySet();
-        for (String s : myTrainersIDs) {
-            if (trainedByMap.get(s).equals(moduleID))
-                tutorsID = s;
-        }
-        return tutorsID;
+    public String getWhoTrainsMeThis(HashMap<String, Object> userMap, String moduleID) {
+        HashMap<String, String> learningMap = (HashMap<String, String>) userMap.get("learning");
+        return learningMap.get(moduleID);
     }
 
 
-    public boolean isLearning(Context context, HashMap<String, Object> user, String moduleID) {
+    public boolean isLearning(HashMap<String, Object> user, String moduleID) {
         HashMap<String, String> learning = (HashMap<String, String>) user.get("learning");
         Set<String> learningIDset = learning.keySet();
 
@@ -107,20 +97,20 @@ public class User {
         return false;
     }
 
-    public HashMap<String, Object> addToLearning(Context context, HashMap<String, Object> userMap, String modID, String modName, String noOfSlides) {
+    public HashMap<String, Object> addToLearning(HashMap<String, Object> userMap, String IDofTutor, String modID, String modName, String noOfSlides) {
 
-        HashMap<String, String> oldLearningMap = (HashMap<String, String>) userMap.get("learning");
-        if (oldLearningMap.containsKey("none")) oldLearningMap.remove("none");
-        oldLearningMap.put(modID, "true");
+        HashMap<String, String> learningMap = (HashMap<String, String>) userMap.get("learning");
+        if (learningMap.containsKey("none")) learningMap.remove("none");
+        learningMap.put(modID, IDofTutor);
 
-        HashMap<String, String> oldProgressMap = (HashMap<String, String>) userMap.get("progress");
-        if (oldProgressMap.containsKey("none")) oldProgressMap.remove("none");
-        oldProgressMap.put(modID, modName + "_" + noOfSlides + "_0");
+        HashMap<String, String> progressMap = (HashMap<String, String>) userMap.get("progress");
+        if (progressMap.containsKey("none")) progressMap.remove("none");
+        progressMap.put(modID, modName + "_" + noOfSlides + "_0");
 
         userMap.remove("learning");
         userMap.remove("progress");
-        userMap.put("learning", oldLearningMap);
-        userMap.put("progress", oldProgressMap);
+        userMap.put("learning", learningMap);
+        userMap.put("progress", progressMap);
 
         Cloud c = new Cloud();
         c.saveUserHashMapInCloud(userMap);
@@ -128,34 +118,14 @@ public class User {
         return userMap;
     }
 
-    public HashMap<String, Object> assignTutor(HashMap<String, Object> userMap, HashMap<String, String> moduleMap) {
+    public String assignTutor(HashMap<String, Object> userMap, HashMap<String, String> moduleMap) {
 
         String tutorID = moduleMap.get("author");
 
-        HashMap<String, String> oldTrainedBy = (HashMap<String, String>) userMap.get("trainedBy");
-        if (oldTrainedBy.containsKey("none")) oldTrainedBy.remove("none");
-
-        if (oldTrainedBy.containsKey(tutorID)) {
-
-            String temp = oldTrainedBy.get(tutorID) + ", " + moduleMap.get("id");
-            oldTrainedBy.remove(tutorID);
-            oldTrainedBy.put(tutorID, temp);
-
-        } else {
-
-            oldTrainedBy.put(tutorID, moduleMap.get("id"));
-        }
-
-        userMap.remove("trainedBy");
-        userMap.put("trainedBy", oldTrainedBy);
-
-        Cloud c = new Cloud();
-
         c.saveUserHashMapInCloud(userMap);
-
         c.addToTrainersTrainees(tutorID, userMap.get("id").toString(), moduleMap.get("id").toString());
 
-        return userMap;
+        return tutorID;
     }
 
     public int getLastSlideViewed(HashMap<String, Object> userMap, String moduleID) {

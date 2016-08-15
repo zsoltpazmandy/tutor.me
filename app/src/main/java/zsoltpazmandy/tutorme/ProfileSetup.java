@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ProfileSetup extends AppCompatActivity {
@@ -76,7 +77,7 @@ public class ProfileSetup extends AppCompatActivity {
         setUpAge();
         setUpLocation();
         setUpLanguages();
-//        setUpInterests();
+        setUpInterests();
 
 
         Button saveProfileButt = (Button) findViewById(R.id.save_profile_butt);
@@ -96,56 +97,65 @@ public class ProfileSetup extends AppCompatActivity {
                             FirebaseAuth mAuth = FirebaseAuth.getInstance();
                             String id = mAuth.getCurrentUser().getUid();
 
-                            userMap = u.buildUserHashMap(
-                                    id,
-                                    userMap.get("username").toString(),
-                                    userMap.get("email").toString(),
-                                    String.valueOf(ageSpinner.getSelectedItemPosition()),
-                                    u.decodeLanguage(languages1Spinner.getSelectedItemPosition()),
-                                    u.decodeLanguage(languages2Spinner.getSelectedItemPosition()),
-                                    u.decodeLanguage(languages3Spinner.getSelectedItemPosition()),
-                                    u.decodeCountry(locationSpinner.getSelectedItemPosition()));
+                            if (!getIntent().hasExtra("Modifying")) {
+                                userMap = u.buildUserHashMap(
+                                        id,
+                                        userMap.get("username").toString(),
+                                        userMap.get("email").toString(),
+                                        String.valueOf(ageSpinner.getSelectedItemPosition()),
+                                        u.decodeLanguage(languages1Spinner.getSelectedItemPosition()),
+                                        u.decodeLanguage(languages2Spinner.getSelectedItemPosition()),
+                                        u.decodeLanguage(languages3Spinner.getSelectedItemPosition()),
+                                        u.decodeCountry(locationSpinner.getSelectedItemPosition()));
+                            } else {
+                                userMap.put("language1", u.decodeLanguage(languages1Spinner.getSelectedItemPosition()));
+                                userMap.put("language2", u.decodeLanguage(languages2Spinner.getSelectedItemPosition()));
+                                userMap.put("language3", u.decodeLanguage(languages3Spinner.getSelectedItemPosition()));
+                                userMap.put("age", String.valueOf(ageSpinner.getSelectedItemPosition()));
+                                userMap.put("location", u.decodeCountry(locationSpinner.getSelectedItemPosition()));
+                            }
+
+                            ArrayList<String> interests = new ArrayList<String>();
+
+                            if (languagesCheck.isChecked()) {
+                                interests.add("0");
+                            }
+                            if (travelCheck.isChecked()) {
+                                interests.add("1");
+                            }
+                            if (sportsCheck.isChecked()) {
+                                interests.add("2");
+                            }
+                            if (historyCheck.isChecked()) {
+                                interests.add("3");
+                            }
+                            if (musicCheck.isChecked()) {
+                                interests.add("4");
+                            }
+                            if (scienceCheck.isChecked()) {
+                                interests.add("5");
+                            }
+                            if (artsCheck.isChecked()) {
+                                interests.add("6");
+                            }
+                            if (foodCheck.isChecked()) {
+                                interests.add("7");
+                            }
+                            if (healthCheck.isChecked()) {
+                                interests.add("8");
+                            }
+                            if (computersCheck.isChecked()) {
+                                interests.add("9");
+                            }
+                            userMap.put("interests", interests);
 
                             Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
                             Intent homeStart = new Intent(ProfileSetup.this, Home.class);
                             Cloud c = new Cloud();
                             c.saveUserHashMapInCloud(userMap);
-                            System.out.println(userMap.toString());
                             homeStart.putExtra("User", userMap);
                             startActivity(homeStart);
                             finish();
-
-
-//                                                           if (languagesCheck.isChecked()) {
-//                                                               interests.add(0);
-//                                                           }
-//                                                           if (travelCheck.isChecked()) {
-//                                                               interests.add(1);
-//                                                           }
-//                                                           if (sportsCheck.isChecked()) {
-//                                                               interests.add(2);
-//                                                           }
-//                                                           if (historyCheck.isChecked()) {
-//                                                               interests.add(3);
-//                                                           }
-//                                                           if (musicCheck.isChecked()) {
-//                                                               interests.add(4);
-//                                                           }
-//                                                           if (scienceCheck.isChecked()) {
-//                                                               interests.add(5);
-//                                                           }
-//                                                           if (artsCheck.isChecked()) {
-//                                                               interests.add(6);
-//                                                           }
-//                                                           if (foodCheck.isChecked()) {
-//                                                               interests.add(7);
-//                                                           }
-//                                                           if (healthCheck.isChecked()) {
-//                                                               interests.add(8);
-//                                                           }
-//                                                           if (computersCheck.isChecked()) {
-//                                                               interests.add(9);
-//                                                           }
 
                         }
                     }
@@ -155,75 +165,56 @@ public class ProfileSetup extends AppCompatActivity {
 
     }
 
+    private void setUpInterests() {
+        interestsLabel = (TextView) findViewById(R.id.interests_label);
+        languagesCheck = (CheckBox) findViewById(R.id.language_check);
+        travelCheck = (CheckBox) findViewById(R.id.travel_check);
+        sportsCheck = (CheckBox) findViewById(R.id.sports_check);
+        historyCheck = (CheckBox) findViewById(R.id.history_check);
+        musicCheck = (CheckBox) findViewById(R.id.music_check);
+        scienceCheck = (CheckBox) findViewById(R.id.science_check);
+        artsCheck = (CheckBox) findViewById(R.id.arts_check);
+        foodCheck = (CheckBox) findViewById(R.id.food_check);
+        healthCheck = (CheckBox) findViewById(R.id.health_check);
+        computersCheck = (CheckBox) findViewById(R.id.computers_check);
 
-//    private void setUpInterests() {
-//
-//        interestsLabel = (TextView) findViewById(R.id.interests_label);
-//        languagesCheck = (CheckBox) findViewById(R.id.language_check);
-//        travelCheck = (CheckBox) findViewById(R.id.travel_check);
-//        sportsCheck = (CheckBox) findViewById(R.id.sports_check);
-//        historyCheck = (CheckBox) findViewById(R.id.history_check);
-//        musicCheck = (CheckBox) findViewById(R.id.music_check);
-//        scienceCheck = (CheckBox) findViewById(R.id.science_check);
-//        artsCheck = (CheckBox) findViewById(R.id.arts_check);
-//        foodCheck = (CheckBox) findViewById(R.id.food_check);
-//        healthCheck = (CheckBox) findViewById(R.id.health_check);
-//        computersCheck = (CheckBox) findViewById(R.id.computers_check);
-//
-//        String[] checkedInterests = u.getInterests(getApplicationContext(), user);
-//
-//
-//        for (String s : checkedInterests) {
-//            if(s.equals(null))break;
-//            Interests interest = Interests.valueOf(s.toUpperCase());
-//
-//            switch (interest) {
-//                case LANGUAGES:
-//                    languagesCheck.setChecked(true);
-//                    break;
-//                case TRAVELLING:
-//                    travelCheck.setChecked(true);
-//                    break;
-//                case SPORTS:
-//                    sportsCheck.setChecked(true);
-//                    break;
-//                case HISTORY:
-//                    historyCheck.setChecked(true);
-//                    break;
-//                case MUSIC:
-//                    musicCheck.setChecked(true);
-//                    break;
-//                case SCIENCE:
-//                    scienceCheck.setChecked(true);
-//                    break;
-//                case ARTS:
-//                    artsCheck.setChecked(true);
-//                    break;
-//                case FOOD:
-//                    foodCheck.setChecked(true);
-//                    break;
-//                case HEALTH:
-//                    healthCheck.setChecked(true);
-//                    break;
-//                case COMPUTERS:
-//                    computersCheck.setChecked(true);
-//                    break;
-//            }
-//        }
-//    }
+        ArrayList<String> interests = (ArrayList<String>) userMap.get("interests");
+        for (String s : interests) {
+            switch (s) {
+                case "0":
+                    languagesCheck.setChecked(true);
+                    break;
+                case "1":
+                    travelCheck.setChecked(true);
+                    break;
+                case "2":
+                    sportsCheck.setChecked(true);
+                    break;
+                case "3":
+                    historyCheck.setChecked(true);
+                    break;
+                case "4":
+                    musicCheck.setChecked(true);
+                    break;
+                case "5":
+                    scienceCheck.setChecked(true);
+                    break;
+                case "6":
+                    artsCheck.setChecked(true);
+                    break;
+                case "7":
+                    foodCheck.setChecked(true);
+                    break;
+                case "8":
+                    healthCheck.setChecked(true);
+                    break;
+                case "9":
+                    computersCheck.setChecked(true);
+                    break;
+            }
+        }
+    }
 
-//    public enum Interests {
-//        LANGUAGES,
-//        TRAVELLING,
-//        SPORTS,
-//        HISTORY,
-//        MUSIC,
-//        SCIENCE,
-//        ARTS,
-//        FOOD,
-//        HEALTH,
-//        COMPUTERS,
-//    }
 
     private void setUpLanguages() {
         languages1Label = (TextView) findViewById(R.id.languages1_label);

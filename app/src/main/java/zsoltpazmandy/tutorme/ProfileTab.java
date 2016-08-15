@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ProfileTab extends Fragment {
@@ -192,7 +193,7 @@ public class ProfileTab extends Fragment {
 
         int counter = 0;
         HashMap<String, Object> authored = (HashMap<String, Object>) userMap.get("authored");
-        if(authored.size() != 0 && !authored.containsKey("none")){
+        if (authored.size() != 0 && !authored.containsKey("none")) {
             counter = authored.size();
         }
 
@@ -206,65 +207,46 @@ public class ProfileTab extends Fragment {
         language2Edit.setText(userMap.get("language2").toString());
         language3Edit.setText(userMap.get("language3").toString());
 
-        if(Integer.parseInt(userMap.get("age").toString())==0){
+        if (Integer.parseInt(userMap.get("age").toString()) == 0) {
             ageEdit.setText("?");
         } else {
             ageEdit.setText(userMap.get("age").toString());
         }
 
-//        String[] checkedInterests = u.getInterests(getActivity().getApplicationContext(), user);
-//
-//
-//        for (String s : checkedInterests) {
-//            Interests interest = Interests.valueOf(s.toUpperCase());
-//
-//            switch (interest) {
-//                case LANGUAGES:
-//                    languagesCheck.setChecked(true);
-//                    break;
-//                case TRAVELLING:
-//                    travelCheck.setChecked(true);
-//                    break;
-//                case SPORTS:
-//                    sportsCheck.setChecked(true);
-//                    break;
-//                case HISTORY:
-//                    historyCheck.setChecked(true);
-//                    break;
-//                case MUSIC:
-//                    musicCheck.setChecked(true);
-//                    break;
-//                case SCIENCE:
-//                    scienceCheck.setChecked(true);
-//                    break;
-//                case ARTS:
-//                    artsCheck.setChecked(true);
-//                    break;
-//                case FOOD:
-//                    foodCheck.setChecked(true);
-//                    break;
-//                case HEALTH:
-//                    healthCheck.setChecked(true);
-//                    break;
-//                case COMPUTERS:
-//                    computersCheck.setChecked(true);
-//                    break;
-//            }
-//        }
+        ArrayList<String> interests = (ArrayList<String>) userMap.get("interests");
+        for (String s : interests) {
+            switch (s) {
+                case "0":
+                    languagesCheck.setChecked(true);
+                    break;
+                case "1":
+                    travelCheck.setChecked(true);
+                    break;
+                case "2":
+                    sportsCheck.setChecked(true);
+                    break;
+                case "3":
+                    historyCheck.setChecked(true);
+                    break;
+                case "4":
+                    musicCheck.setChecked(true);
+                    break;
+                case "5":
+                    scienceCheck.setChecked(true);
+                    break;
+                case "6":
+                    artsCheck.setChecked(true);
+                    break;
+                case "7":
+                    foodCheck.setChecked(true);
+                    break;
+                case "8":
+                    healthCheck.setChecked(true);
+                    break;
+                case "9":
+                    computersCheck.setChecked(true);
+                    break;
+            }
+        }
     }
-
-//    public enum Interests {
-//        LANGUAGES,
-//        TRAVELLING,
-//        SPORTS,
-//        HISTORY,
-//        MUSIC,
-//        SCIENCE,
-//        ARTS,
-//        FOOD,
-//        HEALTH,
-//        COMPUTERS,
-//    }
-
-
 }

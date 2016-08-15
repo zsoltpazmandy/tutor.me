@@ -69,7 +69,7 @@ public class ModuleProgress extends AppCompatActivity {
 
         u = new User();
 
-        IDofTutor = u.getWhoTrainsMeThis(getApplicationContext(), userMap, moduleMap.get("id").toString());
+        IDofTutor = u.getWhoTrainsMeThis(userMap, moduleMap.get("id").toString());
 
         getMyTutorIDs();
 
@@ -198,8 +198,11 @@ public class ModuleProgress extends AppCompatActivity {
 
 
     private void getMyTutorIDs() {
-        HashMap<String, String> trainedByMap = (HashMap<String, String>) userMap.get("trainedBy");
-        IDsOfMyTutors = trainedByMap.keySet();
+        HashMap<String, String> learningMap = (HashMap<String, String>) userMap.get("learning");
+        Set<String> myLearningIDs = learningMap.keySet();
+        for(String s : myLearningIDs){
+            IDsOfMyTutors.add(learningMap.get(s));
+        }
     }
 
     class AsyncGetMyTutors extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
@@ -213,7 +216,6 @@ public class ModuleProgress extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     HashMap<String, Object> currentTutor = new HashMap<String, Object>();
-
                     for (String s : IDsOfMyTutors) {
                         currentTutor = (HashMap) dataSnapshot.child(s).getValue();
                         myTutors.add(currentTutor);

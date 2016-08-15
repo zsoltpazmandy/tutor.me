@@ -172,13 +172,11 @@ public class Home extends AppCompatActivity {
                     HashMap<String, String> training = (HashMap) dataSnapshot.child("training").getValue();
                     HashMap<String, String> learning = (HashMap) dataSnapshot.child("learning").getValue();
                     HashMap<String, String> progress = (HashMap) dataSnapshot.child("progress").getValue();
-                    HashMap<String, String> trainedBy = (HashMap) dataSnapshot.child("trainedBy").getValue();
 
                     userMap.put("authored", authored);
                     userMap.put("training", training);
                     userMap.put("learning", learning);
                     userMap.put("progress", progress);
-                    userMap.put("trainedBy", trainedBy);
 
                     publishProgress(userMap);
                 }
@@ -241,19 +239,22 @@ public class Home extends AppCompatActivity {
         protected String doInBackground(String... uid) {
             DatabaseReference chatsessions = FirebaseDatabase.getInstance().getReference().child("/chat_sessions/");
 
-            HashMap<String, String> trainerMap = (HashMap<String, String>) userMap.get("trainedBy");
-            Set<String> myTutorsIDs = trainerMap.keySet();
+            HashMap<String, String> learningMap = (HashMap<String, String>) userMap.get("learning");
+            Set<String> myLearningIDs = learningMap.keySet();
+            Set<String> myTutorIDs = new HashSet<>();
+            for (String s : myLearningIDs) {
+                myTutorIDs.add(learningMap.get(s));
+            }
 
             HashMap<String, String> tuteeMap = (HashMap<String, String>) userMap.get("training");
-            Set<String> modulesItrain = tuteeMap.keySet();
-
+            Set<String> myTrainingIDs = tuteeMap.keySet();
             Set<String> myTuteeIDs = new HashSet<>();
-            for (String s : modulesItrain) {
+            for (String s : myTrainingIDs) {
                 myTuteeIDs.add(tuteeMap.get(s));
             }
 
 
-            for (String tutorID : myTutorsIDs) {
+            for (String tutorID : myLearningIDs) {
                 chatsessions.child(tutorID + "_" + userMap.get("id").toString()).addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {

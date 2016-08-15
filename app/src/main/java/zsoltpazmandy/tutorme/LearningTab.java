@@ -80,7 +80,6 @@ public class LearningTab extends Fragment {
         setUpProgress();
         AsyncGetMyModules getMyModules = new AsyncGetMyModules();
         getMyModules.execute();
-        setupLearningTab();
     }
 
     private void setupElements() {
@@ -194,7 +193,6 @@ public class LearningTab extends Fragment {
                             for (String s : modIDsLearning) {
 
                                 HashMap<String, Object> modMap = new HashMap<String, Object>();
-
                                 modMap.put("name", dataSnapshot.child(s).child("name").getValue().toString());
                                 modMap.put("description", dataSnapshot.child(s).child("description").getValue().toString());
                                 modMap.put("id", dataSnapshot.child(s).child("id").getValue().toString());
@@ -203,7 +201,6 @@ public class LearningTab extends Fragment {
                                 modMap.put("author", dataSnapshot.child(s).child("author").getValue().toString());
                                 modMap.put("noOfSlides", dataSnapshot.child(s).child("noOfSlides").getValue().toString());
                                 modMap.put("authorName", dataSnapshot.child(s).child("authorName").getValue().toString());
-
                                 int amountOfSlides = Integer.parseInt(dataSnapshot.child(s).child("noOfSlides").getValue().toString());
 
                                 for (int j = 1; j <= amountOfSlides; j++) {
@@ -236,6 +233,7 @@ public class LearningTab extends Fragment {
         protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... modulesArray) {
             super.onProgressUpdate(modulesArray);
             modules = modulesArray[0];
+            setupLearningTab();
         }
     }
 }

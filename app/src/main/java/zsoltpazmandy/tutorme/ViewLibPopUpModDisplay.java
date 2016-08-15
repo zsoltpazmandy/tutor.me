@@ -76,7 +76,7 @@ public class ViewLibPopUpModDisplay extends Activity {
             @Override
             public void onClick(View v) {
 
-                boolean enrolledAlready = u.isLearning(getApplicationContext(), userMap, infoToShow.get(0));
+                boolean enrolledAlready = u.isLearning(userMap, infoToShow.get(0));
                 if (ownModule()) {
                     Toast.makeText(ViewLibPopUpModDisplay.this, "You cannot train yourself!", Toast.LENGTH_SHORT).show();
                     return;
@@ -86,17 +86,14 @@ public class ViewLibPopUpModDisplay extends Activity {
                     String moduleName = moduleMap.get("name");
                     String totalSlides = moduleMap.get("noOfSlides");
 
-                    userMap = u.addToLearning(getApplicationContext(), userMap, modID, moduleName, totalSlides);
-
                     // for now, this method assigns the first available tutor (== Author) of a module
-                    userMap = u.assignTutor(userMap, moduleMap);
+                    String IDofTutor = u.assignTutor(userMap, moduleMap);
+                    userMap = u.addToLearning(userMap, IDofTutor, modID, moduleName, totalSlides);
 
                     Toast.makeText(ViewLibPopUpModDisplay.this, "Enrolled! You can view your progress on the Learning Tab.", Toast.LENGTH_SHORT).show();
                     Intent returnResult = new Intent(ViewLibPopUpModDisplay.this, ViewLibrary.class);
-                    System.out.println(userMap.toString());
                     returnResult.putExtra("User", userMap);
                     returnResult.putExtra("Module", moduleMap);
-
                     setResult(1, returnResult);
                     finish();
 

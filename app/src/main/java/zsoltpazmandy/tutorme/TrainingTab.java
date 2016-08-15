@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -101,7 +102,7 @@ public class TrainingTab extends Fragment {
 
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
-
+                            Toast.makeText(getActivity().getApplicationContext(), "Network error", Toast.LENGTH_SHORT).show();
                         }
                     }
 
@@ -112,9 +113,19 @@ public class TrainingTab extends Fragment {
         @Override
         protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... tutees) {
             super.onProgressUpdate(tutees);
-            setupTrainingTab();
         }
 
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            Toast.makeText(getActivity().getApplicationContext(), "Network error", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            setupTrainingTab();
+        }
     }
 
     public void setupTrainingTab() {
