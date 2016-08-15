@@ -1,6 +1,12 @@
 package zsoltpazmandy.tutorme;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
@@ -8,9 +14,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -35,15 +41,10 @@ public class Chat extends AppCompatActivity {
     DatabaseReference root = null;
     DatabaseReference chatRoot = null;
 
-    DatabaseReference thisChat = null;
-    FirebaseAuth.AuthStateListener mAuthListener;
     FirebaseAuth mAuth;
-    FirebaseUser FBUser;
+    FirebaseMessagingService FBM = null;
 
     String roomName = "";
-
-    User u = null;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,8 +54,7 @@ public class Chat extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mAuth = FirebaseAuth.getInstance();
-
-        User u = new User();
+        FBM = new FirebaseMessagingService();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -120,21 +120,16 @@ public class Chat extends AppCompatActivity {
         thisChat.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 Iterator iter = dataSnapshot.getChildren().iterator();
-
                 messageBox.setText("");
-
                 while (iter.hasNext()) {
                     DataSnapshot temp = ((DataSnapshot) iter.next());
-
                     messageBox.append(temp.child("sender").getValue().toString());
                     messageBox.append("[" + temp.child("timeStamp").getValue().toString() + "]: ");
                     messageBox.append(temp.child("message").getValue().toString() + "\n");
 
+
                 }
-
-
             }
 
             @Override
@@ -161,8 +156,22 @@ public class Chat extends AppCompatActivity {
         }
     }
 
+    boolean wantsToQuitChat = false;
+
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
+        if (wantsToQuitChat) {
+            super.onBackPressed();
+            finish();
+        }
+
+        this.wantsToQuitChat = true;
+        Toast.makeText(this, "Press 'Back' once more to quit chatting.", Toast.LENGTH_SHORT).show();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                wantsToQuitChat = false;
+            }
+        }, 1000);
     }
 }

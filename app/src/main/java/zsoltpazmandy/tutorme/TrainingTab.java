@@ -34,6 +34,7 @@ public class TrainingTab extends Fragment {
     private ArrayList<HashMap<String, Object>> myTutees;
     private ArrayList<String> tuteesIDs;
     private ArrayList<String> trainingListContent = null;
+    private boolean noTutees = true;
 
 
     public TrainingTab() {
@@ -55,10 +56,117 @@ public class TrainingTab extends Fragment {
 
     }
 
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_training_tab, container, false);
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        HashMap<String, String> trainingMap = (HashMap<String, String>) userMap.get("training");
+        for (String id : trainingMap.keySet()) {
+            if (!trainingMap.get(id).equals("true") && !trainingMap.get(id).equals("none")) {
+                tuteesIDs.add(trainingMap.get(id));
+            }
+        }
+
+        AsyncGetMyTutees getMyTutees = new AsyncGetMyTutees();
+        getMyTutees.execute();
+
+    }
+
+
+    class AsyncGetMyTutees extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
+
+        @Override
+        protected String doInBackground(String... uid) {
+
+            final DatabaseReference usersRoot = FirebaseDatabase.getInstance().getReference().child("/users");
+            usersRoot.addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            HashMap<String, Object> currentTutee = new HashMap<String, Object>();
+                            if (tuteesIDs.size() != 0)
+                                for (String s : tuteesIDs) {
+                                    currentTutee = (HashMap<String, Object>) dataSnapshot.child(s).getValue();
+                                    myTutees.add(currentTutee);
+                                    noTutees = false;
+                                }
+                            publishProgress();
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    }
+
+            );
+            return null;
+        }
+
+        @Override
+        protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... tutees) {
+            super.onProgressUpdate(tutees);
+            setupTrainingTab();
+        }
+
+    }
+
+    public void setupTrainingTab() {
+
+        trainingTabTop = (TextView) getActivity().findViewById(R.id.training_tab_top);
+        trainingTabTop.setText(R.string.training_tab_no_tutees_hint);
+
+        Button createButt = (Button) getActivity().findViewById(R.id.createModButt);
+        assert createButt != null;
+        Button editModButt = (Button) getActivity().findViewById(R.id.training_tab_edit_module_butt);
+        assert editModButt != null;
+
+        createButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent createModule = new Intent(getActivity(), CreateModActivity.class);
+                createModule.putExtra("User", userMap);
+                startActivity(createModule);
+                getActivity().finish();
+            }
+        });
+        HashMap<String, Object> authoredMap = (HashMap<String, Object>) userMap.get("authored");
+        if (authoredMap.size() == 1 && authoredMap.containsKey("none")) {
+            editModButt.setEnabled(false);
+        }
+
+        editModButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent editModIntent = new Intent(getActivity(), EditModules.class);
+                editModIntent.putExtra("User", userMap);
+                startActivity(editModIntent);
+                getActivity().finish();
+            }
+        });
+
+        setUpTuteeList();
+
+    }
 
     private void setUpTuteeList() {
 
-        if (!tuteesIDs.get(0).equals("none")) {
+        if (!noTutees) {
+
+            for (int i = 0; i < tuteesIDs.size(); i++) {
+                trainingListContent.clear();
+                System.out.println(i);
+                System.out.println(myTutees.get(i));
+                trainingListContent.add(myTutees.get(i).get("username").toString());
+            }
+
             trainingTabTop.setText(R.string.training_tab_currently_tutoring_hint);
             trainingList = (ListView) getActivity().findViewById(R.id.training_tab_tutee_list);
             ListAdapter trainingListAdapter = new ArrayAdapter<String>(getActivity(),
@@ -75,7 +183,6 @@ public class TrainingTab extends Fragment {
                     startChat.putExtra("User", userMap);
                     startChat.putExtra("TuteeMap", tuteeMap);
                     startActivity(startChat);
-                    getActivity().finish();
                 }
             });
 
@@ -83,99 +190,5 @@ public class TrainingTab extends Fragment {
 
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_training_tab, container, false);
-    }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        AsyncGetMyTutees getMyTutees = new AsyncGetMyTutees();
-        HashMap<String, String> trainingMap = (HashMap<String, String>) userMap.get("training");
-        for (String id : trainingMap.keySet()) {
-            tuteesIDs.add(trainingMap.get(id));
-        }
-        getMyTutees.execute();
-
-    }
-
-    public void setupTrainingTab() {
-        {
-
-
-            trainingTabTop = (TextView) getActivity().findViewById(R.id.training_tab_top);
-            trainingTabTop.setText(R.string.training_tab_no_tutees_hint);
-            setUpTuteeList();
-
-            Button createButt = (Button) getActivity().findViewById(R.id.createModButt);
-            assert createButt != null;
-            Button editModButt = (Button) getActivity().findViewById(R.id.training_tab_edit_module_butt);
-            assert editModButt != null;
-
-            createButt.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent createModule = new Intent(getActivity(), CreateModActivity.class);
-                    createModule.putExtra("User", userMap);
-                    startActivity(createModule);
-                    getActivity().finish();
-                }
-            });
-            HashMap<String, Object> authoredMap = (HashMap<String, Object>) userMap.get("authored");
-            if (authoredMap.size() == 1 && authoredMap.containsKey("none")) {
-                editModButt.setEnabled(false);
-            }
-
-            editModButt.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    Intent editModIntent = new Intent(getActivity(), EditModules.class);
-                    editModIntent.putExtra("User", userMap);
-                    startActivity(editModIntent);
-                    getActivity().finish();
-                }
-            });
-        }
-
-    }
-
-    class AsyncGetMyTutees extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
-
-        @Override
-        protected String doInBackground(String... uid) {
-
-            final DatabaseReference usersRoot = FirebaseDatabase.getInstance().getReference().child("/users");
-            usersRoot.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    HashMap<String, Object> currentTutee = new HashMap<String, Object>();
-
-                    for (String s : tuteesIDs) {
-                        currentTutee = (HashMap) dataSnapshot.child(s).getValue();
-                        trainingListContent.add(currentTutee.get("username").toString());
-                        myTutees.add(currentTutee);
-                    }
-                    publishProgress(myTutees);
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    publishProgress(myTutees);
-                }
-            });
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... tutees) {
-            super.onProgressUpdate(tutees);
-            myTutees = tutees[0];
-            setupTrainingTab();
-        }
-
-    }
 }

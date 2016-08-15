@@ -1,18 +1,23 @@
 package zsoltpazmandy.tutorme;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.RingtoneManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -23,6 +28,8 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -42,6 +49,11 @@ public class Home extends AppCompatActivity {
     private String id;
     private String token;
 
+    private boolean flag1 = false;
+    private boolean flag2 = false;
+    private boolean flag3 = false;
+    private boolean flag4 = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,14 +62,15 @@ public class Home extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mAuth = FirebaseAuth.getInstance();
+
         FirebaseMessaging.getInstance().subscribeToTopic("test");
-        System.out.println(FirebaseInstanceId.getInstance().getToken());
 
         id = FirebaseAuth.getInstance().getCurrentUser().getUid();
         token = FirebaseInstanceId.getInstance().getToken();
 
-        AsyncRegId reg = new AsyncRegId();
-        reg.execute();
+//        AsyncRegId reg = new AsyncRegId();
+//        reg.execute();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -79,8 +92,12 @@ public class Home extends AppCompatActivity {
                 finish();
                 return;
             }
-//            AsyncLoadUser load = new AsyncLoadUser();
-//            load.execute();
+
+//            ListenToMessages startListening = new ListenToMessages();
+//            startListening.execute();
+
+            AsyncLoadUser load = new AsyncLoadUser();
+            load.execute();
         }
     }
 
@@ -138,7 +155,7 @@ public class Home extends AppCompatActivity {
         protected String doInBackground(String... uid) {
 
             final DatabaseReference thisUserRoot = FirebaseDatabase.getInstance().getReference().child("/users/" + mAuth.getCurrentUser().getUid());
-            thisUserRoot.addListenerForSingleValueEvent(new ValueEventListener() {
+            thisUserRoot.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
@@ -215,5 +232,140 @@ public class Home extends AppCompatActivity {
             super.onProgressUpdate(user);
         }
 
+    }
+
+
+    class ListenToMessages extends AsyncTask<String, String, String> {
+
+        @Override
+        protected String doInBackground(String... uid) {
+            DatabaseReference chatsessions = FirebaseDatabase.getInstance().getReference().child("/chat_sessions/");
+
+            HashMap<String, String> trainerMap = (HashMap<String, String>) userMap.get("trainedBy");
+            Set<String> myTutorsIDs = trainerMap.keySet();
+
+            HashMap<String, String> tuteeMap = (HashMap<String, String>) userMap.get("training");
+            Set<String> modulesItrain = tuteeMap.keySet();
+
+            Set<String> myTuteeIDs = new HashSet<>();
+            for (String s : modulesItrain) {
+                myTuteeIDs.add(tuteeMap.get(s));
+            }
+
+
+            for (String tutorID : myTutorsIDs) {
+                chatsessions.child(tutorID + "_" + userMap.get("id").toString()).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        if (flag1) {
+
+                            Intent notifIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notifIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(Home.this)
+                                    .setAutoCancel(true)
+                                    .setContentTitle("tutor.me")
+                                    .setContentText("One of your tutors has messaged you.")
+                                    .setSmallIcon(R.drawable.school24)
+                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    .setContentIntent(pendingIntent);
+                            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                            manager.notify(0, builder.build());
+                        }
+                        flag1 = true;
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        if (flag2) {
+
+                            Intent notifIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notifIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(Home.this)
+                                    .setAutoCancel(true)
+                                    .setContentTitle("tutor.me")
+                                    .setContentText("One of your tutors has messaged you.")
+                                    .setSmallIcon(R.drawable.school24)
+                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    .setContentIntent(pendingIntent);
+                            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                            manager.notify(0, builder.build());
+                        }
+                        flag2 = true;
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+
+            for (String tuteeID : myTuteeIDs) {
+                chatsessions.child(userMap.get("id").toString() + "_" + tuteeID).addChildEventListener(new ChildEventListener() {
+
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        if (flag3) {
+                            Intent notifIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notifIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(Home.this)
+                                    .setAutoCancel(true)
+                                    .setContentTitle("tutor.me")
+                                    .setContentText("Someone needs you!")
+                                    .setSmallIcon(R.drawable.school24)
+                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    .setContentIntent(pendingIntent);
+                            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                            manager.notify(0, builder.build());
+                        }
+                        flag3 = true;
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        if (flag4) {
+                            Intent notifIntent = new Intent(getApplicationContext(), MainActivity.class);
+                            PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, notifIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                            NotificationCompat.Builder builder = new NotificationCompat.Builder(Home.this)
+                                    .setAutoCancel(true)
+                                    .setContentTitle("tutor.me")
+                                    .setContentText("Someone needs you!")
+                                    .setSmallIcon(R.drawable.school24)
+                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    .setContentIntent(pendingIntent);
+                            NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                            manager.notify(0, builder.build());
+                        }
+                        flag4 = true;
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+            }
+            return null;
+        }
     }
 }

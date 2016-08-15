@@ -17,7 +17,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-
         showNotification(remoteMessage.getData().get("message"));
     }
 
@@ -35,9 +34,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
                 .setContentIntent(pendingIntent);
 
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-
         manager.notify(0,builder.build());
-
-
     }
 }
