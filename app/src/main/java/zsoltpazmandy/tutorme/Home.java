@@ -18,8 +18,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
+import java.io.IOException;
 import java.util.HashMap;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
 
 public class Home extends AppCompatActivity {
 
@@ -31,6 +39,8 @@ public class Home extends AppCompatActivity {
     private HashMap<String, Object> userMap = null;
 
     private FirebaseAuth mAuth;
+    private String id;
+    private String token;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +49,15 @@ public class Home extends AppCompatActivity {
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        FirebaseMessaging.getInstance().subscribeToTopic("test");
+        System.out.println(FirebaseInstanceId.getInstance().getToken());
+
+        id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        token = FirebaseInstanceId.getInstance().getToken();
+
+        AsyncRegId reg = new AsyncRegId();
+        reg.execute();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -55,7 +74,6 @@ public class Home extends AppCompatActivity {
             viewPager.setAdapter(viewPagerAdapter);
             tabLayout.setupWithViewPager(viewPager);
 
-            mAuth = FirebaseAuth.getInstance();
 
             if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
                 finish();
@@ -168,5 +186,34 @@ public class Home extends AppCompatActivity {
 
     }
 
+    class AsyncRegId extends AsyncTask<String, String, String> {
+        @Override
+        protected String doInBackground(String... uid) {
+            OkHttpClient client = new OkHttpClient();
+            RequestBody body = new FormBody.Builder()
+                    .add("Token", token)
+                    .add("id", id)
+                    .build();
 
+            Request request = new Request.Builder()
+                    .url("http://192.168.1.19/tutorme/add_id.php")
+                    .post(body)
+                    .build();
+
+            try {
+                client.newCall(request).execute();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+
+        }
+
+        @Override
+        protected void onProgressUpdate(String... user) {
+            super.onProgressUpdate(user);
+        }
+
+    }
 }

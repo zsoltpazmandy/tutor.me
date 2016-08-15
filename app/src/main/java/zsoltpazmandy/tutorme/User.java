@@ -169,7 +169,6 @@ public class User {
                 lastSlide = Integer.parseInt(progressMap.get(s).split("_")[2]);
             }
         }
-
         return lastSlide;
     }
 

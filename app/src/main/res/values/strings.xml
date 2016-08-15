@@ -108,4 +108,5 @@
     <string name="edit_module_select_slide_to_edit_hint">Select the slide you wish to edit by LONG PRESSING it, then press one of the buttons above.</string>
     <string name="title_activity_chat">Chat</string>
     <string name="title_activity_sign_up">Sign up</string>
+    <string name="training_tab_currently_tutoring_hint">"Choose one of your tutees to check up on:"</string>
 </resources>

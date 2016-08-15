@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,11 +33,17 @@ public class SignUp extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
 
+    private ProgressBar loading;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
         setUpViews();
+
+        loading = (ProgressBar) findViewById(R.id.loading_circular);
+        loading.setVisibility(View.GONE);
 
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
@@ -74,14 +81,18 @@ public class SignUp extends AppCompatActivity {
     private void addSignUpListener() {
         signUpButt
                 .setOnClickListener(
+
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        loading.setVisibility(View.VISIBLE);
                         username = usernameField.getText().toString().trim();
                         email = emailField.getText().toString().trim();
 
-                        if (!fieldsValid())
+                        if (!fieldsValid()) {
+                            loading.setVisibility(View.GONE);
                             return;
+                        }
 
                         mAuth.createUserWithEmailAndPassword(
                                 emailField.getText()
@@ -118,6 +129,7 @@ public class SignUp extends AppCompatActivity {
                                                     startActivity(setupProfile);
                                                     finish();
                                                 } else {
+                                                    loading.setVisibility(View.GONE);
                                                     Toast.makeText(SignUp.this, "Registration failed", Toast.LENGTH_SHORT).show();
                                                 }
                                             }

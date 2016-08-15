@@ -93,31 +93,49 @@ public class Cloud {
         thisUser.updateChildren(userMap);
     }
 
-    public void updateProgress(HashMap<String, Object> userMap, String moduleID, int lastSlide) {
-        HashMap<String, Object> progressMap = (HashMap<String, Object>) userMap.get("progress");
+    public HashMap<String, Object> updateProgress(HashMap<String, Object> userMap, String moduleID, int newLastSlideInt) {
+
+        HashMap<String, String> progressMap = (HashMap<String, String>) userMap.get("progress");
         Set<String> modIDsLearning = progressMap.keySet();
-        for (String s : modIDsLearning) {
-            if (moduleID.equals(s)) {
-                String name = progressMap.get(s).toString().split("_")[0];
-                String totalSlides = progressMap.get(s).toString().split("_")[1];
-                if(Integer.parseInt(totalSlides) == lastSlide){
-                    return;
-                }
-                String updatedLastSlide = String.valueOf(lastSlide);
-                progressMap.remove(s);
-                progressMap.put(s, name + "_" + totalSlides + "_" + updatedLastSlide);
+
+        int oldLastSlideInt = 0;
+        int totalSlidesInt = 0;
+
+        String name = "";
+        String totalSlidesString = "";
+        String oldLastSlideString = "";
+
+        String newLastSlideString = String.valueOf(newLastSlideInt);
+
+        for (String currentModuleID : modIDsLearning) {
+            if (moduleID.equals(currentModuleID)) {
+                name = progressMap.get(currentModuleID).toString().split("_")[0];
+                totalSlidesString = progressMap.get(currentModuleID).toString().split("_")[1];
+                oldLastSlideString = progressMap.get(currentModuleID).toString().split("_")[2];
             }
         }
-//        progressRoot.child(userMap.get("id").toString()).updateChildren(progressMap);
-        userRoot.child(userMap.get("id").toString()).child("progress").updateChildren(progressMap);
-    }
 
-    public void syncProgress(Context context, HashMap<String, Object> userMap) {
-        AsyncProgress asyncProgress = new AsyncProgress();
-        ArrayList<Object> stuff = new ArrayList<>();
-        stuff.add(userMap.get("id"));
-        stuff.add(context);
-        asyncProgress.execute(stuff);
+        totalSlidesInt = Integer.parseInt(totalSlidesString);
+        oldLastSlideInt = Integer.parseInt(oldLastSlideString);
+
+        if (newLastSlideInt > oldLastSlideInt) {   // new progress stored
+            progressMap.remove(moduleID);
+            progressMap.put(moduleID, name + "_" + totalSlidesString + "_" + newLastSlideString);
+            userMap.remove("progress");
+            userMap.put("progress", progressMap);
+            userRoot.child(userMap.get("id").toString()).updateChildren(userMap);
+        }
+
+        if (newLastSlideInt == totalSlidesInt) {    // module completed
+            progressMap.remove(moduleID);
+            progressMap.put(moduleID, name + "_" + totalSlidesString + "_" + newLastSlideString);
+            userMap.remove("progress");
+            userMap.put("progress", progressMap);
+            userRoot.child(userMap.get("id").toString()).updateChildren(userMap);
+        }
+
+        return userMap;
+
     }
 
     class AsyncProgress extends AsyncTask<ArrayList<Object>, boolean[], String> {
@@ -135,7 +153,7 @@ public class Cloud {
                     userRoot.child(stuff[0].get(0).toString()).child("progress").updateChildren(activeProgressMap);
                     success[0] = true;
                     publishProgress(success);
-                    Toast.makeText((Context) stuff[0].get(1),"Progress synced from cloud", Toast.LENGTH_SHORT).show();
+                    Toast.makeText((Context) stuff[0].get(1), "Progress synced from cloud", Toast.LENGTH_SHORT).show();
                 }
 
                 @Override

@@ -1,11 +1,9 @@
 package zsoltpazmandy.tutorme;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.ScrollingMovementMethod;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -19,9 +17,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -30,8 +25,8 @@ import java.util.Map;
 
 public class Chat extends AppCompatActivity {
 
-    JSONObject user;
-    JSONObject tutor;
+    private HashMap<String, Object> userMap = null;
+    private HashMap<String, Object> partner = null;
 
     EditText enterMessage;
     ImageButton sendButton;
@@ -59,47 +54,29 @@ public class Chat extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull final FirebaseAuth firebaseAuth) {
-                final FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    Log.i("AuthStateChanged", "User is signed in with uid: " + user.getUid());
-                } else {
-                    Log.i("AuthStateChanged", "No user is signed in.");
-                }
-            }
-        });
-
-
         User u = new User();
+
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+
+        if (getIntent().hasExtra("TutorMap")) {
+            partner = (HashMap<String, Object>) getIntent().getSerializableExtra("TutorMap");
+            roomName = partner.get("id").toString() + "_" + userMap.get("id").toString();
+        } else {
+            partner = (HashMap<String, Object>) getIntent().getSerializableExtra("TuteeMap");
+            roomName = userMap.get("id").toString() + "_" + partner.get("id").toString();
+        }
+
+        setTitle("Chatting with " + partner.get("username").toString());
 
         enterMessage = (EditText) findViewById(R.id.chat_enter_message);
         sendButton = (ImageButton) findViewById(R.id.chat_send_button);
         messageBox = (TextView) findViewById(R.id.chat_messagebox_text);
         messageBox.setMovementMethod(new ScrollingMovementMethod());
 
-
-        try {
-            user = new JSONObject(getIntent().getStringExtra("User"));
-            tutor = new JSONObject(getIntent().getStringExtra("Tutor"));
-//            setTitle("Chatting with " + u.getUsername(getApplicationContext(), tutor));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            roomName = "" + tutor.getInt("ID") + "_" + user.getInt("ID");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
         root = FirebaseDatabase.getInstance().getReference().child("/chat_sessions/" + roomName);
 
         setUpSendButtListener();
         setUpMessageBoxUpdater();
-
-        System.out.println(mAuth.getCurrentUser().getUid().toString());
 
     }
 
@@ -110,19 +87,14 @@ public class Chat extends AppCompatActivity {
 
     private void setUpSendButtListener() {
 
-
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 String sender = "";
                 String recipient = "";
-                try {
-                    sender = user.getString("Username");
-                    recipient = tutor.getString("Username");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                sender = userMap.get("username").toString();
+                recipient = partner.get("username").toString();
                 String timeStamp = getTimeStamp();
                 String message = enterMessage.getText().toString();
 
@@ -152,7 +124,6 @@ public class Chat extends AppCompatActivity {
                 Iterator iter = dataSnapshot.getChildren().iterator();
 
                 messageBox.setText("");
-
 
                 while (iter.hasNext()) {
                     DataSnapshot temp = ((DataSnapshot) iter.next());

@@ -14,17 +14,14 @@ import com.google.firebase.messaging.RemoteMessage;
  */
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 
-    String message;
-    String title;
 
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        message = remoteMessage.getNotification().getBody();
-        title = remoteMessage.getNotification().getTitle();
-        showNotification(title, message);
+
+        showNotification(remoteMessage.getData().get("message"));
     }
 
-    private void showNotification(String title, String message) {
+    private void showNotification(String message) {
         Intent notifIntent = new Intent(this,MainActivity.class);
         notifIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         Uri beep = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -32,7 +29,6 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
                 .setAutoCancel(true)
-                .setContentTitle(title)
                 .setContentText(message)
                 .setSmallIcon(R.drawable.school24)
                 .setSound(beep)

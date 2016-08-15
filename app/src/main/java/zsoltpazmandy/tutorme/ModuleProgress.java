@@ -32,6 +32,7 @@ public class ModuleProgress extends AppCompatActivity {
 
     HashMap<String, Object> moduleMap = null;
     HashMap<String, Object> userMap = null;
+    HashMap<String, Object> tutorMap = null;
     private int lastSlide = 0;
     private boolean isReview;
 
@@ -60,8 +61,11 @@ public class ModuleProgress extends AppCompatActivity {
 
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+        tutorMap = new HashMap<>();
         myTutors = new ArrayList<>();
         IDsOfMyTutors = new HashSet<>();
+
+        tutorMap = new HashMap<>();
 
         u = new User();
 
@@ -125,12 +129,16 @@ public class ModuleProgress extends AppCompatActivity {
                     lastSlide = 1;
                 }
 
-                int type = Integer.parseInt(typesMap.get("Slide_" + lastSlide));
+                int type;
+
+                if (isReview) {
+                    type = Integer.parseInt(typesMap.get("Slide_" + 1));
+                } else {
+                    type = Integer.parseInt(typesMap.get("Slide_" + lastSlide));
+                }
 
                 Intent startModule = null;
                 switch (type) {
-                    case 0:
-                        return;
                     case 1:
                         startModule = new Intent(ModuleProgress.this, ViewTextSlide.class);
                         break;
@@ -138,11 +146,19 @@ public class ModuleProgress extends AppCompatActivity {
                         startModule = new Intent(ModuleProgress.this, ViewTableSlide.class);
                         break;
                 }
+                try {
+                    if (!getThisTutorMap(IDofTutor).equals(null)) {
+                        startModule.putExtra("TutorMap", tutorMap);
+                    }
+                } catch (NullPointerException e){
 
+                }
+                startModule.putExtra("TutorID", IDofTutor);
                 startModule.putExtra("User", userMap);
                 startModule.putExtra("Module", moduleMap);
 
                 if (isReview) {
+                    startModule.putExtra("Review", true);
                     startModule.putExtra("Slide Number", "" + 0);
                 } else {
                     startModule.putExtra("Slide Number", "" + lastSlide);
@@ -156,7 +172,7 @@ public class ModuleProgress extends AppCompatActivity {
 
     }
 
-    private String getThisTutorName(String iDofTutor) {
+    public String getThisTutorName(String iDofTutor) {
         for (HashMap<String, Object> tutor : myTutors) {
             try {
                 if (tutor.get("id").toString().equals(iDofTutor))
@@ -167,6 +183,19 @@ public class ModuleProgress extends AppCompatActivity {
         }
         return "is no longer registered :(";
     }
+
+    public HashMap<String, Object> getThisTutorMap(String iDofTutor) {
+        for (HashMap<String, Object> tutor : myTutors) {
+            try {
+                if (tutor.get("id").toString().equals(iDofTutor))
+                    return tutor;
+            } catch (NullPointerException e) {
+                return null;
+            }
+        }
+        return null;
+    }
+
 
     private void getMyTutorIDs() {
         HashMap<String, String> trainedByMap = (HashMap<String, String>) userMap.get("trainedBy");
@@ -211,6 +240,7 @@ public class ModuleProgress extends AppCompatActivity {
 
     private void setUpTutorInfo() {
         tutorNameString = getThisTutorName(IDofTutor);
+        tutorMap = getThisTutorMap(IDofTutor);
         tutorName.setText("Your tutor: " + tutorNameString);
     }
 

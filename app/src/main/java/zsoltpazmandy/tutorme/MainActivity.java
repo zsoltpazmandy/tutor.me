@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,8 +22,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 
@@ -39,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
 
+    private ProgressBar loading;
+
+    AsyncCloudGetUser getUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,9 +49,8 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FirebaseMessaging.getInstance().subscribeToTopic("tutor.me");
-        FirebaseInstanceId.getInstance().getToken();
-
+        loading = (ProgressBar) findViewById(R.id.loading_circular);
+        loading.setVisibility(View.GONE);
 
         mAuth = FirebaseAuth.getInstance();
 
@@ -93,21 +95,26 @@ public class MainActivity extends AppCompatActivity {
         loginButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loading.setVisibility(View.VISIBLE);
+
 
                 email = emailField.getText().toString().trim();
                 password = passwordField.getText().toString().trim();
 
-                if (!validateInput(email, password))
+                if (!validateInput(email, password)) {
+                    loading.setVisibility(View.GONE);
                     return;
+                }
                 mAuth.signInWithEmailAndPassword(emailField.getText().toString(), passwordField.getText().toString())
                         .addOnCompleteListener(MainActivity.this, new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
                                     Toast.makeText(MainActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
-                                    AsyncCloudGetUser getUser = new AsyncCloudGetUser();
+                                    getUser = new AsyncCloudGetUser();
                                     getUser.execute(mAuth.getCurrentUser().getUid());
                                 } else {
+                                    loading.setVisibility(View.GONE);
                                     Toast.makeText(MainActivity.this, "Login failed", Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -120,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected String doInBackground(String... uid) {
             final DatabaseReference userRoot = FirebaseDatabase.getInstance().getReference().child("/users/" + uid[0]);
-            userRoot.addValueEventListener(new ValueEventListener() {
+            userRoot.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     HashMap<String, Object> userMap = (HashMap<String, Object>) dataSnapshot.getValue();
@@ -141,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
             Intent launchHome = new Intent(MainActivity.this, Home.class);
             launchHome.putExtra("User", values[0]);
+            getUser.cancel(true);
             startActivity(launchHome);
             finish();
         }

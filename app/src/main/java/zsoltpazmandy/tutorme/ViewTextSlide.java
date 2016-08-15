@@ -27,13 +27,14 @@ public class ViewTextSlide extends AppCompatActivity {
 
     private Cloud c;
     private HashMap<String, Object> userMap = null;
-
+    private HashMap<String, Object> tutorMap = null;
     private HashMap<String, Object> moduleMap = null;
     private HashMap<String, String> typesMap = null;
 
     private int slideNumber;
     private int slideType;
     private int totalSlides;
+    private String IDofTutor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,9 @@ public class ViewTextSlide extends AppCompatActivity {
         }
 
         instantiateVars();
-        c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+
+        if (!getIntent().hasExtra("Review"))
+            userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
         updateElements();
         setUpListeners();
     }
@@ -74,9 +77,20 @@ public class ViewTextSlide extends AppCompatActivity {
         c = new Cloud();
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
+        IDofTutor = getIntent().getStringExtra("TutorID");
         slideCountText = (TextView) findViewById(R.id.view_text_slide_top_slidecounttext);
         saveQuit = (Button) findViewById(R.id.view_text_slide_savenquit_butt);
         askTutor = (Button) findViewById(R.id.view_text_slide_asktutor_butt);
+        try {
+            if (getIntent().hasExtra("TutorMap")) {
+                tutorMap = (HashMap<String, Object>) getIntent().getSerializableExtra("TutorMap");
+            } else {
+                askTutor.setEnabled(false);
+
+            }
+        } catch (NullPointerException e) {
+            askTutor.setEnabled(false);
+        }
         prevButt = (Button) findViewById(R.id.view_text_bottom_prev_butt);
         nextButt = (Button) findViewById(R.id.view_text_bottom_next_butt);
         this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
@@ -93,11 +107,13 @@ public class ViewTextSlide extends AppCompatActivity {
         saveQuit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //                HashMap<String, String> progressMap = (HashMap<String, String>) moduleMap.get("progress");
-//                if (Integer.parseInt(progressMap.get(moduleMap.get("id").toString()).split("_")[2]) < slideNumber)
-//                    c.syncProgress(getApplicationContext(), userMap);
-                c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
+                returnHome.putExtra("TutorID", IDofTutor);
+                if (!getIntent().hasExtra("Review")) {
+                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                } else {
+                    returnHome.putExtra("Review", true);
+                }
                 returnHome.putExtra("User", userMap);
                 startActivity(returnHome);
                 finish();
@@ -114,8 +130,6 @@ public class ViewTextSlide extends AppCompatActivity {
 
                 Intent prevSlide = null;
                 switch (slideType) {
-                    case 0:
-                        return;
                     case 1:
                         prevSlide = new Intent(ViewTextSlide.this, ViewTextSlide.class);
                         break;
@@ -123,7 +137,19 @@ public class ViewTextSlide extends AppCompatActivity {
                         prevSlide = new Intent(ViewTextSlide.this, ViewTableSlide.class);
                         break;
                 }
+                prevSlide.putExtra("TutorID", IDofTutor);
+                if (!getIntent().hasExtra("Review")) {
+                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                } else {
+                    prevSlide.putExtra("Review", true);
+                }
+                try {
+                    if (getIntent().hasExtra("TutorMap")) {
+                        prevSlide.putExtra("TutorMap", tutorMap);
+                    }
+                } catch (NullPointerException e) {
 
+                }
                 prevSlide.putExtra("User", userMap);
                 prevSlide.putExtra("Module", moduleMap);
                 prevSlide.putExtra("Slide Number", "" + slideNumber);
@@ -136,10 +162,11 @@ public class ViewTextSlide extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-//                Intent startChat = new Intent(ViewTextSlide.this, Chat.class);
-//                startChat.putExtra("User", user.toString());
-//                startChat.putExtra("Tutor", tutor.toString());
-//                startActivity(startChat);
+                Intent startChat = new Intent(ViewTextSlide.this, Chat.class);
+                startChat.putExtra("User", userMap);
+                startChat.putExtra("TutorMap", tutorMap);
+                startChat.putExtra("TutorID", IDofTutor);
+                startActivity(startChat);
             }
         });
 
@@ -162,7 +189,19 @@ public class ViewTextSlide extends AppCompatActivity {
                         nextSlide = new Intent(ViewTextSlide.this, ViewTableSlide.class);
                         break;
                 }
+                if (!getIntent().hasExtra("Review")) {
+                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                } else {
+                    nextSlide.putExtra("Review", true);
+                }
+                try {
+                    if (getIntent().hasExtra("TutorMap")) {
+                        nextSlide.putExtra("TutorMap", tutorMap);
+                    }
+                } catch (NullPointerException e) {
 
+                }
+                nextSlide.putExtra("TutorID", IDofTutor);
                 nextSlide.putExtra("User", userMap);
                 nextSlide.putExtra("Module", moduleMap);
                 nextSlide.putExtra("Slide Number", "" + slideNumber);
@@ -178,6 +217,11 @@ public class ViewTextSlide extends AppCompatActivity {
     public void onBackPressed() {
         if (wantsToQuitLearning) {
             Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
+            if (!getIntent().hasExtra("Review")) {
+                userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+            } else {
+                returnHome.putExtra("Review", true);
+            }
             returnHome.putExtra("User", userMap);
             startActivity(returnHome);
             finish();
