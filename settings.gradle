@@ -1,2 +1,2 @@
-include ':app', ':retrofit-2.1.0'
+include ':app'
 

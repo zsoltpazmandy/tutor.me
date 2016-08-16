@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/retrofit-2.1.0/retrofit-2.1.0.iml" filepath="$PROJECT_DIR$/retrofit-2.1.0/retrofit-2.1.0.iml" />
       <module fileurl="file://$PROJECT_DIR$/tutor.me.iml" filepath="$PROJECT_DIR$/tutor.me.iml" />
     </modules>
   </component>

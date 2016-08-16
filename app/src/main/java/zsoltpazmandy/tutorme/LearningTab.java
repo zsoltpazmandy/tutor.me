@@ -121,9 +121,7 @@ public class LearningTab extends Fragment {
         } else {
             learningView.setText(R.string.i_m_currently_learning);
         }
-
         if (modsLearningNames.size() > 0) {
-
             ArrayList<String> learningDisplayArray = new ArrayList<>();
             for (int i = 0; i < modsLearningNames.size(); i++) {
                 double progress = Double.valueOf(modsLearningLastSlides.get(i).replaceAll("\"", ""));
@@ -132,18 +130,14 @@ public class LearningTab extends Fragment {
                 long percentCompleted = Math.round(tempDouble);
                 learningDisplayArray.add(modsLearningNames.get(i) + "\n(" + percentCompleted + "%)");
             }
-
 //            learningDisplayArray = showMostRecentFirst(learningDisplayArray);
-
             final ListAdapter currentModulesAdapter = new ArrayAdapter<String>(getActivity(),
                     android.R.layout.simple_list_item_1, learningDisplayArray);
             learningList.setAdapter(currentModulesAdapter);
             learningList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                     HashMap<String, Object> selectedModule = (HashMap<String, Object>) modules.get(position);
-
                     Intent openModule = new Intent(getActivity(), ModuleProgress.class);
                     openModule.putExtra("User", userMap);
                     openModule.putExtra("Module", selectedModule);

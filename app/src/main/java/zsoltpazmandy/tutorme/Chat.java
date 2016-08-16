@@ -19,6 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -26,10 +29,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class Chat extends AppCompatActivity {
 
@@ -47,6 +51,9 @@ public class Chat extends AppCompatActivity {
     FirebaseMessagingService FBM = null;
 
     String roomName = "";
+
+    OkHttpClient client = new OkHttpClient();
+
 
     SendPushNotification sendPush = null;
 
@@ -114,11 +121,11 @@ public class Chat extends AppCompatActivity {
                 chatRoot.setValue(chatMessage);
 
                 sendPush = new SendPushNotification();
-                String[] toPush = new String[2];
-                toPush[0] = partner.get("token").toString();
-                toPush[1] = userMap.get("username").toString()+": "+message;
-                sendPush.execute(toPush);
-
+                String[] notifItems = new String[3];
+                notifItems[0] = partner.get("token").toString();
+                notifItems[1] = userMap.get("username").toString();
+                notifItems[2] = message;
+                sendPush.execute(notifItems);
                 enterMessage.setText("");
             }
         });
@@ -149,7 +156,6 @@ public class Chat extends AppCompatActivity {
         });
     }
 
-
     public static String getTimeStamp() {
         try {
 
@@ -167,21 +173,22 @@ public class Chat extends AppCompatActivity {
 
     class SendPushNotification extends AsyncTask<String, String, String> {
         @Override
-        protected String doInBackground(String... toPush) {
-            OkHttpClient client = new OkHttpClient();
-            RequestBody body = new FormBody.Builder()
-                    .add("Token", toPush[0])
-                    .add("msg", toPush[1])
-                    .build();
-
-            Request request = new Request.Builder()
-                    .url("http://192.168.1.19/tutorme/notification.php")
-                    .post(body)
-                    .build();
+        protected String doInBackground(String... notifItems) {
+            JSONObject msg = new JSONObject();
+            JSONObject data = new JSONObject();
 
             try {
-                client.newCall(request).execute();
+                msg.put("to", notifItems[0]);
+                data.put("title", notifItems[1]);
+                data.put("body", notifItems[2]);
+                data.put("tag", notifItems[1]);
+                msg.put("data", data);
+                msg.put("project_id", "tutorme-1dcd6");
+                post("https://fcm.googleapis.com/fcm/send", msg.toString());
+
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             return null;
@@ -194,35 +201,18 @@ public class Chat extends AppCompatActivity {
         }
     }
 
-    class LoadPartnerToken extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... toPush) {
-            final DatabaseReference userRoot = FirebaseDatabase.getInstance().getReference().child("/users/" + partner.get("id").toString());
-            userRoot.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    publishProgress(userRoot.child("token").toString());
-                }
+    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                }
-            });
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            partner.remove("token");
-            partner.put("token", values[0]);
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            sendPush.cancel(true);
-        }
+    String post(String url, String json) throws IOException {
+        RequestBody body = RequestBody.create(JSON, json);
+        Request request = new Request.Builder()
+                .addHeader("Authorization", "key = AIzaSyDt8dxIKOUE8wDPFtgTYZPmN9X69iHLgYg")
+                .addHeader("Content-Type", "application/json")
+                .url(url)
+                .post(body)
+                .build();
+        Response response = client.newCall(request).execute();
+        return response.body().string();
     }
 
     boolean wantsToQuitChat = false;
@@ -243,4 +233,6 @@ public class Chat extends AppCompatActivity {
             }
         }, 1000);
     }
+
+
 }
