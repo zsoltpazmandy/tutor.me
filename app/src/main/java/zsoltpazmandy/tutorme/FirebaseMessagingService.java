@@ -28,6 +28,7 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
                 .setAutoCancel(true)
+                .setContentTitle("tutor.me message received:")
                 .setContentText(message)
                 .setSmallIcon(R.drawable.school24)
                 .setSound(beep)

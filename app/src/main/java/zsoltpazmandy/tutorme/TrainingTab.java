@@ -67,13 +67,6 @@ public class TrainingTab extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        HashMap<String, String> trainingMap = (HashMap<String, String>) userMap.get("training");
-        for (String id : trainingMap.keySet()) {
-            if (!trainingMap.get(id).equals("true") && !trainingMap.get(id).equals("none")) {
-                tuteesIDs.add(trainingMap.get(id));
-            }
-        }
-
         AsyncGetMyTutees getMyTutees = new AsyncGetMyTutees();
         getMyTutees.execute();
 
@@ -86,10 +79,18 @@ public class TrainingTab extends Fragment {
         protected String doInBackground(String... uid) {
 
             final DatabaseReference usersRoot = FirebaseDatabase.getInstance().getReference().child("/users");
-            usersRoot.addListenerForSingleValueEvent(
+            usersRoot.addValueEventListener(
                     new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            HashMap<String, String> trainingMap = (HashMap<String, String>) userMap.get("training");
+                            for (String id : trainingMap.keySet()) {
+                                if (!trainingMap.get(id).equals("true") && !trainingMap.get(id).equals("none")) {
+                                    tuteesIDs.add(trainingMap.get(id));
+                                }
+                            }
+
                             HashMap<String, Object> currentTutee = new HashMap<String, Object>();
                             if (tuteesIDs.size() != 0)
                                 for (String s : tuteesIDs) {
@@ -173,8 +174,6 @@ public class TrainingTab extends Fragment {
 
             for (int i = 0; i < tuteesIDs.size(); i++) {
                 trainingListContent.clear();
-                System.out.println(i);
-                System.out.println(myTutees.get(i));
                 trainingListContent.add(myTutees.get(i).get("username").toString());
             }
 

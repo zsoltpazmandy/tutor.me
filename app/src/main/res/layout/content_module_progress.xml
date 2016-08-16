@@ -20,7 +20,6 @@
             android:layout_margin="@dimen/activity_horizontal_margin"
             android:orientation="vertical">
 
-
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -147,12 +146,29 @@
                     android:textStyle="italic" />
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:background="@android:color/darker_gray" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/view_module_chat_butt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="message\ntutor" />
+
+                <Button
+                    android:id="@+id/view_module_start_butt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerHorizontal="true"
+                    android:text="Start\nmodule" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/view_module_description"
@@ -160,22 +176,8 @@
                 android:layout_height="wrap_content"
                 android:text="@string/view_module_description_of_module" />
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginBottom="@dimen/activity_vertical_margin"
-                android:layout_marginTop="@dimen/activity_vertical_margin"
-                android:background="@android:color/darker_gray" />
-
         </LinearLayout>
 
 
-        <Button
-            android:id="@+id/view_module_start_butt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_alignParentBottom="true"
-            android:text="Start" />
     </RelativeLayout>
 </RelativeLayout>

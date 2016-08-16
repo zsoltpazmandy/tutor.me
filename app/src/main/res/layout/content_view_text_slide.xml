@@ -57,7 +57,8 @@
                         android:layout_toRightOf="@id/view_text_slide_savenquit_butt"
                         android:gravity="center_horizontal"
                         android:text="Slide 4/7"
-                        android:textSize="@dimen/profile_setup_text_size"
+                        android:textSize="22sp"
+                        android:textColor="@color/colorPrimaryDark"
                         android:textStyle="bold" />
 
 

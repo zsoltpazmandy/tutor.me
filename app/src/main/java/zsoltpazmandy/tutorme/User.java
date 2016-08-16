@@ -1,5 +1,6 @@
 package zsoltpazmandy.tutorme;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -60,6 +61,8 @@ public class User {
         learning.put("none", "none");
         HashMap<String, String> progress = new HashMap<>();
         progress.put("none", "none");
+        ArrayList<String> interests = new ArrayList<>();
+        interests.add("none");
 
         HashMap<String, Object> user = new HashMap<>();
         user.put("id", id);
@@ -74,6 +77,7 @@ public class User {
         user.put("training", training);
         user.put("learning", learning);
         user.put("progress", progress);
+        user.put("interests", interests);
 
         return user;
     }

@@ -35,6 +35,7 @@ public class ModuleProgress extends AppCompatActivity {
     HashMap<String, Object> tutorMap = null;
     private int lastSlide = 0;
     private boolean isReview;
+    private boolean hasTutor = true;
 
     private TextView nameOfModule = null;
     private TextView nameOfAuth = null;
@@ -47,6 +48,7 @@ public class ModuleProgress extends AppCompatActivity {
     private TextView progressText = null;
     private TextView moduleDesc = null;
     private Button startButt = null;
+    private Button chatButt = null;
 
     private String IDofTutor;
     private String tutorNameString;
@@ -89,6 +91,7 @@ public class ModuleProgress extends AppCompatActivity {
         progressText = (TextView) findViewById(R.id.view_module_progress_text);
         TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
         startButt = (Button) findViewById(R.id.view_module_start_butt);
+        chatButt = (Button) findViewById(R.id.view_module_chat_butt);
 
         nameOfModule.setText(moduleMap.get("name").toString());
         nameOfAuth.setText("written by " + moduleMap.get("authorName"));
@@ -106,14 +109,14 @@ public class ModuleProgress extends AppCompatActivity {
 
         if (lastSlide < Integer.parseInt(moduleMap.get("noOfSlides").toString())) {
             if (lastSlide == 0) {
-                startButt.setText("Start");
+                startButt.setText("Start\nmodule");
                 startButt.setEnabled(true);
             } else {
-                startButt.setText("Continue");
+                startButt.setText("Continue\nmodule");
                 startButt.setEnabled(true);
             }
         } else {
-            startButt.setText("Review");
+            startButt.setText("Review\nmodule");
             isReview = true;
         }
 
@@ -169,6 +172,17 @@ public class ModuleProgress extends AppCompatActivity {
             }
         });
 
+        chatButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startChat = new Intent(ModuleProgress.this, Chat.class);
+                startChat.putExtra("User", userMap);
+                startChat.putExtra("TutorMap", tutorMap);
+                startChat.putExtra("TutorID", IDofTutor);
+                startActivity(startChat);
+            }
+        });
+
 
     }
 
@@ -178,9 +192,11 @@ public class ModuleProgress extends AppCompatActivity {
                 if (tutor.get("id").toString().equals(iDofTutor))
                     return tutor.get("username").toString();
             } catch (NullPointerException e) {
+                hasTutor = false;
                 return "is no longer registered :(";
             }
         }
+        hasTutor = false;
         return "is no longer registered :(";
     }
 

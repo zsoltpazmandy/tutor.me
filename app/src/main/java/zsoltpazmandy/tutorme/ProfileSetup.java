@@ -178,40 +178,44 @@ public class ProfileSetup extends AppCompatActivity {
         healthCheck = (CheckBox) findViewById(R.id.health_check);
         computersCheck = (CheckBox) findViewById(R.id.computers_check);
 
-        ArrayList<String> interests = (ArrayList<String>) userMap.get("interests");
-        for (String s : interests) {
-            switch (s) {
-                case "0":
-                    languagesCheck.setChecked(true);
-                    break;
-                case "1":
-                    travelCheck.setChecked(true);
-                    break;
-                case "2":
-                    sportsCheck.setChecked(true);
-                    break;
-                case "3":
-                    historyCheck.setChecked(true);
-                    break;
-                case "4":
-                    musicCheck.setChecked(true);
-                    break;
-                case "5":
-                    scienceCheck.setChecked(true);
-                    break;
-                case "6":
-                    artsCheck.setChecked(true);
-                    break;
-                case "7":
-                    foodCheck.setChecked(true);
-                    break;
-                case "8":
-                    healthCheck.setChecked(true);
-                    break;
-                case "9":
-                    computersCheck.setChecked(true);
-                    break;
+        try {
+            ArrayList<String> interests = (ArrayList<String>) userMap.get("interests");
+            for (String s : interests) {
+                switch (s) {
+                    case "0":
+                        languagesCheck.setChecked(true);
+                        break;
+                    case "1":
+                        travelCheck.setChecked(true);
+                        break;
+                    case "2":
+                        sportsCheck.setChecked(true);
+                        break;
+                    case "3":
+                        historyCheck.setChecked(true);
+                        break;
+                    case "4":
+                        musicCheck.setChecked(true);
+                        break;
+                    case "5":
+                        scienceCheck.setChecked(true);
+                        break;
+                    case "6":
+                        artsCheck.setChecked(true);
+                        break;
+                    case "7":
+                        foodCheck.setChecked(true);
+                        break;
+                    case "8":
+                        healthCheck.setChecked(true);
+                        break;
+                    case "9":
+                        computersCheck.setChecked(true);
+                        break;
+                }
             }
+        } catch (NullPointerException e){
+
         }
     }
 
