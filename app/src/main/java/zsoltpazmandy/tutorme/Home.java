@@ -21,13 +21,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 
-import java.io.IOException;
 import java.util.HashMap;
-
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
 
 public class Home extends AppCompatActivity {
 
@@ -41,11 +35,6 @@ public class Home extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private String id;
     private String token;
-
-    private boolean flag1 = false;
-    private boolean flag2 = false;
-    private boolean flag3 = false;
-    private boolean flag4 = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +53,6 @@ public class Home extends AppCompatActivity {
         DatabaseReference userRoot = FirebaseDatabase.getInstance().getReference().child("/users/");
         userRoot.child(id).child("token").setValue(token);
 
-//        AsyncRegId reg = new AsyncRegId();
-//        reg.execute();
-
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
         if (!isProfileComplete()) {
@@ -80,7 +66,6 @@ public class Home extends AppCompatActivity {
             viewPagerAdapter.addFragments(new TrainingTab(), "Train");
             viewPager.setAdapter(viewPagerAdapter);
             tabLayout.setupWithViewPager(viewPager);
-
 
             if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
                 finish();
@@ -191,29 +176,5 @@ public class Home extends AppCompatActivity {
         }
 
     }
-
-    class AsyncRegId extends AsyncTask<String, String, String> {
-        @Override
-        protected String doInBackground(String... asd) {
-            OkHttpClient client = new OkHttpClient();
-            RequestBody body = new FormBody.Builder()
-                    .add("Token", token)
-                    .add("id", id)
-                    .build();
-
-            Request request = new Request.Builder()
-                    .url("http://192.168.1.19/tutorme/add_id.php")
-                    .post(body)
-                    .build();
-            try {
-                client.newCall(request).execute();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-    }
-
 
 }

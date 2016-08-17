@@ -57,6 +57,14 @@ public class CreateModActivity extends AppCompatActivity {
             return;
         }
 
+        initVars();
+        nextButtListener();
+
+        AsyncGetIDforThisModule getID = new AsyncGetIDforThisModule();
+        getID.execute();
+    }
+
+    private void initVars() {
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
         moduleMap = new HashMap<String, Object>();
@@ -69,6 +77,9 @@ public class CreateModActivity extends AppCompatActivity {
         nextButt = (Button) findViewById(R.id.moduleBeginButton);
         nextButt.setText("Next");
         nextButt.setEnabled(false);
+    }
+
+    private void nextButtListener() {
         nextButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -141,11 +152,8 @@ public class CreateModActivity extends AppCompatActivity {
 
             }
         });
-
-        AsyncGetIDforThisModule getID = new AsyncGetIDforThisModule();
-        getID.execute();
-
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

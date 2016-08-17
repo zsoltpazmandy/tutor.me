@@ -25,7 +25,7 @@ public class ViewTextSlide extends AppCompatActivity {
     private TextView slideTextView;
     private User u;
 
-    private Cloud c;
+    private Cloud cloud;
     private HashMap<String, Object> userMap = null;
     private HashMap<String, Object> tutorMap = null;
     private HashMap<String, Object> moduleMap = null;
@@ -53,7 +53,7 @@ public class ViewTextSlide extends AppCompatActivity {
         instantiateVars();
 
         if (!getIntent().hasExtra("Review"))
-            userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+            userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
         updateElements();
         setUpListeners();
     }
@@ -74,7 +74,7 @@ public class ViewTextSlide extends AppCompatActivity {
 
     private void instantiateVars() {
         u = new User();
-        c = new Cloud();
+        cloud = new Cloud();
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
         IDofTutor = getIntent().getStringExtra("TutorID");
@@ -110,7 +110,7 @@ public class ViewTextSlide extends AppCompatActivity {
                 Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
                 returnHome.putExtra("TutorID", IDofTutor);
                 if (!getIntent().hasExtra("Review")) {
-                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                    userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 } else {
                     returnHome.putExtra("Review", true);
                 }
@@ -139,7 +139,7 @@ public class ViewTextSlide extends AppCompatActivity {
                 }
                 prevSlide.putExtra("TutorID", IDofTutor);
                 if (!getIntent().hasExtra("Review")) {
-                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                    userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 } else {
                     prevSlide.putExtra("Review", true);
                 }
@@ -190,7 +190,7 @@ public class ViewTextSlide extends AppCompatActivity {
                         break;
                 }
                 if (!getIntent().hasExtra("Review")) {
-                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                    userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 } else {
                     nextSlide.putExtra("Review", true);
                 }
@@ -218,7 +218,7 @@ public class ViewTextSlide extends AppCompatActivity {
         if (wantsToQuitLearning) {
             Intent returnHome = new Intent(ViewTextSlide.this, Home.class);
             if (!getIntent().hasExtra("Review")) {
-                userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
             } else {
                 returnHome.putExtra("Review", true);
             }
@@ -238,212 +238,3 @@ public class ViewTextSlide extends AppCompatActivity {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

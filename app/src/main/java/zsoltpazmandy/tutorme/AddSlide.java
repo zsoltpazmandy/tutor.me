@@ -29,6 +29,9 @@ public class AddSlide extends AppCompatActivity {
 
     private TextView selSlideHint;
     private TextView textSlideTag;
+    private TextView tableSlideTag;
+    private ImageView tableSlideImg;
+    private ImageView textSlideImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,16 +46,27 @@ public class AddSlide extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        initVars();
+        textSlideImgListener();
+        tableSlideImgListener();
+    }
+
+    private void initVars() {
         selSlideHint = (TextView) findViewById(R.id.selectSlideHint);
         textSlideTag = (TextView) findViewById(R.id.plaintextSlideTag);
 
-        final ImageView textSlideImg = (ImageView) findViewById(R.id.plaintextImage);
+        textSlideImg = (ImageView) findViewById(R.id.plaintextImage);
 
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
         noOfSlides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
 
+        tableSlideTag = (TextView) findViewById(R.id.tableSlideTag);
+        tableSlideImg = (ImageView) findViewById(R.id.tableImage);
+    }
+
+    private void textSlideImgListener() {
         textSlideImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,12 +111,9 @@ public class AddSlide extends AppCompatActivity {
                 }
             }
         });
+    }
 
-        TextView tableSlideTag = (TextView) findViewById(R.id.tableSlideTag);
-
-        final ImageView tableSlideImg = (ImageView) findViewById(R.id.tableImage);
-        assert tableSlideImg != null;
-
+    private void tableSlideImgListener() {
         tableSlideImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

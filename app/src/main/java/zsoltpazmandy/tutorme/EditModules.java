@@ -33,9 +33,8 @@ public class EditModules extends AppCompatActivity {
     private ListAdapter modulesListAdapter = null;
     private ListView modulesList = null;
     private ArrayList<String> NamesOfModsAuthoredByThis = null;
-    AsyncGetMyModules getModules = null;
+    private AsyncGetMyModules getModules = null;
     private ArrayList<String> allModuleNames = null;
-
     private HashMap<String, Object> userMap = null;
 
     @Override

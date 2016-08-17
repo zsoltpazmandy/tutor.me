@@ -40,22 +40,21 @@ public class Chat extends AppCompatActivity {
     private HashMap<String, Object> userMap = null;
     private HashMap<String, Object> partner = null;
 
-    EditText enterMessage;
-    ImageButton sendButton;
-    TextView messageBox;
+    private EditText enterMessage;
+    private ImageButton sendButton;
+    private TextView messageBox;
 
-    DatabaseReference root = null;
-    DatabaseReference chatRoot = null;
+    private DatabaseReference root = null;
+    private DatabaseReference chatRoot = null;
 
-    FirebaseAuth mAuth;
-    FirebaseMessagingService FBM = null;
+    private FirebaseAuth mAuth;
+    private FirebaseMessagingService FBM = null;
 
-    String roomName = "";
+    private String roomName = "";
 
-    OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client = new OkHttpClient();
 
-
-    SendPushNotification sendPush = null;
+    private SendPushNotification sendPush = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +63,14 @@ public class Chat extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        initVars();
+        setUpSendButtListener();
+        setUpMessageBoxUpdater();
+    }
+
+    private void initVars() {
         mAuth = FirebaseAuth.getInstance();
         FBM = new FirebaseMessagingService();
-
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -86,10 +90,6 @@ public class Chat extends AppCompatActivity {
         messageBox.setMovementMethod(new ScrollingMovementMethod());
 
         root = FirebaseDatabase.getInstance().getReference().child("/chat_sessions/" + roomName);
-
-        setUpSendButtListener();
-        setUpMessageBoxUpdater();
-
     }
 
     @Override
@@ -98,11 +98,9 @@ public class Chat extends AppCompatActivity {
     }
 
     private void setUpSendButtListener() {
-
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 String sender = "";
                 String recipient = "";
                 sender = userMap.get("username").toString();
@@ -132,9 +130,7 @@ public class Chat extends AppCompatActivity {
     }
 
     private void setUpMessageBoxUpdater() {
-
         DatabaseReference thisChat = root;
-
         thisChat.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -152,7 +148,6 @@ public class Chat extends AppCompatActivity {
             public void onCancelled(DatabaseError databaseError) {
 
             }
-
         });
     }
 
@@ -174,17 +169,17 @@ public class Chat extends AppCompatActivity {
     class SendPushNotification extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... notifItems) {
-            JSONObject msg = new JSONObject();
+            JSONObject message = new JSONObject();
             JSONObject data = new JSONObject();
 
             try {
-                msg.put("to", notifItems[0]);
+                message.put("to", notifItems[0]);
                 data.put("title", notifItems[1]);
                 data.put("body", notifItems[2]);
                 data.put("tag", notifItems[1]);
-                msg.put("data", data);
-                msg.put("project_id", "tutorme-1dcd6");
-                post("https://fcm.googleapis.com/fcm/send", msg.toString());
+                message.put("data", data);
+                message.put("project_id", "tutorme-1dcd6");
+                post("https://fcm.googleapis.com/fcm/send", message.toString());
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -223,7 +218,6 @@ public class Chat extends AppCompatActivity {
             super.onBackPressed();
             finish();
         }
-
         this.wantsToQuitChat = true;
         Toast.makeText(this, "Press 'Back' once more to quit chatting.", Toast.LENGTH_SHORT).show();
         new Handler().postDelayed(new Runnable() {
@@ -233,6 +227,4 @@ public class Chat extends AppCompatActivity {
             }
         }, 1000);
     }
-
-
 }

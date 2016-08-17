@@ -51,6 +51,16 @@ public class ViewTableSlide extends AppCompatActivity {
             return;
         }
 
+        instantiateVars();
+        saveButtListener();
+        askTutorButtListener();
+        prevButtListener();
+        nextButtListener();
+        enableDisableButtons();
+        fillTable();
+    }
+
+    private void instantiateVars() {
         u = new User();
         c = new Cloud();
 
@@ -60,6 +70,7 @@ public class ViewTableSlide extends AppCompatActivity {
         slideCountText = (TextView) findViewById(R.id.view_table_slide_top_slidecounttext);
         saveQuit = (Button) findViewById(R.id.view_table_slide_savenquit_butt);
         askTutor = (Button) findViewById(R.id.view_table_slide_asktutor_butt);
+
         try {
             if (getIntent().hasExtra("TutorMap")) {
                 tutorMap = (HashMap<String, Object>) getIntent().getSerializableExtra("TutorMap");
@@ -71,7 +82,6 @@ public class ViewTableSlide extends AppCompatActivity {
         }
         prevButt = (Button) findViewById(R.id.view_table_bottom_prev_butt);
         nextButt = (Button) findViewById(R.id.view_table_bottom_next_butt);
-
         this.slideNumber = Integer.parseInt(getIntent().getStringExtra("Slide Number"));
 
         if (this.slideNumber == 0) {
@@ -84,73 +94,9 @@ public class ViewTableSlide extends AppCompatActivity {
         this.setTitle(moduleMap.get("name").toString());
         slideCountText.setText("Slide " + slideNumber + "/" + totalSlides);
 
-        saveQuit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent returnHome = new Intent(ViewTableSlide.this, Home.class);
-                returnHome.putExtra("TutorID", IDofTutor);
-                if (!getIntent().hasExtra("Review")) {
-                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
-                } else {
-                    returnHome.putExtra("Review", true);
-                }
-                returnHome.putExtra("User", userMap);
-                startActivity(returnHome);
-                finish();
-            }
-        });
+    }
 
-        prevButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
-                slideNumber--;
-                slideType = Integer.parseInt(typesMap.get("Slide_" + slideNumber));
-
-                Intent prevSlide = null;
-                switch (slideType) {
-                    case 1:
-                        prevSlide = new Intent(ViewTableSlide.this, ViewTextSlide.class);
-                        break;
-                    case 2:
-                        prevSlide = new Intent(ViewTableSlide.this, ViewTableSlide.class);
-                        break;
-                }
-
-                if (!getIntent().hasExtra("Review")) {
-                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
-                } else {
-                    prevSlide.putExtra("Review", true);
-                }
-                try {
-                    if (getIntent().hasExtra("TutorMap")) {
-                        prevSlide.putExtra("TutorMap", tutorMap);
-                    }
-                } catch (NullPointerException e) {
-
-                }
-                prevSlide.putExtra("TutorID", IDofTutor);
-                prevSlide.putExtra("User", userMap);
-                prevSlide.putExtra("Module", moduleMap);
-                prevSlide.putExtra("Slide Number", "" + slideNumber);
-                startActivity(prevSlide);
-                finish();
-            }
-        });
-
-        askTutor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent startChat = new Intent(ViewTableSlide.this, Chat.class);
-                startChat.putExtra("User", userMap);
-                startChat.putExtra("TutorID", IDofTutor);
-                startChat.putExtra("TutorMap", tutorMap);
-                startActivity(startChat);
-            }
-        });
-
+    private void nextButtListener() {
         nextButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -191,8 +137,82 @@ public class ViewTableSlide extends AppCompatActivity {
                 finish();
             }
         });
+    }
 
+    private void prevButtListener() {
+        prevButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                typesMap = (HashMap<String, String>) moduleMap.get("typesOfSlides");
+                slideNumber--;
+                slideType = Integer.parseInt(typesMap.get("Slide_" + slideNumber));
+
+                Intent prevSlide = null;
+                switch (slideType) {
+                    case 1:
+                        prevSlide = new Intent(ViewTableSlide.this, ViewTextSlide.class);
+                        break;
+                    case 2:
+                        prevSlide = new Intent(ViewTableSlide.this, ViewTableSlide.class);
+                        break;
+                }
+
+                if (!getIntent().hasExtra("Review")) {
+                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                } else {
+                    prevSlide.putExtra("Review", true);
+                }
+                try {
+                    if (getIntent().hasExtra("TutorMap")) {
+                        prevSlide.putExtra("TutorMap", tutorMap);
+                    }
+                } catch (NullPointerException e) {
+
+                }
+                prevSlide.putExtra("TutorID", IDofTutor);
+                prevSlide.putExtra("User", userMap);
+                prevSlide.putExtra("Module", moduleMap);
+                prevSlide.putExtra("Slide Number", "" + slideNumber);
+                startActivity(prevSlide);
+                finish();
+            }
+        });
+    }
+
+    private void askTutorButtListener() {
+        askTutor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent startChat = new Intent(ViewTableSlide.this, Chat.class);
+                startChat.putExtra("User", userMap);
+                startChat.putExtra("TutorID", IDofTutor);
+                startChat.putExtra("TutorMap", tutorMap);
+                startActivity(startChat);
+            }
+        });
+    }
+
+    private void saveButtListener() {
+        saveQuit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent returnHome = new Intent(ViewTableSlide.this, Home.class);
+                returnHome.putExtra("TutorID", IDofTutor);
+                if (!getIntent().hasExtra("Review")) {
+                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                } else {
+                    returnHome.putExtra("Review", true);
+                }
+                returnHome.putExtra("User", userMap);
+                startActivity(returnHome);
+                finish();
+            }
+        });
+    }
+
+    private void enableDisableButtons() {
         if (slideNumber == 1) {
             prevButt.setEnabled(false);
         } else {
@@ -204,8 +224,9 @@ public class ViewTableSlide extends AppCompatActivity {
         } else {
             nextButt.setEnabled(true);
         }
+    }
 
-
+    private void fillTable() {
         String tableRaw = "";
         ArrayList<String> tableSlide = new ArrayList<>();
 
@@ -303,8 +324,6 @@ public class ViewTableSlide extends AppCompatActivity {
         assert row0col2 != null;
         row0col2.setMaxWidth(row0col2.getWidth());
         row0col2.setText(tableSlide.get(19));
-
-
     }
 
     boolean wantsToQuitLearning = false;

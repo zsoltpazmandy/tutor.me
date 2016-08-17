@@ -1,20 +1,10 @@
 package zsoltpazmandy.tutorme;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.widget.Toast;
-
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
-import com.google.firebase.database.ValueEventListener;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -22,10 +12,10 @@ import java.util.Set;
  */
 public class Cloud {
 
-    FirebaseAuth mAuth = null;
-    DatabaseReference userRoot = null;
-    DatabaseReference moduleRoot = null;
-    DatabaseReference progressRoot = null;
+    private FirebaseAuth mAuth = null;
+    private DatabaseReference userRoot = null;
+    private DatabaseReference moduleRoot = null;
+    private DatabaseReference progressRoot = null;
 
     public Cloud() {
         userRoot = FirebaseDatabase.getInstance().getReference().child("/users/");
@@ -133,43 +123,6 @@ public class Cloud {
             userMap.put("progress", progressMap);
             userRoot.child(userMap.get("id").toString()).updateChildren(userMap);
         }
-
         return userMap;
-
     }
-
-    class AsyncProgress extends AsyncTask<ArrayList<Object>, boolean[], String> {
-        @Override
-        protected String doInBackground(final ArrayList<Object>... stuff) {
-            final boolean[] success = new boolean[1];
-            progressRoot.addListenerForSingleValueEvent(new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-
-                    GenericTypeIndicator<Map<String, Object>> activeProgressMapGen = new GenericTypeIndicator<Map<String, Object>>() {
-                    };
-                    Map<String, Object> activeProgressMap = dataSnapshot.child(stuff[0].get(0).toString()).getValue(activeProgressMapGen);
-
-                    userRoot.child(stuff[0].get(0).toString()).child("progress").updateChildren(activeProgressMap);
-                    success[0] = true;
-                    publishProgress(success);
-                    Toast.makeText((Context) stuff[0].get(1), "Progress synced from cloud", Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onCancelled(DatabaseError databaseError) {
-                    success[0] = false;
-                    publishProgress(success);
-                }
-            });
-            return null;
-        }
-
-        @Override
-        protected void onProgressUpdate(boolean[]... success) {
-            super.onProgressUpdate(success);
-        }
-
-    }
-
 }
