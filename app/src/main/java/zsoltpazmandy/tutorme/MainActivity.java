@@ -76,6 +76,13 @@ public class MainActivity extends AppCompatActivity {
         setupSignupButton();
     }
 
+    private void setupFields() {
+        emailField = (EditText) findViewById(R.id.username_textfield);
+        emailField.setMaxWidth(emailField.getWidth());
+        passwordField = (EditText) findViewById(R.id.password_textfield);
+        passwordField.setMaxWidth(passwordField.getWidth());
+    }
+
     private void setupSignupButton() {
         signUpButt = (Button) findViewById(R.id.signUpButt);
         signUpButt.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +103,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 loading.setVisibility(View.VISIBLE);
-
 
                 email = emailField.getText().toString().trim();
                 password = passwordField.getText().toString().trim();
@@ -154,12 +160,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void setupFields() {
-        emailField = (EditText) findViewById(R.id.username_textfield);
-        emailField.setMaxWidth(emailField.getWidth());
-        passwordField = (EditText) findViewById(R.id.password_textfield);
-        passwordField.setMaxWidth(passwordField.getWidth());
-    }
 
     public boolean validateInput(String email, String password) {
         boolean result = true;

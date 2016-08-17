@@ -81,20 +81,14 @@ public class EditModules extends AppCompatActivity {
         for (String s : IDset) {
             NamesOfModsAuthoredByThis.add(authoredMap.get(s));
         }
-
-
     }
 
     private void setUpList() {
-
         modulesListAdapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, NamesOfModsAuthoredByThis);
-
         modulesList = (ListView) findViewById(R.id.edit_module_listview);
-
         assert modulesList != null;
         modulesList.setAdapter(modulesListAdapter);
-
     }
 
     private void setUpListener() {

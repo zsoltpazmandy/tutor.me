@@ -24,11 +24,10 @@ public class FirebaseMessagingService extends com.google.firebase.messaging.Fire
 
     private void showNotification(String from, String messageBody) {
 
-        Intent notifIntent = new Intent(this, MainActivity.class);
+        Intent notifIntent = new Intent(this, Chat.class);
         notifIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         Uri beep = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notifIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
         NotificationCompat.Builder builder = new NotificationCompat.Builder(FirebaseMessagingService.this)
                 .setAutoCancel(true)
                 .setContentTitle("tutor.me message")

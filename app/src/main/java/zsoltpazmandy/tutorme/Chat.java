@@ -37,24 +37,18 @@ import okhttp3.Response;
 
 public class Chat extends AppCompatActivity {
 
-    private HashMap<String, Object> userMap = null;
-    private HashMap<String, Object> partner = null;
-
+    private HashMap<String, Object> userMap;
+    private HashMap<String, Object> partner;
     private EditText enterMessage;
     private ImageButton sendButton;
     private TextView messageBox;
-
-    private DatabaseReference root = null;
-    private DatabaseReference chatRoot = null;
-
+    private DatabaseReference root;
+    private DatabaseReference chatRoot;
     private FirebaseAuth mAuth;
-    private FirebaseMessagingService FBM = null;
-
+    private FirebaseMessagingService FBM;
     private String roomName = "";
-
-    private OkHttpClient client = new OkHttpClient();
-
-    private SendPushNotification sendPush = null;
+    private OkHttpClient client;
+    private SendPushNotification sendPush;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +65,7 @@ public class Chat extends AppCompatActivity {
     private void initVars() {
         mAuth = FirebaseAuth.getInstance();
         FBM = new FirebaseMessagingService();
+        client = new OkHttpClient();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -101,23 +96,16 @@ public class Chat extends AppCompatActivity {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String sender = "";
-                String recipient = "";
-                sender = userMap.get("username").toString();
-                recipient = partner.get("username").toString();
+                String sender = userMap.get("username").toString();
+                String recipient = partner.get("username").toString();
                 String timeStamp = getTimeStamp();
                 String message = enterMessage.getText().toString();
-
                 ChatMessage chatMessage = new ChatMessage(sender, recipient, timeStamp, message);
-
                 String messagePushTemp = root.push().getKey();
-                Map<String, Object> map = new HashMap<String, Object>();
-
+                Map<String, Object> map = new HashMap<>();
                 root.child(messagePushTemp).setValue(map);
-
                 chatRoot = root.child(messagePushTemp);
                 chatRoot.setValue(chatMessage);
-
                 sendPush = new SendPushNotification();
                 String[] notifItems = new String[3];
                 notifItems[0] = partner.get("token").toString();
@@ -208,6 +196,20 @@ public class Chat extends AppCompatActivity {
                 .build();
         Response response = client.newCall(request).execute();
         return response.body().string();
+        /*
+        ADD to the notification sent:
+            an Intent, clicking which pulls up the Chat activity on the recipient's end with
+            the correct extras linking to the sender:
+                1. getIntent().getSerializableExtra("User") => sending from here, it's "partnerMap"
+                2. INVERT THIS:
+                    if (getIntent().hasExtra("TutorMap")) {
+                    partner = (HashMap<String, Object>) getIntent().getSerializableExtra("TutorMap");
+                    roomName = partner.get("id").toString() + "_" + userMap.get("id").toString();
+                   } else {
+                    partner = (HashMap<String, Object>) getIntent().getSerializableExtra("TuteeMap");
+                    roomName = userMap.get("id").toString() + "_" + partner.get("id").toString();
+                    }
+         */
     }
 
     boolean wantsToQuitChat = false;
