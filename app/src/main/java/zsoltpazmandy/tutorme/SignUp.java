@@ -19,6 +19,36 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.HashMap;
 
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * This class handles the registration of a new user in the database. It collects the user-entered
+ * email address, password which are sent to register on Firebase. If the registration is successful
+ * (i.e. if the device manages to establish a network connection with Firebase, the user-provided
+ * data is of the correct format and if the email address being registered is free) the user's basic
+ * information is registered as a stub in the database. Ideally this information is completed on the
+ * following activity, ProfileSetup, however it may happen that this second stage of the registration
+ * fails for some reason (e.g. the user closes the application by accident), but in order to minimise
+ * the necessity to repeatedly enter information by the user, the email & password combination is
+ * immediately registered and a user directory is created in the database with the user's ID and
+ * username. Failing to complete the registration prompts the user that they must complete it before
+ * being allowed to use the application. This is done on the main screen after successful login.
+ *
+ * Registration of email & password are handled by Google's Firebase Auth
+ *
+ * Username and ID is recorded in the Firebase database separately from Auth information.
+ * Such operations are handled from within the Cloud class.
+ *
+ * fieldsValid() checks whether the inserted characters are acceptable.
+ *      email:      [a-z][A-Z]@[a-z][A-Z].[a-z][A-Z]
+ *      password:   minumum 6 alphanumeric char in length
+ *      username:   [a-z] 3-10 alphanumeric char in length
+ *
+ *      User-entered information is trimmed of initial or final whitespaces
+ */
 public class SignUp extends AppCompatActivity {
 
     private EditText usernameField;
@@ -32,6 +62,7 @@ public class SignUp extends AppCompatActivity {
     private String id;
 
     private FirebaseAuth mAuth;
+    private Cloud cloud;
 
     private ProgressBar loading;
 
@@ -44,6 +75,8 @@ public class SignUp extends AppCompatActivity {
 
         loading = (ProgressBar) findViewById(R.id.loading_circular);
         loading.setVisibility(View.GONE);
+
+        cloud = new Cloud();
 
         mAuth = FirebaseAuth.getInstance();
         mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
@@ -61,6 +94,11 @@ public class SignUp extends AppCompatActivity {
         });
     }
 
+    /**
+     *If the user has already entered their email address and password on the previous screen it is
+     *sent to this one and the fields are populated with this data in order to reduce the necessity
+     *of repeatedly entering information.
+     */
     private void setUpViews() {
         usernameField = (EditText) findViewById(R.id.username_field);
         usernameField.setMaxLines(1);
@@ -119,9 +157,7 @@ public class SignUp extends AppCompatActivity {
                                                     userPrepMap.put("username", username);
                                                     userPrepMap.put("email", email);
 
-
-                                                    Cloud c = new Cloud();
-                                                    c.prepUser(id, email, username);
+                                                    cloud.prepUser(id, email, username);
 
                                                     // continue to profile setup
                                                     Intent setupProfile = new Intent(SignUp.this, ProfileSetup.class);
@@ -176,8 +212,11 @@ public class SignUp extends AppCompatActivity {
         return allValid;
     }
 
+    /**
+     * In order to ensure the user doesn't accidentally leave the activity, they are prompted to
+     * repeat the BackPress action within 1 second.
+     */
     boolean wantsToQuit = false;
-
     @Override
     public void onBackPressed() {
         if (wantsToQuit) {

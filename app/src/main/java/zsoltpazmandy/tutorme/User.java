@@ -5,20 +5,32 @@ import java.util.HashMap;
 import java.util.Set;
 
 /**
- * Functions related to User Records, updater functions, user records management
- * <p/>
- * Created by zsolt on 30/06/16.
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ * <p>
+ * The class contains functions related to User data and operations related to User data storage
+ * such as decoding country codes, languages and interests. It is also used to create the POJO used
+ * to store user information in the Firebase database.
  */
 public class User {
 
-    private Cloud c;
+    private Cloud cloud;
 
     private String id;
     private String email;
     private String username;
+    private HashMap<String, Object> authored;
+    private HashMap<String, String> training;
+    private HashMap<String, String> learning;
+    private HashMap<String, String> progress;
+    private ArrayList<String> interests;
+    private HashMap<String, Object> user;
+    private HashMap<String, String> learningMap;
+    private HashMap<String, String> progressMap;
 
     public User() {
-        c = new Cloud();
+        cloud = new Cloud();
     }
 
     public User(String id, String email, String username) {
@@ -52,19 +64,17 @@ public class User {
     }
 
     public HashMap<String, Object> buildUserHashMap(String id, String username, String email, String age, String language1, String language2, String language3, String location) {
-
-        HashMap<String, String> authored = new HashMap<>();
+        authored = new HashMap<>();
         authored.put("none", "none");
-        HashMap<String, String> training = new HashMap<>();
+        training = new HashMap<>();
         training.put("none", "none");
-        HashMap<String, String> learning = new HashMap<>();
+        learning = new HashMap<>();
         learning.put("none", "none");
-        HashMap<String, String> progress = new HashMap<>();
+        progress = new HashMap<>();
         progress.put("none", "none");
-        ArrayList<String> interests = new ArrayList<>();
+        interests = new ArrayList<>();
         interests.add("none");
-
-        HashMap<String, Object> user = new HashMap<>();
+        user = new HashMap<>();
         user.put("id", id);
         user.put("username", username);
         user.put("email", email);
@@ -78,16 +88,13 @@ public class User {
         user.put("learning", learning);
         user.put("progress", progress);
         user.put("interests", interests);
-
         return user;
     }
-
 
     public String getWhoTrainsMeThis(HashMap<String, Object> userMap, String moduleID) {
         HashMap<String, String> learningMap = (HashMap<String, String>) userMap.get("learning");
         return learningMap.get(moduleID);
     }
-
 
     public boolean isLearning(HashMap<String, Object> user, String moduleID) {
         HashMap<String, String> learning = (HashMap<String, String>) user.get("learning");
@@ -103,11 +110,11 @@ public class User {
 
     public HashMap<String, Object> addToLearning(HashMap<String, Object> userMap, String IDofTutor, String modID, String modName, String noOfSlides) {
 
-        HashMap<String, String> learningMap = (HashMap<String, String>) userMap.get("learning");
+        learningMap = (HashMap<String, String>) userMap.get("learning");
         if (learningMap.containsKey("none")) learningMap.remove("none");
         learningMap.put(modID, IDofTutor);
 
-        HashMap<String, String> progressMap = (HashMap<String, String>) userMap.get("progress");
+        progressMap = (HashMap<String, String>) userMap.get("progress");
         if (progressMap.containsKey("none")) progressMap.remove("none");
         progressMap.put(modID, modName + "_" + noOfSlides + "_0");
 
@@ -116,8 +123,8 @@ public class User {
         userMap.put("learning", learningMap);
         userMap.put("progress", progressMap);
 
-        Cloud c = new Cloud();
-        c.saveUserHashMapInCloud(userMap);
+        cloud = new Cloud();
+        cloud.saveUserHashMapInCloud(userMap);
 
         return userMap;
     }
@@ -126,8 +133,8 @@ public class User {
 
         String tutorID = moduleMap.get("author");
 
-        c.saveUserHashMapInCloud(userMap);
-        c.addToTrainersTrainees(tutorID, userMap.get("id").toString(), moduleMap.get("id").toString());
+        cloud.saveUserHashMapInCloud(userMap);
+        cloud.addToTutorsTuteesList(tutorID, userMap.get("id").toString(), moduleMap.get("id").toString());
 
         return tutorID;
     }

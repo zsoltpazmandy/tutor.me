@@ -26,16 +26,30 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * The activity displays a list of all the modules available in the Module Library and a counter
+ * on the top of the screen. It uses an asynchronous task to read a snapshot of the database.
+ *
+ */
 public class ViewLibrary extends AppCompatActivity {
 
-    private ArrayList<HashMap<String, Object>> modules = null;
-    private ArrayList<String> modulesNamesList = null;
-    private ListView listView = null;
-    private ListAdapter libraryAdapter = null;
+    private ArrayList<HashMap<String, Object>> modules;
+    private ArrayList<String> modulesNamesList;
+    private ListView listView;
+    private ListAdapter libraryAdapter;
     private int counterInt;
-
-    HashMap<String, Object> userMap = null;
-    HashMap<String, Object> moduleMap = null;
+    private HashMap<String, Object> userMap;
+    private HashMap<String, Object> moduleMap;
+    private TextView displayTop;
+    private AsyncGetModules getMods;
+    private TextView counter;
+    private String counterText;
+    private ArrayList<String> moduleInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,37 +63,27 @@ public class ViewLibrary extends AppCompatActivity {
             return;
         }
 
-        TextView displayTop = (TextView) findViewById(R.id.display_top);
-        assert displayTop != null;
-
+        displayTop = (TextView) findViewById(R.id.display_top);
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         listView = (ListView) findViewById(R.id.library_listview);
-
-        AsyncGetModules getMods = new AsyncGetModules();
+        getMods = new AsyncGetModules();
         getMods.execute();
-
     }
 
     private void setUpList() {
-
-        TextView counter = (TextView) findViewById(R.id.counter);
-        assert counter != null;
-        String counterText = "" + counterInt;
+        counter = (TextView) findViewById(R.id.counter);
+        counterText = "" + counterInt;
         counter.setText(counterText);
-
         libraryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, modulesNamesList);
-
         listView.setAdapter(libraryAdapter);
-
     }
 
     private void setUpListenerOnItems() {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                ArrayList<String> moduleInfo = new ArrayList<String>();
+                moduleInfo = new ArrayList<String>();
 
                 // ID of Module as a String (Right now redundant, as Names are also PKs of DB)
                 moduleInfo.add(modules.get(position).get("id").toString());
@@ -111,8 +115,6 @@ public class ViewLibrary extends AppCompatActivity {
                 showModulePop.putExtra("Module", modules.get(position));
                 showModulePop.putStringArrayListExtra("Module Info", moduleInfo);
                 startActivityForResult(showModulePop, 1);
-
-
             }
         });
     }
@@ -186,14 +188,10 @@ public class ViewLibrary extends AppCompatActivity {
             for (HashMap<String, Object> oneModule : moduleMap[0]) {
                 modulesNamesList.add(oneModule.get("name").toString());
             }
-
             counterInt = modules.size();
-
             setUpList();
             setUpListenerOnItems();
-
         }
-
     }
 
     @Override
@@ -201,10 +199,8 @@ public class ViewLibrary extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == 1) {
-
             userMap = (HashMap<String, Object>) data.getSerializableExtra("User");
             moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module");
-
             // asking if user wants to begin the newly added module
             AlertDialog.Builder alert = new AlertDialog.Builder(ViewLibrary.this);
             alert.setTitle("Begin new module now?");
@@ -218,15 +214,12 @@ public class ViewLibrary extends AppCompatActivity {
                     dialog.dismiss();
                 }
             });
-
             alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int whichButton) {
                     dialog.dismiss();
                 }
             });
             alert.show();
-
-
         }
     }
 
@@ -241,19 +234,3 @@ public class ViewLibrary extends AppCompatActivity {
         finish();
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -1,13 +1,14 @@
 package zsoltpazmandy.tutorme;
 
-import android.content.Context;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * Created by zsolt on 29/06/16.
- * All Module management functions are found here
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * Used to create module POJOs & perform some module functions.
  */
 public class Module {
 
@@ -94,7 +95,14 @@ public class Module {
         this.pro = pro;
     }
 
-    public HashMap<String, Object> removeSlide(Context context, HashMap<String, Object> moduleMap, int indexOfSlideToRemove) {
+    /**
+     * Removes the slide from the module at the index provided as an argument
+     *
+     * @param moduleMap the Module from which a slide is being removed
+     * @param indexOfSlideToRemove the index at which a slide is to be removed from the module
+     * @return
+     */
+    public HashMap<String, Object> removeSlide(HashMap<String, Object> moduleMap, int indexOfSlideToRemove) {
 
         ArrayList<String> allSlides = new ArrayList<>();
         ArrayList<Integer> allTypes = new ArrayList<>();
@@ -136,7 +144,15 @@ public class Module {
         return  moduleMap;
     }
 
-    public int getSlideType(Context context, HashMap<String,Object> module, int slideNumber) {
+    /**
+     * Returns the type of the slide found at the index provided as an argument in the module
+     * also provided as an argument
+     *
+     * @param module the module whose slide's type is being requested
+     * @param slideNumber the index of the slide in the module whose type is being requested
+     * @return
+     */
+    public int getSlideType(HashMap<String,Object> module, int slideNumber) {
 
         int slideType = 0;
 

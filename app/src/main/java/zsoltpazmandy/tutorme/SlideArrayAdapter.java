@@ -9,8 +9,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+
 /**
- * Created by zsolt on 12/07/16.
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * Used to build EditSelectedModule's list of slides in a module.
+ *
  */
 public class SlideArrayAdapter extends ArrayAdapter<String> {
 
@@ -20,13 +26,13 @@ public class SlideArrayAdapter extends ArrayAdapter<String> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        LayoutInflater li = LayoutInflater.from(getContext());
-        View v = li.inflate(R.layout.slide_row, parent, false);
+        LayoutInflater inflater = LayoutInflater.from(getContext());
+        View view = inflater.inflate(R.layout.slide_row, parent, false);
 
         String slide = getItem(position);
 
-        TextView item = (TextView) v.findViewById(R.id.slide_item);
+        TextView item = (TextView) view.findViewById(R.id.slide_item);
         item.setText(slide);
-        return v;
+        return view;
     }
 }

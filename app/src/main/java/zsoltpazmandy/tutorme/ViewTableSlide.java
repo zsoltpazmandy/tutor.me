@@ -13,6 +13,18 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * Used to view Table Slides within a module. 2 columns by 10 rows. The bottom of the screen hosts
+ * navigation buttons that move the user forward or return to the previous slide. The top of the
+ * screen displays the slide counter showing the ordinal number of the slide shown, and 2 buttons:
+ * Save & Exit, and Ask Tutor.
+ *
+ */
 public class ViewTableSlide extends AppCompatActivity {
 
     private TextView slideCountText;
@@ -21,17 +33,12 @@ public class ViewTableSlide extends AppCompatActivity {
     private Button askTutor;
     private Button prevButt;
     private Button nextButt;
-
-    private User u;
-
-    private Cloud c;
+    private User user;
+    private Cloud cloud;
     private HashMap<String, Object> userMap = null;
-
     private HashMap<String, Object> moduleMap = null;
     private HashMap<String, String> typesMap = null;
     private HashMap<String, Object> tutorMap = null;
-
-
     private int slideNumber;
     private int slideType;
     private int totalSlides;
@@ -61,16 +68,14 @@ public class ViewTableSlide extends AppCompatActivity {
     }
 
     private void instantiateVars() {
-        u = new User();
-        c = new Cloud();
-
+        user = new User();
+        cloud = new Cloud();
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
         IDofTutor = getIntent().getStringExtra("TutorID");
         slideCountText = (TextView) findViewById(R.id.view_table_slide_top_slidecounttext);
         saveQuit = (Button) findViewById(R.id.view_table_slide_savenquit_butt);
         askTutor = (Button) findViewById(R.id.view_table_slide_asktutor_butt);
-
         try {
             if (getIntent().hasExtra("TutorMap")) {
                 tutorMap = (HashMap<String, Object>) getIntent().getSerializableExtra("TutorMap");
@@ -88,12 +93,11 @@ public class ViewTableSlide extends AppCompatActivity {
             this.slideNumber = 1;
         }
         if (!getIntent().hasExtra("Review"))
-            userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+            userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
 
         this.totalSlides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
         this.setTitle(moduleMap.get("name").toString());
         slideCountText.setText("Slide " + slideNumber + "/" + totalSlides);
-
     }
 
     private void nextButtListener() {
@@ -119,7 +123,7 @@ public class ViewTableSlide extends AppCompatActivity {
                 nextSlide.putExtra("TutorID", IDofTutor);
 
                 if (!getIntent().hasExtra("Review")) {
-                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                    userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 } else {
                     nextSlide.putExtra("Review", true);
                 }
@@ -159,7 +163,7 @@ public class ViewTableSlide extends AppCompatActivity {
                 }
 
                 if (!getIntent().hasExtra("Review")) {
-                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                    userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 } else {
                     prevSlide.putExtra("Review", true);
                 }
@@ -201,7 +205,7 @@ public class ViewTableSlide extends AppCompatActivity {
                 Intent returnHome = new Intent(ViewTableSlide.this, Home.class);
                 returnHome.putExtra("TutorID", IDofTutor);
                 if (!getIntent().hasExtra("Review")) {
-                    userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                    userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
                 } else {
                     returnHome.putExtra("Review", true);
                 }
@@ -334,7 +338,7 @@ public class ViewTableSlide extends AppCompatActivity {
 
             Intent returnHome = new Intent(ViewTableSlide.this, Home.class);
             if (!getIntent().hasExtra("Review")) {
-                userMap = c.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
+                userMap = cloud.updateProgress(userMap, moduleMap.get("id").toString(), slideNumber);
             } else {
                 returnHome.putExtra("Review", true);
             }

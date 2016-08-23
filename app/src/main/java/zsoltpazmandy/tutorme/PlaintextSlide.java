@@ -1,7 +1,11 @@
 package zsoltpazmandy.tutorme;
 
+
 /**
- * Created by zsolt on 01/08/16.
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
  */
 public class PlaintextSlide extends TextSlide {
 

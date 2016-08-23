@@ -23,36 +23,44 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * The activity is used to provide a general overview of a selected module the user is training.
+ * It is launched when the user selects one of the modules they have enrolled on from the Learning
+ * Tab. It displays general module information: name, description, author and tutor information, and
+ * ratings. Moreover, it shows the progress the user has made in the module using a progressbar.
+ * The learner may initiate a chat activity from this screen by pressing the 'Message Tutor' button.
+ *
+ */
 public class ModuleProgress extends AppCompatActivity {
 
-    private ArrayList<HashMap<String, Object>> myTutors = null;
-    private Set<String> IDsOfMyTutors = null;
-
+    private ArrayList<HashMap<String, Object>> myTutors;
+    private Set<String> IDsOfMyTutors;
     private User u = null;
-
-    HashMap<String, Object> moduleMap = null;
-    HashMap<String, Object> userMap = null;
-    HashMap<String, Object> tutorMap = null;
+    private HashMap<String, Object> moduleMap;
+    private HashMap<String, Object> userMap;
+    private HashMap<String, Object> tutorMap;
     private int lastSlide = 0;
     private boolean isReview;
     private boolean hasTutor = true;
-
-    private TextView nameOfModule = null;
-    private TextView nameOfAuth = null;
-    private TextView moduleRating = null;
-    private TextView authRating = null;
-    private TextView tutorName = null;
-    private TextView tutorRating = null;
-    private TextView progressHeader = null;
-    private ProgressBar progressBar = null;
-    private TextView progressText = null;
-    private TextView moduleDesc = null;
-    private Button startButt = null;
-    private Button chatButt = null;
-
+    private TextView nameOfModule;
+    private TextView nameOfAuth;
+    private TextView moduleRating;
+    private TextView authRating;
+    private TextView tutorName;
+    private TextView tutorRating;
+    private TextView progressHeader;
+    private ProgressBar progressBar;
+    private TextView progressText;
+    private TextView moduleDesc;
+    private Button startButt;
+    private Button chatButt;
     private String IDofTutor;
     private String tutorNameString;
-
+    private AsyncGetMyTutors getMyTutors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,51 +69,12 @@ public class ModuleProgress extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
-        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
-        tutorMap = new HashMap<>();
-        myTutors = new ArrayList<>();
-        IDsOfMyTutors = new HashSet<>();
-
-        tutorMap = new HashMap<>();
-
-        u = new User();
-
-        IDofTutor = u.getWhoTrainsMeThis(userMap, moduleMap.get("id").toString());
-
+        initVars();
         getMyTutorIDs();
-
-        AsyncGetMyTutors getMyTutors = new AsyncGetMyTutors();
+        getMyTutors = new AsyncGetMyTutors();
         getMyTutors.execute();
-
-        this.setTitle("Module information");
-
-        nameOfModule = (TextView) findViewById(R.id.view_module_name_of_module_view);
-        nameOfAuth = (TextView) findViewById(R.id.view_module_author_of_module_view);
-        moduleRating = (TextView) findViewById(R.id.view_module_rating);
-        authRating = (TextView) findViewById(R.id.view_author_rating);
-        tutorName = (TextView) findViewById(R.id.view_module_tutors_name);
-        tutorRating = (TextView) findViewById(R.id.view_module_tutors_rating);
-        progressHeader = (TextView) findViewById(R.id.view_module_progress_header);
-        progressBar = (ProgressBar) findViewById(R.id.view_module_progressbar);
-        progressText = (TextView) findViewById(R.id.view_module_progress_text);
-        TextView moduleDesc = (TextView) findViewById(R.id.view_module_description);
-        startButt = (Button) findViewById(R.id.view_module_start_butt);
-        chatButt = (Button) findViewById(R.id.view_module_chat_butt);
-
-        nameOfModule.setText(moduleMap.get("name").toString());
-        nameOfAuth.setText("written by " + moduleMap.get("authorName"));
-        moduleRating.setText("Module *****");
-        authRating.setText("Author *****");
-
-        lastSlide = u.getLastSlideViewed(userMap, moduleMap.get("id").toString());
-
-        tutorName.setText("Loading tutor info...");
-        tutorRating.setText("Tutor *****");
-        progressBar.setMax(Integer.parseInt(moduleMap.get("noOfSlides").toString()));
-        progressBar.setProgress(lastSlide);
-        progressText.setText("" + lastSlide + " of " + moduleMap.get("noOfSlides") + " slides.");
-        moduleDesc.setText(moduleMap.get("description").toString());
+        populateFields();
+        setUpProgress();
 
         if (lastSlide < Integer.parseInt(moduleMap.get("noOfSlides").toString())) {
             if (lastSlide == 0) {
@@ -119,8 +88,23 @@ public class ModuleProgress extends AppCompatActivity {
             startButt.setText("Review\nmodule");
             isReview = true;
         }
+        addStartButtListener();
+        addChatButtListener();
+    }
 
-        assert startButt != null;
+    private void addChatButtListener() {
+        chatButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent startChat = new Intent(ModuleProgress.this, Chat.class);
+                startChat.putExtra("User", userMap);
+                startChat.putExtra("TutorMap", tutorMap);
+                startChat.putExtra("TutorID", IDofTutor);
+                startActivity(startChat);
+            }
+        });}
+
+    private void addStartButtListener() {
         startButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,22 +152,48 @@ public class ModuleProgress extends AppCompatActivity {
                 }
                 startActivity(startModule);
                 finish();
-
             }
-        });
+        });}
 
-        chatButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent startChat = new Intent(ModuleProgress.this, Chat.class);
-                startChat.putExtra("User", userMap);
-                startChat.putExtra("TutorMap", tutorMap);
-                startChat.putExtra("TutorID", IDofTutor);
-                startActivity(startChat);
-            }
-        });
+    private void setUpProgress() {
+        progressBar.setMax(Integer.parseInt(moduleMap.get("noOfSlides").toString()));
+        progressBar.setProgress(lastSlide);
+        progressText.setText("" + lastSlide + " of " + moduleMap.get("noOfSlides") + " slides.");
+    }
 
+    private void populateFields() {
+        nameOfModule = (TextView) findViewById(R.id.view_module_name_of_module_view);
+        nameOfAuth = (TextView) findViewById(R.id.view_module_author_of_module_view);
+        moduleRating = (TextView) findViewById(R.id.view_module_rating);
+        authRating = (TextView) findViewById(R.id.view_author_rating);
+        tutorName = (TextView) findViewById(R.id.view_module_tutors_name);
+        tutorRating = (TextView) findViewById(R.id.view_module_tutors_rating);
+        progressHeader = (TextView) findViewById(R.id.view_module_progress_header);
+        progressBar = (ProgressBar) findViewById(R.id.view_module_progressbar);
+        progressText = (TextView) findViewById(R.id.view_module_progress_text);
+        moduleDesc = (TextView) findViewById(R.id.view_module_description);
+        startButt = (Button) findViewById(R.id.view_module_start_butt);
+        chatButt = (Button) findViewById(R.id.view_module_chat_butt);
+        nameOfModule.setText(moduleMap.get("name").toString());
+        nameOfAuth.setText("written by " + moduleMap.get("authorName"));
+        moduleRating.setText("Module *****");
+        authRating.setText("Author *****");
+        lastSlide = u.getLastSlideViewed(userMap, moduleMap.get("id").toString());
+        tutorName.setText("Loading tutor info...");
+        tutorRating.setText("Tutor *****");
+    }
 
+    private void initVars() {
+        moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
+        userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
+        tutorMap = new HashMap<>();
+        myTutors = new ArrayList<>();
+        IDsOfMyTutors = new HashSet<>();
+        tutorMap = new HashMap<>();
+        u = new User();
+        IDofTutor = u.getWhoTrainsMeThis(userMap, moduleMap.get("id").toString());
+        this.setTitle("Module information");
+        moduleDesc.setText(moduleMap.get("description").toString());
     }
 
     public String getThisTutorName(String iDofTutor) {
@@ -211,7 +221,6 @@ public class ModuleProgress extends AppCompatActivity {
         }
         return null;
     }
-
 
     private void getMyTutorIDs() {
         HashMap<String, String> learningMap = (HashMap<String, String>) userMap.get("learning");
@@ -262,17 +271,18 @@ public class ModuleProgress extends AppCompatActivity {
         tutorName.setText("Your tutor: " + tutorNameString);
     }
 
+    /**
+     * In order to ensure the user doesn't accidentally leave the activity, they are prompted to
+     * repeat the BackPress action within 1 second.
+     */
     boolean wantsToQuitLearning = false;
-
     @Override
     public void onBackPressed() {
         if (wantsToQuitLearning) {
-
             Intent returnHome = new Intent(ModuleProgress.this, Home.class);
             returnHome.putExtra("User", userMap);
             startActivity(returnHome);
             finish();
-
         }
 
         this.wantsToQuitLearning = true;

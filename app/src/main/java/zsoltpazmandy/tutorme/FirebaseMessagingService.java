@@ -10,7 +10,13 @@ import android.support.v4.app.NotificationCompat;
 import com.google.firebase.messaging.RemoteMessage;
 
 /**
- * Created by zsolt on 29/07/16.
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * The class is responsible for displaying remote messages as push notifications using
+ * Google's Firebase platform. showNotification is called whenever a message is received.
  */
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
 

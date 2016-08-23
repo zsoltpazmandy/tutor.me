@@ -12,6 +12,17 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * Used to view Text Slides within a module. The bottom of the screen hosts navigation buttons that
+ * move the user forward or return to the previous slide. The top of the screen displays the slide
+ * counter showing the ordinal number of the slide shown, and 2 buttons: Save & Exit, and Ask Tutor.
+ *
+ */
 public class ViewTextSlide extends AppCompatActivity {
 
     private TextView slideCountText;
@@ -23,7 +34,7 @@ public class ViewTextSlide extends AppCompatActivity {
     private String slideText;
 
     private TextView slideTextView;
-    private User u;
+    private User user;
 
     private Cloud cloud;
     private HashMap<String, Object> userMap = null;
@@ -73,7 +84,7 @@ public class ViewTextSlide extends AppCompatActivity {
     }
 
     private void instantiateVars() {
-        u = new User();
+        user = new User();
         cloud = new Cloud();
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");

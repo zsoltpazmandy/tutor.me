@@ -17,38 +17,77 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ *
+ * This activity is used in two different ways within the application:
+ *
+ *      1. at first-time registration: in order to complete the existing user directory-stub in
+ *          the database which initially only contains the users's unique ID, username and email address.
+ *          In this case the present class is responsible for the completion of the userprofile in the
+ *          online database using an instance of the Cloud class.
+ *          This use of the activity is marked with no extra on the incoming intent, (i.e. the
+ *          lack of the "Modifying" extra), which triggers the firstSetup boolean.
+ *          An instance of the User class is used:
+ *              1. to create a HashMap of the user's data (aka userMap)
+ *              2. to perform certain operations on displayed data (e.g. decoding language and
+ *              location information: they are stored as integers, and User class's decode* functions
+ *              help translating them to intelligible data; see User.java)
+ *
+ *      2. any time an existing user wishes to edit their profile data, they are sent to this activity
+ *          from the main Home screen of the application. This means that at this stage the user
+ *          must have used this activity at least once already. This use of the activity is marked
+ *          using the "Modyfying" extra on the incoming intent, which triggers the firstSetup boolean.
+ *          If the activity is accessed by an already set up user account, the previously saved
+ *          information is loaded up and the fields (spinners) are populated respectively.
+ *
+ *  The user's profile is set up by gathering some required and some optional information.
+ *      Required info: First Language & Location. These are required in order for the system to
+ *      be able to more accurately link users by taking into account whether or not they have at least
+ *      one common language and whether their timezones are more or less close, so as to facilitate
+ *      seamless communication between them.
+ *
+ *      Optional fields: further languages spoken, age and interests. These are there to further
+ *      refine the algorithm that links users, other than purely based on common language and
+ *      location information, based on their common preferences as well.
+ *
+ *      The ProfileSetup activity cannot be left unless the required information is set to
+ *      anything other than the base values i.e. [please select]
+ *
+ *  Upon successful completion of fields, the user is taken to the main Home activity of the application
+ *  by pressing the Save button
+ */
 public class ProfileSetup extends AppCompatActivity {
 
-    boolean lang1exists = false;
-    boolean lang2exists;
-    boolean lang3exists;
-
-    User u = null;
-
     private boolean firstSetup;
-
-    TextView ageLabel;
-    Spinner ageSpinner;
-    TextView locationLabel;
-    Spinner locationSpinner;
-    TextView languages1Label;
-    Spinner languages1Spinner;
-    TextView languages2Label;
-    Spinner languages2Spinner;
-    TextView languages3Label;
-    Spinner languages3Spinner;
-
-    TextView interestsLabel;
-    CheckBox languagesCheck;
-    CheckBox travelCheck;
-    CheckBox sportsCheck;
-    CheckBox historyCheck;
-    CheckBox musicCheck;
-    CheckBox scienceCheck;
-    CheckBox artsCheck;
-    CheckBox foodCheck;
-    CheckBox healthCheck;
-    CheckBox computersCheck;
+    private User user;
+    private Cloud cloud;
+    private TextView ageLabel;
+    private Spinner ageSpinner;
+    private TextView locationLabel;
+    private Spinner locationSpinner;
+    private TextView languages1Label;
+    private Spinner languages1Spinner;
+    private TextView languages2Label;
+    private Spinner languages2Spinner;
+    private TextView languages3Label;
+    private Spinner languages3Spinner;
+    private TextView interestsLabel;
+    private CheckBox languagesCheck;
+    private CheckBox travelCheck;
+    private CheckBox sportsCheck;
+    private CheckBox historyCheck;
+    private CheckBox musicCheck;
+    private CheckBox scienceCheck;
+    private CheckBox artsCheck;
+    private CheckBox foodCheck;
+    private CheckBox healthCheck;
+    private CheckBox computersCheck;
 
     private HashMap<String, Object> userMap = null;
 
@@ -64,13 +103,15 @@ public class ProfileSetup extends AppCompatActivity {
             return;
         }
 
+        // triggering firstSetup if no "Modifying" extra
         if (getIntent().hasExtra("Modifying")) {
             firstSetup = false;
         } else {
             firstSetup = true;
         }
 
-        u = new User();
+        user = new User();
+        cloud = new Cloud();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
@@ -78,18 +119,17 @@ public class ProfileSetup extends AppCompatActivity {
         setUpLocation();
         setUpLanguages();
         setUpInterests();
+        addSaveProfileButtListener();
+    }
 
-
+    private void addSaveProfileButtListener() {
         Button saveProfileButt = (Button) findViewById(R.id.save_profile_butt);
-        assert saveProfileButt != null;
-
-        final boolean finalLang1exists = lang1exists;
-        final boolean finalLang2exists = lang2exists;
-        final boolean finalLang3exists = lang3exists;
         saveProfileButt.setOnClickListener(
                 new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        // checking whether the required fields have been set
                         if (locationSpinner.getSelectedItemPosition() == 0 || languages1Spinner.getSelectedItemPosition() == 0) {
                             Toast.makeText(ProfileSetup.this, "Some of the required fields are missing", Toast.LENGTH_SHORT).show();
                             return;
@@ -97,26 +137,26 @@ public class ProfileSetup extends AppCompatActivity {
                             FirebaseAuth mAuth = FirebaseAuth.getInstance();
                             String id = mAuth.getCurrentUser().getUid();
 
-                            if (!getIntent().hasExtra("Modifying")) {
-                                userMap = u.buildUserHashMap(
+                            if (firstSetup) {
+                                userMap = user.buildUserHashMap(
                                         id,
                                         userMap.get("username").toString(),
                                         userMap.get("email").toString(),
                                         String.valueOf(ageSpinner.getSelectedItemPosition()),
-                                        u.decodeLanguage(languages1Spinner.getSelectedItemPosition()),
-                                        u.decodeLanguage(languages2Spinner.getSelectedItemPosition()),
-                                        u.decodeLanguage(languages3Spinner.getSelectedItemPosition()),
-                                        u.decodeCountry(locationSpinner.getSelectedItemPosition()));
+                                        user.decodeLanguage(languages1Spinner.getSelectedItemPosition()),
+                                        user.decodeLanguage(languages2Spinner.getSelectedItemPosition()),
+                                        user.decodeLanguage(languages3Spinner.getSelectedItemPosition()),
+                                        user.decodeCountry(locationSpinner.getSelectedItemPosition()));
                             } else {
-                                userMap.put("language1", u.decodeLanguage(languages1Spinner.getSelectedItemPosition()));
-                                userMap.put("language2", u.decodeLanguage(languages2Spinner.getSelectedItemPosition()));
-                                userMap.put("language3", u.decodeLanguage(languages3Spinner.getSelectedItemPosition()));
+                                userMap.put("language1", user.decodeLanguage(languages1Spinner.getSelectedItemPosition()));
+                                userMap.put("language2", user.decodeLanguage(languages2Spinner.getSelectedItemPosition()));
+                                userMap.put("language3", user.decodeLanguage(languages3Spinner.getSelectedItemPosition()));
                                 userMap.put("age", String.valueOf(ageSpinner.getSelectedItemPosition()));
-                                userMap.put("location", u.decodeCountry(locationSpinner.getSelectedItemPosition()));
+                                userMap.put("location", user.decodeCountry(locationSpinner.getSelectedItemPosition()));
                             }
 
+                            // list of interest codes stored as integers (need to be decoded if visualised)
                             ArrayList<String> interests = new ArrayList<String>();
-
                             if (languagesCheck.isChecked()) {
                                 interests.add("0");
                             }
@@ -151,18 +191,14 @@ public class ProfileSetup extends AppCompatActivity {
 
                             Toast.makeText(ProfileSetup.this, "Profile saved.", Toast.LENGTH_SHORT).show();
                             Intent homeStart = new Intent(ProfileSetup.this, Home.class);
-                            Cloud c = new Cloud();
-                            c.saveUserHashMapInCloud(userMap);
+                            cloud.saveUserHashMapInCloud(userMap);
                             homeStart.putExtra("User", userMap);
                             startActivity(homeStart);
                             finish();
-
                         }
                     }
                 }
-
         );
-
     }
 
     private void setUpInterests() {
@@ -178,6 +214,8 @@ public class ProfileSetup extends AppCompatActivity {
         healthCheck = (CheckBox) findViewById(R.id.health_check);
         computersCheck = (CheckBox) findViewById(R.id.computers_check);
 
+
+        // populating interest fields if such data has ever been registered
         try {
             ArrayList<String> interests = (ArrayList<String>) userMap.get("interests");
             for (String s : interests) {
@@ -227,13 +265,9 @@ public class ProfileSetup extends AppCompatActivity {
         languages1SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languages1Spinner.setAdapter(languages1SpinnerAdapter);
 
-        lang1exists = false;
-        lang2exists = false;
-        lang3exists = false;
-
         if (!firstSetup) {
             for (int i = 0; i < languages1SpinnerAdapter.getCount(); i++) {
-                if (u.decodeLanguage(i).equals(userMap.get("language1")))
+                if (user.decodeLanguage(i).equals(userMap.get("language1")))
                     languages1Spinner.setSelection(i);
             }
         }
@@ -247,7 +281,7 @@ public class ProfileSetup extends AppCompatActivity {
         if (userMap.containsKey("language2"))
             if (!userMap.get("language2").equals("")) {
                 for (int i = 0; i < languages2SpinnerAdapter.getCount(); i++) {
-                    if (u.decodeLanguage(i).equals(userMap.get("language2")))
+                    if (user.decodeLanguage(i).equals(userMap.get("language2")))
                         languages2Spinner.setSelection(i);
                 }
             }
@@ -261,7 +295,7 @@ public class ProfileSetup extends AppCompatActivity {
         if (userMap.containsKey("language3"))
             if (!userMap.get("language3").equals("")) {
                 for (int i = 0; i < languages3SpinnerAdapter.getCount(); i++) {
-                    if (u.decodeLanguage(i).equals(userMap.get("language3")))
+                    if (user.decodeLanguage(i).equals(userMap.get("language3")))
                         languages3Spinner.setSelection(i);
                 }
             }
@@ -275,7 +309,7 @@ public class ProfileSetup extends AppCompatActivity {
 
         if (!firstSetup) {
             for (int i = 0; i < locationSpinnerAdapter.getCount(); i++) {
-                if (u.decodeCountry(i).equals(userMap.get("location"))) {
+                if (user.decodeCountry(i).equals(userMap.get("location"))) {
                     locationSpinner.setSelection(i);
                 }
             }
@@ -294,9 +328,13 @@ public class ProfileSetup extends AppCompatActivity {
             }
     }
 
+    /**
+     * Pressing the back button is disallowed if the User is setting up their profile for the first
+     * time.
+     */
     @Override
     public void onBackPressed() {
-        if (getIntent().hasExtra("Modifying")) {
+        if (!firstSetup) {
             super.onBackPressed();
             Toast.makeText(this, "Profile NOT updated.", Toast.LENGTH_SHORT).show();
             Intent backHome = new Intent(ProfileSetup.this, Home.class);

@@ -24,19 +24,32 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * The Training tab contains buttons to start the following activities:
+ *      1. Create Module
+ *      2. Edit Modules (enabled if the user has already authored any modules)
+ *
+ * The Training tab also includes a list of users who are currently enrolled on a module the user
+ * is tutoring.
+ */
 public class TrainingTab extends Fragment {
 
-
-    private HashMap<String, Object> userMap = null;
-    private HashMap<String, Object> tuteeMap = null;
-    private ListView trainingList = null;
-    private TextView trainingTabTop = null;
+    private HashMap<String, Object> userMap;
+    private HashMap<String, Object> tuteeMap;
+    private ListView trainingList;
+    private TextView trainingTabTop;
     private ArrayList<HashMap<String, Object>> myTutees;
     private ArrayList<String> tuteesIDs;
-    private ArrayList<String> trainingListContent = null;
+    private ArrayList<String> trainingListContent;
     private boolean noTutees = true;
-
+    private AsyncGetMyTutees getMyTutees;
+    private Button createButt;
+    private Button editModButt;
 
     public TrainingTab() {
     }
@@ -48,13 +61,11 @@ public class TrainingTab extends Fragment {
             getActivity().finish();
             return;
         }
-
         myTutees = new ArrayList<>();
         userMap = (HashMap<String, Object>) getActivity().getIntent().getSerializableExtra("User");
         tuteeMap = new HashMap<>();
         tuteesIDs = new ArrayList<>();
         trainingListContent = new ArrayList<>();
-
     }
 
     @Nullable
@@ -66,18 +77,74 @@ public class TrainingTab extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        AsyncGetMyTutees getMyTutees = new AsyncGetMyTutees();
+        getMyTutees = new AsyncGetMyTutees();
         getMyTutees.execute();
-
     }
 
+    public void setupTrainingTab() {
+        trainingTabTop = (TextView) getActivity().findViewById(R.id.training_tab_top);
+        trainingTabTop.setText(R.string.training_tab_no_tutees_hint);
+
+        createButt = (Button) getActivity().findViewById(R.id.createModButt);
+        editModButt = (Button) getActivity().findViewById(R.id.training_tab_edit_module_butt);
+
+        createButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent createModule = new Intent(getActivity(), CreateModActivity.class);
+                createModule.putExtra("User", userMap);
+                startActivity(createModule);
+                getActivity().finish();
+            }
+        });
+        HashMap<String, Object> authoredMap = (HashMap<String, Object>) userMap.get("authored");
+        if (authoredMap.size() == 1 && authoredMap.containsKey("none")) {
+            editModButt.setEnabled(false);
+        }
+
+        editModButt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent editModIntent = new Intent(getActivity(), EditModules.class);
+                editModIntent.putExtra("User", userMap);
+                startActivity(editModIntent);
+                getActivity().finish();
+            }
+        });
+        setUpTuteeList();
+    }
+
+    private void setUpTuteeList() {
+        if (!noTutees) {
+            for (int i = 0; i < tuteesIDs.size(); i++) {
+                trainingListContent.clear();
+                trainingListContent.add(myTutees.get(i).get("username").toString());
+            }
+
+            trainingTabTop.setText(R.string.training_tab_currently_tutoring_hint);
+            trainingList = (ListView) getActivity().findViewById(R.id.training_tab_tutee_list);
+            ListAdapter trainingListAdapter = new ArrayAdapter<String>(getActivity(),
+                    android.R.layout.simple_list_item_1, trainingListContent);
+            trainingList.setAdapter(trainingListAdapter);
+
+            trainingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                    tuteeMap = myTutees.get(position);
+                    Intent startChat = new Intent(getActivity(), Chat.class);
+                    startChat.putExtra("User", userMap);
+                    startChat.putExtra("TuteeMap", tuteeMap);
+                    startActivity(startChat);
+                }
+            });
+        }
+    }
 
     class AsyncGetMyTutees extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
-
         @Override
         protected String doInBackground(String... uid) {
-
             final DatabaseReference usersRoot = FirebaseDatabase.getInstance().getReference().child("/users");
             usersRoot.addValueEventListener(
                     new ValueEventListener() {
@@ -106,7 +173,6 @@ public class TrainingTab extends Fragment {
                             Toast.makeText(getActivity().getApplicationContext(), "Network error", Toast.LENGTH_SHORT).show();
                         }
                     }
-
             );
             return null;
         }
@@ -128,77 +194,4 @@ public class TrainingTab extends Fragment {
             setupTrainingTab();
         }
     }
-
-    public void setupTrainingTab() {
-
-        trainingTabTop = (TextView) getActivity().findViewById(R.id.training_tab_top);
-        trainingTabTop.setText(R.string.training_tab_no_tutees_hint);
-
-        Button createButt = (Button) getActivity().findViewById(R.id.createModButt);
-        assert createButt != null;
-        Button editModButt = (Button) getActivity().findViewById(R.id.training_tab_edit_module_butt);
-        assert editModButt != null;
-
-        createButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent createModule = new Intent(getActivity(), CreateModActivity.class);
-                createModule.putExtra("User", userMap);
-                startActivity(createModule);
-                getActivity().finish();
-            }
-        });
-        HashMap<String, Object> authoredMap = (HashMap<String, Object>) userMap.get("authored");
-        if (authoredMap.size() == 1 && authoredMap.containsKey("none")) {
-            editModButt.setEnabled(false);
-        }
-
-        editModButt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent editModIntent = new Intent(getActivity(), EditModules.class);
-                editModIntent.putExtra("User", userMap);
-                startActivity(editModIntent);
-                getActivity().finish();
-            }
-        });
-
-        setUpTuteeList();
-
-    }
-
-    private void setUpTuteeList() {
-
-        if (!noTutees) {
-
-            for (int i = 0; i < tuteesIDs.size(); i++) {
-                trainingListContent.clear();
-                trainingListContent.add(myTutees.get(i).get("username").toString());
-            }
-
-            trainingTabTop.setText(R.string.training_tab_currently_tutoring_hint);
-            trainingList = (ListView) getActivity().findViewById(R.id.training_tab_tutee_list);
-            ListAdapter trainingListAdapter = new ArrayAdapter<String>(getActivity(),
-                    android.R.layout.simple_list_item_1, trainingListContent);
-            trainingList.setAdapter(trainingListAdapter);
-
-            trainingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                    tuteeMap = myTutees.get(position);
-
-                    Intent startChat = new Intent(getActivity(), Chat.class);
-                    startChat.putExtra("User", userMap);
-                    startChat.putExtra("TuteeMap", tuteeMap);
-                    startActivity(startChat);
-                }
-            });
-
-        }
-
-    }
-
-
 }

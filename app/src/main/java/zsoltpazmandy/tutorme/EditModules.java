@@ -26,16 +26,31 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * The activity allows the user to pick from a list (of all of the modules they have authored) the
+ * one they wish to edit. The activity is launched when the user presses the Edit Modules button on
+ * the Training Tab.
+ *
+ */
 public class EditModules extends AppCompatActivity {
 
-    private ArrayList<String> IDsAuthoredByThisUser = null;
-    private ArrayList<HashMap<String, Object>> myModules = null;
-    private ListAdapter modulesListAdapter = null;
-    private ListView modulesList = null;
-    private ArrayList<String> NamesOfModsAuthoredByThis = null;
-    private AsyncGetMyModules getModules = null;
-    private ArrayList<String> allModuleNames = null;
-    private HashMap<String, Object> userMap = null;
+    private ArrayList<String> IDsAuthoredByThisUser;
+    private ArrayList<HashMap<String, Object>> myModules;
+    private ListAdapter modulesListAdapter;
+    private ListView modulesList;
+    private ArrayList<String> NamesOfModsAuthoredByThis;
+    private AsyncGetMyModules getModules;
+    private ArrayList<String> allModuleNames;
+    private HashMap<String, Object> userMap;
+    private User user;
+
+    private TextView topHint;
+    private Button doneButt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,14 +64,13 @@ public class EditModules extends AppCompatActivity {
 
         allModuleNames = new ArrayList<>();
 
-        User u = new User();
+        user = new User();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
-        TextView topHint = (TextView) findViewById(R.id.edit_modules_top_hint_textview);
-        Button doneButt = (Button) findViewById(R.id.edit_modules_butt);
+        topHint = (TextView) findViewById(R.id.edit_modules_top_hint_textview);
+        doneButt = (Button) findViewById(R.id.edit_modules_butt);
         doneButt.setText("Cancel");
-        assert doneButt != null;
         doneButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

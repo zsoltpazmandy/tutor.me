@@ -27,22 +27,35 @@ import java.util.HashSet;
 import java.util.NavigableSet;
 import java.util.Set;
 import java.util.TreeSet;
-
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * The Learning tab contains a button linked to the Module Library, and a list of all the names of
+ * modules the has enrolled on (and the ones they have already completed as well).
+ * This list is suffixed by the rounded up % of the user's progress done in each module.
+ *
+ * Progress is defined by the ratio of slides contained within the module the user has already viewed
+ * vs the the total number of slides contained in the module.
+ *
+ * An asynchronously executed task loads all the modules the user has enrolled on, and stores them
+ * locally. This is so that the user can continue to view the module content even if network connection
+ * is lost.
+ */
 public class LearningTab extends Fragment {
 
     private ArrayList<String> modsLearningNames;
     private ArrayList<String> modsLearningTotSlides;
     private ArrayList<String> modsLearningLastSlides;
-    private Set<String> modIDsLearning = null;
-    private ArrayList<HashMap<String, Object>> modules = null;
-
-    private TextView learningView = null;
-    private Button browseAllButt = null;
-    private ListView learningList = null;
-
-    private HashMap<String, Object> userMap = null;
-
-    private Cloud c;
+    private Set<String> modIDsLearning;
+    private ArrayList<HashMap<String, Object>> modules;
+    private TextView learningView;
+    private Button browseAllButt;
+    private ListView learningList;
+    private HashMap<String, Object> userMap;
+    private Cloud cloud;
 
     public LearningTab() {
     }
@@ -57,8 +70,7 @@ public class LearningTab extends Fragment {
         }
 
         userMap = (HashMap<String, Object>) getActivity().getIntent().getSerializableExtra("User");
-        c = new Cloud();
-//        c.syncProgress(getActivity().getApplicationContext(), userMap);
+        cloud = new Cloud();
 
         modsLearningNames = new ArrayList<>();
         modsLearningTotSlides = new ArrayList<>();
@@ -105,7 +117,10 @@ public class LearningTab extends Fragment {
             modsLearningNames.add("");
         } else {
             modIDsLearning = userProgress.keySet();
-            for (String s : modIDsLearning) { // needs progress format as: ../progress/hashmaps of key: 000000, value: Name_X_Y  | where x = slideType, y = last slide
+            for (String s : modIDsLearning) {
+                // needs progress format as: ../progress/hashmaps of key: 000000, value: Name_X_Y
+                //                                              X = total slides in module
+                //                                              Y = latest slide the user has viewed
                 modsLearningNames.add(userProgress.get(s).split("_")[0]);
                 modsLearningTotSlides.add(userProgress.get(s).split("_")[1]);
                 modsLearningLastSlides.add(userProgress.get(s).split("_")[2]);
@@ -148,14 +163,16 @@ public class LearningTab extends Fragment {
         }
     }
 
+    /**
+     * showMostRecentFirst reorders the items on the list in a way that the module in which the
+     * user has made the most progress is displayed first.
+     * it currently does not work.
+     */
     public ArrayList<String> showMostRecentFirst(ArrayList<String> moduleNames) {
-
 
         // order module names descending
         ArrayList<String> orderedDesc = new ArrayList<>();
-
         TreeSet<Integer> tempTree = new TreeSet<>();
-
         for (String s : moduleNames) {
 
             String temp = s.substring(s.length() - 5, s.length() - 2).replace("(", "").replace(")", "").replace("%", "").replace("\n", "");

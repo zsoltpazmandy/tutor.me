@@ -25,6 +25,28 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * This class is responsible for initiating user login and sign up activities.
+ * Login is handled by Google's Firebase Auth.
+ *
+ * If user credentials are entered and the Sign Up button is pressed, the inserted information
+ * is sent to the sign up activity, to populate its fields so as to reduce the necessity of repeated
+ * user input in case a new user misunderstands the instructions.
+ *
+ * Upon the insertion of correct user credentials an asynchronously executed inner-class retrieves
+ * user-data from the Firebase server.
+ *
+ * No passwords are stored in any way client-side.
+ *
+ * Input fields are validated by validateInput(), accepted entry for email & password are:
+ *      email:      [a-z][A-Z]@[a-z][A-Z].[a-z][A-Z]
+ *      password:   minumum 6 alphanumeric char
+ */
 public class MainActivity extends AppCompatActivity {
 
     private EditText emailField = null;

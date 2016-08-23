@@ -19,43 +19,56 @@ import com.google.firebase.auth.FirebaseAuth;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class ProfileTab extends Fragment {
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * ProfileTab fragment is the first of the three main tabs within the Home activity and is managed
+ * by Home's custom ViewPagerAdapter.
+ *
+ * User Profile information is displayed on this tab such as:
+ *      - name, age, languages spoken, interests;
+ *      - community rating;
+ *      - modules created information;
+ * The user can also initiate the Edit Profle, Account Settings and Upload Profile Photo activities
+ * from this tab.
+ */
+ public class ProfileTab extends Fragment {
 
-    private ImageView avatar = null;
-    private Button editProfileButt = null;
-    private Button accountSettingsButt = null;
-    private Button logoutButt = null;
-    private TextView username = null;
-    private TextView rating = null;
-    private TextView authored = null;
-    private TextView location = null;
-    private TextView language1 = null;
-    private TextView language2 = null;
-    private TextView language3 = null;
-    private TextView age = null;
-    private TextView interests = null;
-    private CheckBox languagesCheck = null;
-    private CheckBox travelCheck = null;
-    private CheckBox sportsCheck = null;
-    private CheckBox historyCheck = null;
-    private CheckBox musicCheck = null;
-    private CheckBox scienceCheck = null;
-    private CheckBox artsCheck = null;
-    private CheckBox foodCheck = null;
-    private CheckBox healthCheck = null;
-    private CheckBox computersCheck = null;
-    private EditText userEdit = null;
-
-    private EditText authoredEdit = null;
-    private EditText locationEdit = null;
-    private EditText language1Edit = null;
-    private EditText language2Edit = null;
-    private EditText language3Edit = null;
-    private EditText ageEdit = null;
-
-    private FirebaseAuth mAuth;
-
-    HashMap<String, Object> userMap = null;
+    private ImageView avatar;
+    private Button editProfileButt;
+    private Button accountSettingsButt;
+    private Button logoutButt;
+    private TextView username;
+    private TextView rating;
+    private TextView authored;
+    private TextView location;
+    private TextView language1;
+    private TextView language2;
+    private TextView language3;
+    private TextView age;
+    private TextView interests;
+    private CheckBox languagesCheck;
+    private CheckBox travelCheck;
+    private CheckBox sportsCheck;
+    private CheckBox historyCheck;
+    private CheckBox musicCheck;
+    private CheckBox scienceCheck;
+    private CheckBox artsCheck;
+    private CheckBox foodCheck;
+    private CheckBox healthCheck;
+    private CheckBox computersCheck;
+    private EditText userEdit;
+    private EditText authoredEdit;
+    private EditText locationEdit;
+    private EditText language1Edit;
+    private EditText language2Edit;
+    private EditText language3Edit;
+    private EditText ageEdit;
+    private FirebaseAuth FBAuth;
+    private HashMap<String, Object> userMap;
 
     public ProfileTab() {
     }
@@ -63,7 +76,7 @@ public class ProfileTab extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
+        FBAuth = FirebaseAuth.getInstance();
 
         if ((getActivity().getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             return;
@@ -184,7 +197,7 @@ public class ProfileTab extends Fragment {
             @Override
             public void onClick(View v) {
 
-                mAuth.signOut();
+                FBAuth.signOut();
                 Intent logoutIntent = new Intent(getActivity(), MainActivity.class);
                 startActivity(logoutIntent);
                 getActivity().finish();
@@ -199,7 +212,6 @@ public class ProfileTab extends Fragment {
 
         authoredEdit.setText("" + counter);
 
-
         userEdit.setText(userMap.get("username").toString());
         locationEdit.setText(userMap.get("location").toString());
 
@@ -213,6 +225,7 @@ public class ProfileTab extends Fragment {
             ageEdit.setText(userMap.get("age").toString());
         }
 
+        // interest checkboxes are populated if there is any such information already stored
         try {
             ArrayList<String> interests = (ArrayList<String>) userMap.get("interests");
             if (interests.size() != 0)

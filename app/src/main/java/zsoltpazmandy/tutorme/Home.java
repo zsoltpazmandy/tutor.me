@@ -23,18 +23,48 @@ import com.google.firebase.messaging.FirebaseMessaging;
 
 import java.util.HashMap;
 
+
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * Home activity of the application: a tabhost that includes the three main activity tabs:
+ *      1. User Profile tab
+ *      2. Learn tab
+ *      3. Train tab
+ *
+ * Handling the 3 tabs is done using a custom Pager Adapter (see ViewPagerAdapter class) that
+ * displays the 3 separate segments within the same frame. The reason for this solution is to enable the
+ * intuitive and commonly standardised gesture of switching tabs by swiping left and right.
+ *
+ * Since Google's Firebase Auth registers the Auth information before any other profile information
+ * is saved in the database, it must be ensured that the user isn't logging in with no other information
+ * of them stored in the database. If that is the case, they must be prompted to complete their
+ * registration my filling in at least the required information on the ProfileSetup activity.
+ * isProfileComplete() checks whether the just logged in user has completed the ProfileSetup,
+ * which if they haven't they are prompted by a dialog window to either visit the ProfileSetup activity
+ * or Quit the application.
+ *
+ * As soon as the user this class is created an asynchronous task is executed to run indefinitely
+ * (until logout) which sets a value listener on the user's directory. This is then used to retrieve
+ * any user information that is changed by someone other than the user. (e.g. if someone enrolls
+ * on a module the user trains, that action is initiated by another person on another device, so
+ * the current user's data is updated, and the current user has to be notified of this and their
+ * application has to register any updates).
+ */
 public class Home extends AppCompatActivity {
 
-    private Toolbar toolbar = null;
-    private TabLayout tabLayout = null;
-    private ViewPager viewPager = null;
-    private ViewPagerAdapter viewPagerAdapter = null;
-
-    private HashMap<String, Object> userMap = null;
-
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private ViewPagerAdapter viewPagerAdapter;
+    private HashMap<String, Object> userMap;
     private FirebaseAuth mAuth;
     private String id;
     private String token;
+    private AsyncLoadUser load;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,9 +102,13 @@ public class Home extends AppCompatActivity {
                 return;
             }
 
-            AsyncLoadUser load = new AsyncLoadUser();
+            load = new AsyncLoadUser();
             load.execute();
         }
+    }
+
+    private boolean isProfileComplete() {
+        return (userMap.containsKey("language1") && userMap.containsKey("location")) ? true : false;
     }
 
     private void warnOfIncompleteProfile() {
@@ -100,30 +134,6 @@ public class Home extends AppCompatActivity {
             }
         });
         incompleteAlert.show();
-    }
-
-    private boolean isProfileComplete() {
-        return (userMap.containsKey("language1") && userMap.containsKey("location")) ? true : false;
-    }
-
-    boolean wantsToQuit = false;
-
-    @Override
-    public void onBackPressed() {
-        if (wantsToQuit) {
-            super.onBackPressed();
-            return;
-        }
-
-        this.wantsToQuit = true;
-        Toast.makeText(this, "Press 'Back' once more to quit.", Toast.LENGTH_SHORT).show();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                wantsToQuit = false;
-            }
-        }, 1000);
     }
 
     class AsyncLoadUser extends AsyncTask<String, HashMap<String, Object>, String> {
@@ -161,8 +171,6 @@ public class Home extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {
                 }
             });
-
-
             return null;
 
         }
@@ -170,11 +178,32 @@ public class Home extends AppCompatActivity {
         @Override
         protected void onProgressUpdate(HashMap<String, Object>... user) {
             super.onProgressUpdate(user);
-
             userMap = user[0];
+        }
+    }
 
+
+    /**
+     * In order to ensure the user doesn't accidentally leave the activity, they are prompted to
+     * repeat the BackPress action within 1 second.
+     */
+    boolean wantsToQuit = false;
+    @Override
+    public void onBackPressed() {
+        if (wantsToQuit) {
+            super.onBackPressed();
+            return;
         }
 
+        this.wantsToQuit = true;
+        Toast.makeText(this, "Press 'Back' once more to quit.", Toast.LENGTH_SHORT).show();
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                wantsToQuit = false;
+            }
+        }, 1000);
     }
 
 }

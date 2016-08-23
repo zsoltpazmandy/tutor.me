@@ -11,6 +11,24 @@ import android.widget.Toast;
 
 import java.util.HashMap;
 
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * Part of the Create module sequence; used to allow the user to pick the type of the slide that
+ * is to be added to the module. It is accessed in two ways, depending on whether the module is
+ * an already existing one, or one that the user had created at an earlier time and is now adding
+ * additional slides to that module. The difference between the two use cases is flagged by the
+ * extra on the intent: "Adding Slide To Existing Module" vs "New Module".
+ *
+ * The user may select the desired slide type by pressing the selected icon. At the present time
+ * there are only two types of slides the user may choose from (Plaintext or Table) which two both
+ * inherit from the TextSlide superclass. Additional slide types (currently features planned for
+ * future extension) could include: Animation slide, Audio/Video stream slide, Drawing board slide,
+ * etc.
+ */
 public class AddSlide extends AppCompatActivity {
 
     private HashMap<String, Object> moduleMap = null;

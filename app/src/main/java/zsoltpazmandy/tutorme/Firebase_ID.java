@@ -14,19 +14,25 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * The class registers the token generated at install & reinstall in a private local database.
+ *
+ */
 public class Firebase_ID extends FirebaseInstanceIdService {
-
 
     @Override
     public void onTokenRefresh() {
 
         String token = FirebaseInstanceId.getInstance().getToken();
-
         registerToken(token);
     }
 
     private void registerToken(String token) {
-
 
         // ONLY WORKS WHILE ON MY NETWORK
 

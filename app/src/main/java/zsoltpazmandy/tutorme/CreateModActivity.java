@@ -23,6 +23,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+
+/**
+ *
+ * Created by Zsolt Pazmandy on 18/08/16.
+ * MSc Computer Science - University of Birmingham
+ * zxp590@student.bham.ac.uk
+ *
+ * The activity is launched when the user presses the Create Module button on the Training Tab.
+ * The user is prompted to enter the selected name of the module of no more than 100 chatacters
+ * and a maximum 1000 character long description that briefly describes the content of the module
+ * and what a user enrolling could expect.
+ *
+ * Choosing the same name as an already existing module is disallowed, and not providing any of the
+ * information is also disallowed, both fields must have some data entered.
+ *
+ * Pressing the Create Slides button takes the user to the AddSlide activity.
+ */
 public class CreateModActivity extends AppCompatActivity {
 
     private Cloud c;
