@@ -30,7 +30,6 @@ public class MakeTableSlide extends AppCompatActivity {
 
     private HashMap<String, Object> moduleMap = null;
     private HashMap<String, Object> userMap = null;
-    private Toolbar toolbar;
     private TextView topHint;
     private Button finishButt;
     private Button nextSlide;
@@ -63,7 +62,7 @@ public class MakeTableSlide extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_table_slide);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
@@ -767,6 +766,5 @@ public class MakeTableSlide extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Toast.makeText(this, "Your slide is not saved yet, please press 'Finish' to save your Module.", Toast.LENGTH_SHORT).show();
-        return;
     }
 }

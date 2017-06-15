@@ -34,8 +34,6 @@ public class AddSlide extends AppCompatActivity {
     private HashMap<String, Object> moduleMap = null;
     private HashMap<String, Object> userMap = null;
 
-    private final int CREATE_MODULE_ADD_SLIDE = 1;
-    private final int EDIT_MODULE_ADD_SLIDE = 2;
     private final int CREATE_MODULE_ADD_TEXT_SLIDE = 3;
     private final int CREATE_MODULE_ADD_TABLE_SLIDE = 4;
     private final int EDIT_MODULE_ADD_TEXT_SLIDE = 5;
@@ -45,9 +43,6 @@ public class AddSlide extends AppCompatActivity {
 
     private int noOfSlides;
 
-    private TextView selSlideHint;
-    private TextView textSlideTag;
-    private TextView tableSlideTag;
     private ImageView tableSlideImg;
     private ImageView textSlideImg;
 
@@ -70,8 +65,8 @@ public class AddSlide extends AppCompatActivity {
     }
 
     private void initVars() {
-        selSlideHint = (TextView) findViewById(R.id.selectSlideHint);
-        textSlideTag = (TextView) findViewById(R.id.plaintextSlideTag);
+        TextView selSlideHint = (TextView) findViewById(R.id.selectSlideHint);
+        TextView textSlideTag = (TextView) findViewById(R.id.plaintextSlideTag);
 
         textSlideImg = (ImageView) findViewById(R.id.plaintextImage);
 
@@ -80,7 +75,7 @@ public class AddSlide extends AppCompatActivity {
 
         noOfSlides = Integer.parseInt(moduleMap.get("noOfSlides").toString());
 
-        tableSlideTag = (TextView) findViewById(R.id.tableSlideTag);
+        TextView tableSlideTag = (TextView) findViewById(R.id.tableSlideTag);
         tableSlideImg = (ImageView) findViewById(R.id.tableImage);
     }
 
@@ -189,6 +184,8 @@ public class AddSlide extends AppCompatActivity {
         moduleMap = (HashMap<String, Object>) data.getSerializableExtra("Module");
         userMap = (HashMap<String, Object>) data.getSerializableExtra("User");
 
+        int EDIT_MODULE_ADD_SLIDE = 2;
+        int CREATE_MODULE_ADD_SLIDE = 1;
         if (requestCode == EDIT_MODULE_ADD_SLIDE) {
             if (requestCode == RESULT_OK) {
                 Intent slideAdded = new Intent(AddSlide.this, CreateModActivity.class);
@@ -283,7 +280,6 @@ public class AddSlide extends AppCompatActivity {
                 finish();
             }
         } else {
-            return;
         }
     }
 

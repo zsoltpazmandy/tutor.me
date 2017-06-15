@@ -10,7 +10,7 @@ package zsoltpazmandy.tutorme;
  * Chat message POJO which gets registered in Firebase as soon as the user presses the send message
  * button in the Chat activity.
  */
-public class ChatMessage {
+class ChatMessage {
 
     private String sender;
     private String recipient;

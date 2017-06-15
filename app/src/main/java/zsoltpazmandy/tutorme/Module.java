@@ -10,15 +10,12 @@ import java.util.HashMap;
  *
  * Used to create module POJOs & perform some module functions.
  */
-public class Module {
+class Module {
 
     private String name;
     private String description;
     private int pro;
     private String author;
-    private ArrayList<Integer> reviews;
-    private ArrayList<Integer> trainers;
-    private ArrayList<Integer> typesOfSlides;
     private int noOfSlides;
     private String ID;
 
@@ -39,9 +36,9 @@ public class Module {
         this.description = description;
         this.pro = pro;
         this.author = author;
-        this.reviews = reviews;
-        this.trainers = trainers;
-        this.typesOfSlides = typesOfSlides;
+        ArrayList<Integer> reviews1 = reviews;
+        ArrayList<Integer> trainers1 = trainers;
+        ArrayList<Integer> typesOfSlides1 = typesOfSlides;
         this.noOfSlides = noOfSlides;
         this.ID = ID;
 

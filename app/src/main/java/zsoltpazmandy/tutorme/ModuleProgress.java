@@ -45,22 +45,13 @@ public class ModuleProgress extends AppCompatActivity {
     private HashMap<String, Object> tutorMap;
     private int lastSlide = 0;
     private boolean isReview;
-    private boolean hasTutor = true;
-    private TextView nameOfModule;
-    private TextView nameOfAuth;
-    private TextView moduleRating;
-    private TextView authRating;
     private TextView tutorName;
-    private TextView tutorRating;
-    private TextView progressHeader;
     private ProgressBar progressBar;
     private TextView progressText;
     private TextView moduleDesc;
     private Button startButt;
     private Button chatButt;
     private String IDofTutor;
-    private String tutorNameString;
-    private AsyncGetMyTutors getMyTutors;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +62,7 @@ public class ModuleProgress extends AppCompatActivity {
 
         initVars();
         getMyTutorIDs();
-        getMyTutors = new AsyncGetMyTutors();
+        AsyncGetMyTutors getMyTutors = new AsyncGetMyTutors();
         getMyTutors.execute();
         populateFields();
         setUpProgress();
@@ -162,13 +153,13 @@ public class ModuleProgress extends AppCompatActivity {
     }
 
     private void populateFields() {
-        nameOfModule = (TextView) findViewById(R.id.view_module_name_of_module_view);
-        nameOfAuth = (TextView) findViewById(R.id.view_module_author_of_module_view);
-        moduleRating = (TextView) findViewById(R.id.view_module_rating);
-        authRating = (TextView) findViewById(R.id.view_author_rating);
+        TextView nameOfModule = (TextView) findViewById(R.id.view_module_name_of_module_view);
+        TextView nameOfAuth = (TextView) findViewById(R.id.view_module_author_of_module_view);
+        TextView moduleRating = (TextView) findViewById(R.id.view_module_rating);
+        TextView authRating = (TextView) findViewById(R.id.view_author_rating);
         tutorName = (TextView) findViewById(R.id.view_module_tutors_name);
-        tutorRating = (TextView) findViewById(R.id.view_module_tutors_rating);
-        progressHeader = (TextView) findViewById(R.id.view_module_progress_header);
+        TextView tutorRating = (TextView) findViewById(R.id.view_module_tutors_rating);
+        TextView progressHeader = (TextView) findViewById(R.id.view_module_progress_header);
         progressBar = (ProgressBar) findViewById(R.id.view_module_progressbar);
         progressText = (TextView) findViewById(R.id.view_module_progress_text);
         moduleDesc = (TextView) findViewById(R.id.view_module_description);
@@ -196,7 +187,8 @@ public class ModuleProgress extends AppCompatActivity {
         moduleDesc.setText(moduleMap.get("description").toString());
     }
 
-    public String getThisTutorName(String iDofTutor) {
+    private String getThisTutorName(String iDofTutor) {
+        boolean hasTutor = true;
         for (HashMap<String, Object> tutor : myTutors) {
             try {
                 if (tutor.get("id").toString().equals(iDofTutor))
@@ -210,7 +202,7 @@ public class ModuleProgress extends AppCompatActivity {
         return "is no longer registered :(";
     }
 
-    public HashMap<String, Object> getThisTutorMap(String iDofTutor) {
+    private HashMap<String, Object> getThisTutorMap(String iDofTutor) {
         for (HashMap<String, Object> tutor : myTutors) {
             try {
                 if (tutor.get("id").toString().equals(iDofTutor))
@@ -230,7 +222,7 @@ public class ModuleProgress extends AppCompatActivity {
         }
     }
 
-    class AsyncGetMyTutors extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
+    private class AsyncGetMyTutors extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
 
         @Override
         protected String doInBackground(String... uid) {
@@ -240,7 +232,7 @@ public class ModuleProgress extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    HashMap<String, Object> currentTutor = new HashMap<String, Object>();
+                    HashMap<String, Object> currentTutor = new HashMap<>();
                     for (String s : IDsOfMyTutors) {
                         currentTutor = (HashMap) dataSnapshot.child(s).getValue();
                         myTutors.add(currentTutor);
@@ -266,7 +258,7 @@ public class ModuleProgress extends AppCompatActivity {
     }
 
     private void setUpTutorInfo() {
-        tutorNameString = getThisTutorName(IDofTutor);
+        String tutorNameString = getThisTutorName(IDofTutor);
         tutorMap = getThisTutorMap(IDofTutor);
         tutorName.setText("Your tutor: " + tutorNameString);
     }
@@ -275,7 +267,7 @@ public class ModuleProgress extends AppCompatActivity {
      * In order to ensure the user doesn't accidentally leave the activity, they are prompted to
      * repeat the BackPress action within 1 second.
      */
-    boolean wantsToQuitLearning = false;
+    private boolean wantsToQuitLearning = false;
     @Override
     public void onBackPressed() {
         if (wantsToQuitLearning) {

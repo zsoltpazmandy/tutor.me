@@ -71,9 +71,6 @@ import okhttp3.Response;
     private TextView messageBox;
     private DatabaseReference root;
     private DatabaseReference chatRoot;
-    private FirebaseAuth mAuth;
-    private FirebaseMessagingService FBM;
-    private String roomName = "";
     private OkHttpClient client;
     private SendPushNotification sendPush;
     private static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -91,12 +88,13 @@ import okhttp3.Response;
     }
 
     private void initVars() {
-        mAuth = FirebaseAuth.getInstance();
-        FBM = new FirebaseMessagingService();
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        FirebaseMessagingService FBM = new FirebaseMessagingService();
         client = new OkHttpClient();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
+        String roomName = "";
         if (getIntent().hasExtra("TutorMap")) {
             partner = (HashMap<String, Object>) getIntent().getSerializableExtra("TutorMap");
             roomName = partner.get("id").toString() + "_" + userMap.get("id").toString();
@@ -167,13 +165,12 @@ import okhttp3.Response;
         });
     }
 
-    public static String getTimeStamp() {
+    private static String getTimeStamp() {
         try {
 
             SimpleDateFormat date = new SimpleDateFormat("HH:mm");
-            String timeStamp = date.format(new Date());
 
-            return timeStamp;
+            return date.format(new Date());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -182,7 +179,7 @@ import okhttp3.Response;
         }
     }
 
-    class SendPushNotification extends AsyncTask<String, String, String> {
+    private class SendPushNotification extends AsyncTask<String, String, String> {
         @Override
         protected String doInBackground(String... notifItems) {
             JSONObject message = new JSONObject();
@@ -195,7 +192,7 @@ import okhttp3.Response;
                 data.put("tag", notifItems[1]);
                 message.put("data", data);
                 message.put("project_id", "tutorme-1dcd6");
-                post("https://fcm.googleapis.com/fcm/send", message.toString());
+                post(message.toString());
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -212,12 +209,12 @@ import okhttp3.Response;
         }
     }
 
-    String post(String url, String json) throws IOException {
+    private String post(String json) throws IOException {
         RequestBody body = RequestBody.create(JSON, json);
         Request request = new Request.Builder()
                 .addHeader("Authorization", "key = AIzaSyDt8dxIKOUE8wDPFtgTYZPmN9X69iHLgYg")
                 .addHeader("Content-Type", "application/json")
-                .url(url)
+                .url("https://fcm.googleapis.com/fcm/send")
                 .post(body)
                 .build();
         Response response = client.newCall(request).execute();
@@ -242,7 +239,7 @@ import okhttp3.Response;
      * In order to ensure the user doesn't accidentally leave the activity, they are prompted to
      * repeat the BackPress action within 1 second.
      */
-    boolean wantsToQuitChat = false;
+    private boolean wantsToQuitChat = false;
     @Override
     public void onBackPressed() {
         if (wantsToQuitChat) {

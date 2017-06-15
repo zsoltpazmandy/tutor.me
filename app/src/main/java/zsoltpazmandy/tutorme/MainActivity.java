@@ -51,8 +51,6 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText emailField = null;
     private EditText passwordField = null;
-    private Button loginButt = null;
-    private Button signUpButt = null;
 
     private String email = null;
     private String password = null;
@@ -62,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
     private ProgressBar loading;
 
-    AsyncCloudGetUser getUser;
+    private AsyncCloudGetUser getUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupSignupButton() {
-        signUpButt = (Button) findViewById(R.id.signUpButt);
+        Button signUpButt = (Button) findViewById(R.id.signUpButt);
         signUpButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -120,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupLoginButton() {
-        loginButt = (Button) findViewById(R.id.login_butt);
+        Button loginButt = (Button) findViewById(R.id.login_butt);
         loginButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,7 +181,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public boolean validateInput(String email, String password) {
+    private boolean validateInput(String email, String password) {
         boolean result = true;
 
         if (!email.trim().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,6}$")) {

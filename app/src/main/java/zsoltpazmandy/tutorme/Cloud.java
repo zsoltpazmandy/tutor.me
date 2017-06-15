@@ -17,7 +17,7 @@ import java.util.Set;
  * All operations involving updating any data in the Firebase database are performed by a method
  * of this class.
  */
-public class Cloud {
+class Cloud {
 
     private FirebaseAuth mAuth = null;
     private DatabaseReference userRoot = null;
@@ -152,9 +152,9 @@ public class Cloud {
 
         for (String currentModuleID : modIDsLearning) {
             if (moduleID.equals(currentModuleID)) {
-                name = progressMap.get(currentModuleID).toString().split("_")[0];
-                totalSlidesString = progressMap.get(currentModuleID).toString().split("_")[1];
-                oldLastSlideString = progressMap.get(currentModuleID).toString().split("_")[2];
+                name = progressMap.get(currentModuleID).split("_")[0];
+                totalSlidesString = progressMap.get(currentModuleID).split("_")[1];
+                oldLastSlideString = progressMap.get(currentModuleID).split("_")[2];
             }
         }
 

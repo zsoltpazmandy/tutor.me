@@ -67,17 +67,11 @@ public class ProfileSetup extends AppCompatActivity {
     private boolean firstSetup;
     private User user;
     private Cloud cloud;
-    private TextView ageLabel;
     private Spinner ageSpinner;
-    private TextView locationLabel;
     private Spinner locationSpinner;
-    private TextView languages1Label;
     private Spinner languages1Spinner;
-    private TextView languages2Label;
     private Spinner languages2Spinner;
-    private TextView languages3Label;
     private Spinner languages3Spinner;
-    private TextView interestsLabel;
     private CheckBox languagesCheck;
     private CheckBox travelCheck;
     private CheckBox sportsCheck;
@@ -104,11 +98,7 @@ public class ProfileSetup extends AppCompatActivity {
         }
 
         // triggering firstSetup if no "Modifying" extra
-        if (getIntent().hasExtra("Modifying")) {
-            firstSetup = false;
-        } else {
-            firstSetup = true;
-        }
+        firstSetup = !getIntent().hasExtra("Modifying");
 
         user = new User();
         cloud = new Cloud();
@@ -132,7 +122,6 @@ public class ProfileSetup extends AppCompatActivity {
                         // checking whether the required fields have been set
                         if (locationSpinner.getSelectedItemPosition() == 0 || languages1Spinner.getSelectedItemPosition() == 0) {
                             Toast.makeText(ProfileSetup.this, "Some of the required fields are missing", Toast.LENGTH_SHORT).show();
-                            return;
                         } else {
                             FirebaseAuth mAuth = FirebaseAuth.getInstance();
                             String id = mAuth.getCurrentUser().getUid();
@@ -156,7 +145,7 @@ public class ProfileSetup extends AppCompatActivity {
                             }
 
                             // list of interest codes stored as integers (need to be decoded if visualised)
-                            ArrayList<String> interests = new ArrayList<String>();
+                            ArrayList<String> interests = new ArrayList<>();
                             if (languagesCheck.isChecked()) {
                                 interests.add("0");
                             }
@@ -202,7 +191,7 @@ public class ProfileSetup extends AppCompatActivity {
     }
 
     private void setUpInterests() {
-        interestsLabel = (TextView) findViewById(R.id.interests_label);
+        TextView interestsLabel = (TextView) findViewById(R.id.interests_label);
         languagesCheck = (CheckBox) findViewById(R.id.language_check);
         travelCheck = (CheckBox) findViewById(R.id.travel_check);
         sportsCheck = (CheckBox) findViewById(R.id.sports_check);
@@ -259,7 +248,7 @@ public class ProfileSetup extends AppCompatActivity {
 
 
     private void setUpLanguages() {
-        languages1Label = (TextView) findViewById(R.id.languages1_label);
+        TextView languages1Label = (TextView) findViewById(R.id.languages1_label);
         languages1Spinner = (Spinner) findViewById(R.id.languages1_spinner);
         ArrayAdapter<CharSequence> languages1SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
         languages1SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -272,7 +261,7 @@ public class ProfileSetup extends AppCompatActivity {
             }
         }
 
-        languages2Label = (TextView) findViewById(R.id.languages2_label);
+        TextView languages2Label = (TextView) findViewById(R.id.languages2_label);
         languages2Spinner = (Spinner) findViewById(R.id.languages2_spinner);
         ArrayAdapter<CharSequence> languages2SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
         languages2SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -286,7 +275,7 @@ public class ProfileSetup extends AppCompatActivity {
                 }
             }
 
-        languages3Label = (TextView) findViewById(R.id.languages3_label);
+        TextView languages3Label = (TextView) findViewById(R.id.languages3_label);
         languages3Spinner = (Spinner) findViewById(R.id.languages3_spinner);
         ArrayAdapter<CharSequence> languages3SpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.languages, android.R.layout.simple_spinner_dropdown_item);
         languages3SpinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -302,7 +291,7 @@ public class ProfileSetup extends AppCompatActivity {
     }
 
     private void setUpLocation() {
-        locationLabel = (TextView) findViewById(R.id.location_label);
+        TextView locationLabel = (TextView) findViewById(R.id.location_label);
         locationSpinner = (Spinner) findViewById(R.id.location_spinner);
         ArrayAdapter<CharSequence> locationSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.locations, android.R.layout.simple_spinner_dropdown_item);
         locationSpinner.setAdapter(locationSpinnerAdapter);
@@ -317,7 +306,7 @@ public class ProfileSetup extends AppCompatActivity {
     }
 
     private void setUpAge() {
-        ageLabel = (TextView) findViewById(R.id.age_label);
+        TextView ageLabel = (TextView) findViewById(R.id.age_label);
         ageSpinner = (Spinner) findViewById(R.id.age_spinner);
         ArrayAdapter<CharSequence> ageSpinnerAdapter = ArrayAdapter.createFromResource(this, R.array.ages, android.R.layout.simple_spinner_dropdown_item);
         ageSpinner.setAdapter(ageSpinnerAdapter);
@@ -343,7 +332,6 @@ public class ProfileSetup extends AppCompatActivity {
             finish();
         } else {
             Toast.makeText(ProfileSetup.this, "Please save your profile first", Toast.LENGTH_SHORT).show();
-            return;
         }
     }
 }

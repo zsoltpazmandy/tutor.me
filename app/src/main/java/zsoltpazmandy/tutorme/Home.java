@@ -56,29 +56,22 @@ import java.util.HashMap;
  */
 public class Home extends AppCompatActivity {
 
-    private Toolbar toolbar;
-    private TabLayout tabLayout;
-    private ViewPager viewPager;
-    private ViewPagerAdapter viewPagerAdapter;
     private HashMap<String, Object> userMap;
     private FirebaseAuth mAuth;
-    private String id;
-    private String token;
-    private AsyncLoadUser load;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseMessaging.getInstance().subscribeToTopic("tutorme");
 
-        id = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        token = FirebaseInstanceId.getInstance().getToken();
+        String id = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String token = FirebaseInstanceId.getInstance().getToken();
 
         DatabaseReference userRoot = FirebaseDatabase.getInstance().getReference().child("/users/");
         userRoot.child(id).child("token").setValue(token);
@@ -88,9 +81,9 @@ public class Home extends AppCompatActivity {
         if (!isProfileComplete()) {
             warnOfIncompleteProfile();
         } else {
-            tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-            viewPager = (ViewPager) findViewById(R.id.viewPager);
-            viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
+            ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
+            ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
             viewPagerAdapter.addFragments(new ProfileTab(), "Home");
             viewPagerAdapter.addFragments(new LearningTab(), "Learn");
             viewPagerAdapter.addFragments(new TrainingTab(), "Train");
@@ -102,13 +95,13 @@ public class Home extends AppCompatActivity {
                 return;
             }
 
-            load = new AsyncLoadUser();
+            AsyncLoadUser load = new AsyncLoadUser();
             load.execute();
         }
     }
 
     private boolean isProfileComplete() {
-        return (userMap.containsKey("language1") && userMap.containsKey("location")) ? true : false;
+        return (userMap.containsKey("language1") && userMap.containsKey("location"));
     }
 
     private void warnOfIncompleteProfile() {
@@ -136,7 +129,7 @@ public class Home extends AppCompatActivity {
         incompleteAlert.show();
     }
 
-    class AsyncLoadUser extends AsyncTask<String, HashMap<String, Object>, String> {
+    private class AsyncLoadUser extends AsyncTask<String, HashMap<String, Object>, String> {
         @Override
         protected String doInBackground(String... uid) {
 
@@ -187,7 +180,7 @@ public class Home extends AppCompatActivity {
      * In order to ensure the user doesn't accidentally leave the activity, they are prompted to
      * repeat the BackPress action within 1 second.
      */
-    boolean wantsToQuit = false;
+    private boolean wantsToQuit = false;
     @Override
     public void onBackPressed() {
         if (wantsToQuit) {

@@ -7,6 +7,6 @@ package zsoltpazmandy.tutorme;
  * zxp590@student.bham.ac.uk
  *
  */
-public class PlaintextSlide extends TextSlide {
+class PlaintextSlide extends TextSlide {
 
 }

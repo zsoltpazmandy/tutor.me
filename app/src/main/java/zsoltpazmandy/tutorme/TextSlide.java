@@ -7,7 +7,7 @@ package zsoltpazmandy.tutorme;
  * zxp590@student.bham.ac.uk
  *
  */
-public abstract class TextSlide {
-    public TextSlide(){
+abstract class TextSlide {
+    TextSlide(){
     }
 }

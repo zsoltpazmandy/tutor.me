@@ -41,16 +41,10 @@ public class EditModules extends AppCompatActivity {
 
     private ArrayList<String> IDsAuthoredByThisUser;
     private ArrayList<HashMap<String, Object>> myModules;
-    private ListAdapter modulesListAdapter;
     private ListView modulesList;
     private ArrayList<String> NamesOfModsAuthoredByThis;
-    private AsyncGetMyModules getModules;
     private ArrayList<String> allModuleNames;
     private HashMap<String, Object> userMap;
-    private User user;
-
-    private TextView topHint;
-    private Button doneButt;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,12 +58,12 @@ public class EditModules extends AppCompatActivity {
 
         allModuleNames = new ArrayList<>();
 
-        user = new User();
+        User user = new User();
 
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
-        topHint = (TextView) findViewById(R.id.edit_modules_top_hint_textview);
-        doneButt = (Button) findViewById(R.id.edit_modules_butt);
+        TextView topHint = (TextView) findViewById(R.id.edit_modules_top_hint_textview);
+        Button doneButt = (Button) findViewById(R.id.edit_modules_butt);
         doneButt.setText("Cancel");
         doneButt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,7 +76,7 @@ public class EditModules extends AppCompatActivity {
         });
 
         getMyAuthoredNames();
-        getModules = new AsyncGetMyModules();
+        AsyncGetMyModules getModules = new AsyncGetMyModules();
         getModules.execute();
 
     }
@@ -98,7 +92,7 @@ public class EditModules extends AppCompatActivity {
     }
 
     private void setUpList() {
-        modulesListAdapter = new ArrayAdapter<String>(this,
+        ListAdapter modulesListAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, NamesOfModsAuthoredByThis);
         modulesList = (ListView) findViewById(R.id.edit_module_listview);
         assert modulesList != null;
@@ -128,7 +122,7 @@ public class EditModules extends AppCompatActivity {
         finish();
     }
 
-    class AsyncGetMyModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, JSONObject> {
+    private class AsyncGetMyModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, JSONObject> {
         @Override
         protected JSONObject doInBackground(String... uid) {
 
@@ -137,10 +131,10 @@ public class EditModules extends AppCompatActivity {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
-                    myModules = new ArrayList<HashMap<String, Object>>();
+                    myModules = new ArrayList<>();
 
                     for (String s : IDsAuthoredByThisUser) {
-                        HashMap<String, Object> modMap = new HashMap<String, Object>();
+                        HashMap<String, Object> modMap = new HashMap<>();
 
                         modMap.put("name", dataSnapshot.child(s).child("name").getValue().toString());
                         modMap.put("description", dataSnapshot.child(s).child("description").getValue().toString());
@@ -150,7 +144,7 @@ public class EditModules extends AppCompatActivity {
                         modMap.put("noOfSlides", dataSnapshot.child(s).child("noOfSlides").getValue().toString());
                         modMap.put("authorName", dataSnapshot.child(s).child("authorName").getValue().toString());
 
-                        HashMap<String, String> typeMap = new HashMap<String, String>();
+                        HashMap<String, String> typeMap = new HashMap<>();
                         for (int i = 1; i <= Integer.parseInt(dataSnapshot.child(s).child("noOfSlides").getValue().toString()); i++) {
                             typeMap.put("Slide_" + i, dataSnapshot.child(s).child("typesOfSlides").child("Slide_" + i).getValue().toString());
                         }
@@ -169,7 +163,7 @@ public class EditModules extends AppCompatActivity {
                         allModuleNames.add(current.child("name").getValue().toString());
                     }
 
-                    HashMap<String, Object> temp = new HashMap<String, Object>();
+                    HashMap<String, Object> temp = new HashMap<>();
                     temp.put("TEMP", allModuleNames);
 
                     myModules.add(temp);
@@ -191,7 +185,7 @@ public class EditModules extends AppCompatActivity {
         protected void onProgressUpdate(ArrayList<HashMap<String, Object>>... moduleMap) {
             super.onProgressUpdate(moduleMap);
 
-            HashMap<String, Object> temp = new HashMap<String, Object>();
+            HashMap<String, Object> temp = new HashMap<>();
 
             NamesOfModsAuthoredByThis = new ArrayList<>();
             for (HashMap<String, Object> oneMod : moduleMap[0]) {

@@ -18,7 +18,7 @@ import java.util.ArrayList;
  * Used to build EditSelectedModule's list of slides in a module.
  *
  */
-public class SlideArrayAdapter extends ArrayAdapter<String> {
+class SlideArrayAdapter extends ArrayAdapter<String> {
 
     public SlideArrayAdapter(Context context, ArrayList<String> slides) {
         super(context, R.layout.slide_row, slides);

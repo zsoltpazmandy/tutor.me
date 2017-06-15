@@ -47,27 +47,23 @@ public class EditSelectedModule extends AppCompatActivity {
     private final int EDIT_MODULE_EDIT_TEXT_SLIDE = 7;
     private final int EDIT_MODULE_EDIT_TABLE_SLIDE = 8;
 
-    private Module f = new Module();
-    private Cloud c = new Cloud();
+    private final Module f = new Module();
+    private final Cloud c = new Cloud();
 
     private HashMap<String, Object> userMap;
     private HashMap<String, Object> moduleMap;
     private HashMap<String, Object> allModNames;
     private ArrayList<String> allModNamesList;
 
-    private TextView moduleNameLabel;
     private TextView moduleNameTextView;
     private Button editNameButt;
-    private TextView descLabel;
     private TextView descTextView;
     private Button editDescButt;
-    private TextView slidesLabel;
     private Button addSlideButt;
     private Button editSlideButt;
     private Button moveSlideButt;
     private Button deleteSlideButt;
     private ListView slidesOfModuleListView;
-    private Button saveButt;
 
     private ArrayList<String> slidesNames;
     private HashMap<String, String> typesMap;
@@ -87,19 +83,19 @@ public class EditSelectedModule extends AppCompatActivity {
             allModNamesList = (ArrayList<String>) getIntent().getSerializableExtra("All Module Names");
         }
 
-        moduleNameLabel = (TextView) findViewById(R.id.edit_selected_name_label);
+        TextView moduleNameLabel = (TextView) findViewById(R.id.edit_selected_name_label);
         moduleNameTextView = (TextView) findViewById(R.id.edit_selected_module_top_hint);
         editNameButt = (Button) findViewById(R.id.edit_selected_change_module_name_butt);
-        descLabel = (TextView) findViewById(R.id.edit_selected_desc_label);
+        TextView descLabel = (TextView) findViewById(R.id.edit_selected_desc_label);
         descTextView = (TextView) findViewById(R.id.edit_selected_module_desc);
         editDescButt = (Button) findViewById(R.id.edit_selected_change_module_desc_butt);
-        slidesLabel = (TextView) findViewById(R.id.edit_selected_slide_label);
+        TextView slidesLabel = (TextView) findViewById(R.id.edit_selected_slide_label);
         addSlideButt = (Button) findViewById(R.id.edit_selected_module_add_slide_butt);
         editSlideButt = (Button) findViewById(R.id.edit_selected_module_edit_slides_butt);
         moveSlideButt = (Button) findViewById(R.id.edit_selected_module_move_slides_butt);
         deleteSlideButt = (Button) findViewById(R.id.edit_selected_module_del_slide_butt);
         slidesOfModuleListView = (ListView) findViewById(R.id.edit_selected_module_slideslist_view);
-        saveButt = (Button) findViewById(R.id.edit_selected_save_butt);
+        Button saveButt = (Button) findViewById(R.id.edit_selected_save_butt);
 
         addEditNameButtListener();
         addEditDescButtListener();
@@ -182,8 +178,7 @@ public class EditSelectedModule extends AppCompatActivity {
                 {
                     @Override
                     public void onClick(View v) {
-                        int indexToDelete = position;
-                        final int filenameNumber = indexToDelete + 1;
+                        final int filenameNumber = position + 1;
 
                         AlertDialog.Builder alert = new AlertDialog.Builder(EditSelectedModule.this);
                         alert.setTitle("Are you sure you want to delete Slide " + filenameNumber);
@@ -312,7 +307,7 @@ public class EditSelectedModule extends AppCompatActivity {
                                         // Remove old Slide Type information
                                         moduleMap.remove("typesOfSlides");
 
-                                        HashMap<String, String> newTypesMap = new HashMap<String, String>();
+                                        HashMap<String, String> newTypesMap = new HashMap<>();
 
                                         // Insert new Slide data & Slide Type information in Module
                                         for (int i = 0; i < tempList.size(); i++) {
@@ -620,7 +615,7 @@ public class EditSelectedModule extends AppCompatActivity {
      * In order to ensure the user doesn't accidentally leave the activity, they are prompted to
      * repeat the BackPress action within 1 second.
      */
-    boolean wantsToQuit = false;
+    private boolean wantsToQuit = false;
 
     @Override
     public void onBackPressed() {

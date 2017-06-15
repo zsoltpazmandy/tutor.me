@@ -41,15 +41,6 @@ import java.util.HashMap;
     private Button editProfileButt;
     private Button accountSettingsButt;
     private Button logoutButt;
-    private TextView username;
-    private TextView rating;
-    private TextView authored;
-    private TextView location;
-    private TextView language1;
-    private TextView language2;
-    private TextView language3;
-    private TextView age;
-    private TextView interests;
     private CheckBox languagesCheck;
     private CheckBox travelCheck;
     private CheckBox sportsCheck;
@@ -90,8 +81,7 @@ import java.util.HashMap;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_profile_tab, container, false);
-        return view;
+        return inflater.inflate(R.layout.activity_profile_tab, container, false);
     }
 
     @Override
@@ -107,15 +97,15 @@ import java.util.HashMap;
         editProfileButt = (Button) getActivity().findViewById(R.id.edit_profile_butt);
         accountSettingsButt = (Button) getActivity().findViewById(R.id.account_settings_butt);
         logoutButt = (Button) getActivity().findViewById(R.id.logoout_butt);
-        username = (TextView) getActivity().findViewById(R.id.profile_tab_textview_username);
-        rating = (TextView) getActivity().findViewById(R.id.profile_tab_textview_rating);
-        authored = (TextView) getActivity().findViewById(R.id.profile_tab_textview_authored);
-        location = (TextView) getActivity().findViewById(R.id.profile_tab_textview_location);
-        language1 = (TextView) getActivity().findViewById(R.id.profile_tab_textview_language1);
-        language2 = (TextView) getActivity().findViewById(R.id.profile_tab_textview_language2);
-        language3 = (TextView) getActivity().findViewById(R.id.profile_tab_textview_language3);
-        age = (TextView) getActivity().findViewById(R.id.profile_tab_textview_age);
-        interests = (TextView) getActivity().findViewById(R.id.profile_tab_textview_interest);
+        TextView username = (TextView) getActivity().findViewById(R.id.profile_tab_textview_username);
+        TextView rating = (TextView) getActivity().findViewById(R.id.profile_tab_textview_rating);
+        TextView authored = (TextView) getActivity().findViewById(R.id.profile_tab_textview_authored);
+        TextView location = (TextView) getActivity().findViewById(R.id.profile_tab_textview_location);
+        TextView language1 = (TextView) getActivity().findViewById(R.id.profile_tab_textview_language1);
+        TextView language2 = (TextView) getActivity().findViewById(R.id.profile_tab_textview_language2);
+        TextView language3 = (TextView) getActivity().findViewById(R.id.profile_tab_textview_language3);
+        TextView age = (TextView) getActivity().findViewById(R.id.profile_tab_textview_age);
+        TextView interests = (TextView) getActivity().findViewById(R.id.profile_tab_textview_interest);
         languagesCheck = (CheckBox) getActivity().findViewById(R.id.language_check);
         travelCheck = (CheckBox) getActivity().findViewById(R.id.travel_check);
         sportsCheck = (CheckBox) getActivity().findViewById(R.id.sports_check);
@@ -135,7 +125,7 @@ import java.util.HashMap;
         ageEdit = (EditText) getActivity().findViewById(R.id.profile_tab_edittext_age);
     }
 
-    public void modifyElements() {
+    private void modifyElements() {
         userEdit.setMaxWidth(userEdit.getWidth());
         authoredEdit.setMaxWidth(authoredEdit.getWidth());
         locationEdit.setMaxWidth(userEdit.getWidth());
@@ -162,7 +152,7 @@ import java.util.HashMap;
         ageEdit.setEnabled(false);
     }
 
-    public void setupProfileTab() {
+    private void setupProfileTab() {
 
         assert avatar != null;
         avatar.setOnClickListener(new View.OnClickListener() {

@@ -41,15 +41,11 @@ public class TrainingTab extends Fragment {
 
     private HashMap<String, Object> userMap;
     private HashMap<String, Object> tuteeMap;
-    private ListView trainingList;
     private TextView trainingTabTop;
     private ArrayList<HashMap<String, Object>> myTutees;
     private ArrayList<String> tuteesIDs;
     private ArrayList<String> trainingListContent;
     private boolean noTutees = true;
-    private AsyncGetMyTutees getMyTutees;
-    private Button createButt;
-    private Button editModButt;
 
     public TrainingTab() {
     }
@@ -77,16 +73,16 @@ public class TrainingTab extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getMyTutees = new AsyncGetMyTutees();
+        AsyncGetMyTutees getMyTutees = new AsyncGetMyTutees();
         getMyTutees.execute();
     }
 
-    public void setupTrainingTab() {
+    private void setupTrainingTab() {
         trainingTabTop = (TextView) getActivity().findViewById(R.id.training_tab_top);
         trainingTabTop.setText(R.string.training_tab_no_tutees_hint);
 
-        createButt = (Button) getActivity().findViewById(R.id.createModButt);
-        editModButt = (Button) getActivity().findViewById(R.id.training_tab_edit_module_butt);
+        Button createButt = (Button) getActivity().findViewById(R.id.createModButt);
+        Button editModButt = (Button) getActivity().findViewById(R.id.training_tab_edit_module_butt);
 
         createButt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,8 +119,8 @@ public class TrainingTab extends Fragment {
             }
 
             trainingTabTop.setText(R.string.training_tab_currently_tutoring_hint);
-            trainingList = (ListView) getActivity().findViewById(R.id.training_tab_tutee_list);
-            ListAdapter trainingListAdapter = new ArrayAdapter<String>(getActivity(),
+            ListView trainingList = (ListView) getActivity().findViewById(R.id.training_tab_tutee_list);
+            ListAdapter trainingListAdapter = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_list_item_1, trainingListContent);
             trainingList.setAdapter(trainingListAdapter);
 
@@ -142,7 +138,7 @@ public class TrainingTab extends Fragment {
         }
     }
 
-    class AsyncGetMyTutees extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
+    private class AsyncGetMyTutees extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
         @Override
         protected String doInBackground(String... uid) {
             final DatabaseReference usersRoot = FirebaseDatabase.getInstance().getReference().child("/users");
@@ -158,7 +154,7 @@ public class TrainingTab extends Fragment {
                                 }
                             }
 
-                            HashMap<String, Object> currentTutee = new HashMap<String, Object>();
+                            HashMap<String, Object> currentTutee = new HashMap<>();
                             if (tuteesIDs.size() != 0)
                                 for (String s : tuteesIDs) {
                                     currentTutee = (HashMap<String, Object>) dataSnapshot.child(s).getValue();

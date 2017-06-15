@@ -41,14 +41,9 @@ public class ViewLibrary extends AppCompatActivity {
     private ArrayList<HashMap<String, Object>> modules;
     private ArrayList<String> modulesNamesList;
     private ListView listView;
-    private ListAdapter libraryAdapter;
     private int counterInt;
     private HashMap<String, Object> userMap;
     private HashMap<String, Object> moduleMap;
-    private TextView displayTop;
-    private AsyncGetModules getMods;
-    private TextView counter;
-    private String counterText;
     private ArrayList<String> moduleInfo;
 
     @Override
@@ -63,18 +58,18 @@ public class ViewLibrary extends AppCompatActivity {
             return;
         }
 
-        displayTop = (TextView) findViewById(R.id.display_top);
+        TextView displayTop = (TextView) findViewById(R.id.display_top);
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         listView = (ListView) findViewById(R.id.library_listview);
-        getMods = new AsyncGetModules();
+        AsyncGetModules getMods = new AsyncGetModules();
         getMods.execute();
     }
 
     private void setUpList() {
-        counter = (TextView) findViewById(R.id.counter);
-        counterText = "" + counterInt;
+        TextView counter = (TextView) findViewById(R.id.counter);
+        String counterText = "" + counterInt;
         counter.setText(counterText);
-        libraryAdapter = new ArrayAdapter<>(this,
+        ListAdapter libraryAdapter = new ArrayAdapter<>(this,
                 android.R.layout.simple_list_item_1, modulesNamesList);
         listView.setAdapter(libraryAdapter);
     }
@@ -83,7 +78,7 @@ public class ViewLibrary extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                moduleInfo = new ArrayList<String>();
+                moduleInfo = new ArrayList<>();
 
                 // ID of Module as a String (Right now redundant, as Names are also PKs of DB)
                 moduleInfo.add(modules.get(position).get("id").toString());
@@ -119,7 +114,7 @@ public class ViewLibrary extends AppCompatActivity {
         });
     }
 
-    class AsyncGetModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
+    private class AsyncGetModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
 
         @Override
         protected String doInBackground(String... uid) {
@@ -131,10 +126,10 @@ public class ViewLibrary extends AppCompatActivity {
 
                     Iterator i = dataSnapshot.getChildren().iterator();
 
-                    modules = new ArrayList<HashMap<String, Object>>();
+                    modules = new ArrayList<>();
                     while (i.hasNext()) {
 
-                        HashMap<String, Object> currentMod = new HashMap<String, Object>();
+                        HashMap<String, Object> currentMod = new HashMap<>();
 
                         DataSnapshot temp = (DataSnapshot) i.next();
 

@@ -104,11 +104,11 @@ public class SignUp extends AppCompatActivity {
         usernameField.setMaxLines(1);
         emailField = (EditText) findViewById(R.id.email_field);
         if (getIntent().hasExtra("email")) {
-            emailField.setText(getIntent().getExtras().getString("email").toString());
+            emailField.setText(getIntent().getExtras().getString("email"));
         }
         pwFirst = (EditText) findViewById(R.id.password1field);
         if (getIntent().hasExtra("password")) {
-            pwFirst.setText(getIntent().getExtras().getString("password").toString());
+            pwFirst.setText(getIntent().getExtras().getString("password"));
         }
         pwSecond = (EditText) findViewById(R.id.password2field);
         signUpButt = (Button) findViewById(R.id.signUpButt);
@@ -149,10 +149,9 @@ public class SignUp extends AppCompatActivity {
                                                 if (task.isSuccessful()) { // registered on cloud
 
                                                     id = mAuth.getCurrentUser()
-                                                            .getUid()
-                                                            .toString();
+                                                            .getUid();
 
-                                                    HashMap<String, Object> userPrepMap = new HashMap<String, Object>();
+                                                    HashMap<String, Object> userPrepMap = new HashMap<>();
                                                     userPrepMap.put("id", id);
                                                     userPrepMap.put("username", username);
                                                     userPrepMap.put("email", email);
@@ -216,7 +215,7 @@ public class SignUp extends AppCompatActivity {
      * In order to ensure the user doesn't accidentally leave the activity, they are prompted to
      * repeat the BackPress action within 1 second.
      */
-    boolean wantsToQuit = false;
+    private boolean wantsToQuit = false;
     @Override
     public void onBackPressed() {
         if (wantsToQuit) {

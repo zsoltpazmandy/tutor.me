@@ -24,15 +24,15 @@ import java.util.HashMap;
  */
 public class MakeTextSlide extends AppCompatActivity {
 
-    HashMap<String, Object> moduleMap = null;
-    HashMap<String, Object> userMap = null;
+    private HashMap<String, Object> moduleMap = null;
+    private HashMap<String, Object> userMap = null;
 
-    TextView textSlideTopTag;
-    EditText slideStringEdit;
-    Button addSlideButt;
-    Button finishButt;
+    private TextView textSlideTopTag;
+    private EditText slideStringEdit;
+    private Button addSlideButt;
+    private Button finishButt;
 
-    int slideIndex;
+    private int slideIndex;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -187,6 +187,5 @@ public class MakeTextSlide extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Toast.makeText(this, "Your slide is not saved yet, please press 'Save & Exit' if you're done with this Module.", Toast.LENGTH_SHORT).show();
-        return;
     }
 }

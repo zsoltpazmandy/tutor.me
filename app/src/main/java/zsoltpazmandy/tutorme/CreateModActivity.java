@@ -46,7 +46,6 @@ public class CreateModActivity extends AppCompatActivity {
 
     private ArrayList<HashMap<String, Object>> modules = null;
     private ArrayList<String> modulesNamesList = null;
-    private ArrayList<String> IDsTakenList = null;
     private int counterInt;
 
     private HashMap<String, Object> userMap = null;
@@ -54,8 +53,6 @@ public class CreateModActivity extends AppCompatActivity {
     private final int CREATE_MODULE_ADD_SLIDE = 1;
 
     private Button nextButt = null;
-    private TextView moduleNameTag = null;
-    private TextView moduleDescTag = null;
     private EditText moduleNameEdit = null;
     private EditText moduleDescEdit = null;
 
@@ -84,11 +81,11 @@ public class CreateModActivity extends AppCompatActivity {
     private void initVars() {
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
 
-        moduleMap = new HashMap<String, Object>();
+        moduleMap = new HashMap<>();
 
-        moduleNameTag = (TextView) findViewById(R.id.moduleNameTag);
+        TextView moduleNameTag = (TextView) findViewById(R.id.moduleNameTag);
         moduleNameEdit = (EditText) findViewById(R.id.moduleNameEdit);
-        moduleDescTag = (TextView) findViewById(R.id.moduleDescriptionTag);
+        TextView moduleDescTag = (TextView) findViewById(R.id.moduleDescriptionTag);
         moduleDescEdit = (EditText) findViewById(R.id.moduleDescriptionEdit);
 
         nextButt = (Button) findViewById(R.id.moduleBeginButton);
@@ -147,13 +144,13 @@ public class CreateModActivity extends AppCompatActivity {
                 moduleMap.put("author", userMap.get("id"));
                 moduleMap.put("authorName", userMap.get("username"));
 
-                HashMap<String, String> reviews = new HashMap<String, String>();
+                HashMap<String, String> reviews = new HashMap<>();
                 reviews.put("none", "none");
 
-                HashMap<String, String> trainers = new HashMap<String, String>();
+                HashMap<String, String> trainers = new HashMap<>();
                 trainers.put(userMap.get("id").toString(), "true");
 
-                HashMap<String, String> types = new HashMap<String, String>();
+                HashMap<String, String> types = new HashMap<>();
                 types.put("none", "none");
 
                 moduleMap.put("reviews", reviews);
@@ -212,7 +209,7 @@ public class CreateModActivity extends AppCompatActivity {
         finish();
     }
 
-    class AsyncGetIDforThisModule extends AsyncTask<String, ArrayList<HashMap<String, Object>>, JSONObject> {
+    private class AsyncGetIDforThisModule extends AsyncTask<String, ArrayList<HashMap<String, Object>>, JSONObject> {
         @Override
         protected JSONObject doInBackground(String... uid) {
 
@@ -223,11 +220,11 @@ public class CreateModActivity extends AppCompatActivity {
 
                     Iterator i = dataSnapshot.getChildren().iterator();
 
-                    modules = new ArrayList<HashMap<String, Object>>();
+                    modules = new ArrayList<>();
 
                     while (i.hasNext()) {
 
-                        HashMap<String, Object> modMap = new HashMap<String, Object>();
+                        HashMap<String, Object> modMap = new HashMap<>();
                         DataSnapshot temp = (DataSnapshot) i.next();
                         modMap.put("name", temp.child("name").getValue().toString());
                         modMap.put("id", temp.child("id").getValue().toString());
@@ -251,7 +248,7 @@ public class CreateModActivity extends AppCompatActivity {
             super.onProgressUpdate(moduleMap);
 
             modulesNamesList = new ArrayList<>();
-            IDsTakenList = new ArrayList<>();
+            ArrayList<String> IDsTakenList = new ArrayList<>();
 
             for (HashMap<String, Object> oneModule : moduleMap[0]) {
                 modulesNamesList.add(oneModule.get("name").toString());
@@ -261,7 +258,7 @@ public class CreateModActivity extends AppCompatActivity {
         }
     }
 
-    public boolean isNameTaken(String name) {
+    private boolean isNameTaken(String name) {
         for (String s : modulesNamesList) {
             if (name.equals(s))
                 return true;

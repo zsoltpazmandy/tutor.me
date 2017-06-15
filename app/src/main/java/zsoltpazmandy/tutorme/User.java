@@ -13,21 +13,13 @@ import java.util.Set;
  * such as decoding country codes, languages and interests. It is also used to create the POJO used
  * to store user information in the Firebase database.
  */
-public class User {
+class User {
 
     private Cloud cloud;
 
     private String id;
     private String email;
     private String username;
-    private HashMap<String, Object> authored;
-    private HashMap<String, String> training;
-    private HashMap<String, String> learning;
-    private HashMap<String, String> progress;
-    private ArrayList<String> interests;
-    private HashMap<String, Object> user;
-    private HashMap<String, String> learningMap;
-    private HashMap<String, String> progressMap;
 
     public User() {
         cloud = new Cloud();
@@ -64,17 +56,17 @@ public class User {
     }
 
     public HashMap<String, Object> buildUserHashMap(String id, String username, String email, String age, String language1, String language2, String language3, String location) {
-        authored = new HashMap<>();
+        HashMap<String, Object> authored = new HashMap<>();
         authored.put("none", "none");
-        training = new HashMap<>();
+        HashMap<String, String> training = new HashMap<>();
         training.put("none", "none");
-        learning = new HashMap<>();
+        HashMap<String, String> learning = new HashMap<>();
         learning.put("none", "none");
-        progress = new HashMap<>();
+        HashMap<String, String> progress = new HashMap<>();
         progress.put("none", "none");
-        interests = new ArrayList<>();
+        ArrayList<String> interests = new ArrayList<>();
         interests.add("none");
-        user = new HashMap<>();
+        HashMap<String, Object> user = new HashMap<>();
         user.put("id", id);
         user.put("username", username);
         user.put("email", email);
@@ -110,11 +102,11 @@ public class User {
 
     public HashMap<String, Object> addToLearning(HashMap<String, Object> userMap, String IDofTutor, String modID, String modName, String noOfSlides) {
 
-        learningMap = (HashMap<String, String>) userMap.get("learning");
+        HashMap<String, String> learningMap = (HashMap<String, String>) userMap.get("learning");
         if (learningMap.containsKey("none")) learningMap.remove("none");
         learningMap.put(modID, IDofTutor);
 
-        progressMap = (HashMap<String, String>) userMap.get("progress");
+        HashMap<String, String> progressMap = (HashMap<String, String>) userMap.get("progress");
         if (progressMap.containsKey("none")) progressMap.remove("none");
         progressMap.put(modID, modName + "_" + noOfSlides + "_0");
 
@@ -134,7 +126,7 @@ public class User {
         String tutorID = moduleMap.get("author");
 
         cloud.saveUserHashMapInCloud(userMap);
-        cloud.addToTutorsTuteesList(tutorID, userMap.get("id").toString(), moduleMap.get("id").toString());
+        cloud.addToTutorsTuteesList(tutorID, userMap.get("id").toString(), moduleMap.get("id"));
 
         return tutorID;
     }

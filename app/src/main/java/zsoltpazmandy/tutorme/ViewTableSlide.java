@@ -27,13 +27,10 @@ import java.util.HashMap;
  */
 public class ViewTableSlide extends AppCompatActivity {
 
-    private TextView slideCountText;
-
     private Button saveQuit;
     private Button askTutor;
     private Button prevButt;
     private Button nextButt;
-    private User user;
     private Cloud cloud;
     private HashMap<String, Object> userMap = null;
     private HashMap<String, Object> moduleMap = null;
@@ -68,12 +65,12 @@ public class ViewTableSlide extends AppCompatActivity {
     }
 
     private void instantiateVars() {
-        user = new User();
+        User user = new User();
         cloud = new Cloud();
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         moduleMap = (HashMap<String, Object>) getIntent().getSerializableExtra("Module");
         IDofTutor = getIntent().getStringExtra("TutorID");
-        slideCountText = (TextView) findViewById(R.id.view_table_slide_top_slidecounttext);
+        TextView slideCountText = (TextView) findViewById(R.id.view_table_slide_top_slidecounttext);
         saveQuit = (Button) findViewById(R.id.view_table_slide_savenquit_butt);
         askTutor = (Button) findViewById(R.id.view_table_slide_asktutor_butt);
         try {
@@ -330,7 +327,7 @@ public class ViewTableSlide extends AppCompatActivity {
         row0col2.setText(tableSlide.get(19));
     }
 
-    boolean wantsToQuitLearning = false;
+    private boolean wantsToQuitLearning = false;
 
     @Override
     public void onBackPressed() {

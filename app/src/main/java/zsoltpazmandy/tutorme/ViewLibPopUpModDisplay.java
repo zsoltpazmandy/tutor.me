@@ -30,23 +30,11 @@ public class ViewLibPopUpModDisplay extends Activity {
     private HashMap<String, String> moduleMap;
     private HashMap<String, Object> userMap;
     private User user;
-    private int screenWidth;
-    private int screenHeight;
-    private TextView nameView;
-    private TextView authView;
-    private String author;
     private int pro;
-    private TextView ratingView;
-    private String ratingText;
     private String modID;
     private String moduleName;
     private String totalSlides;
     private String IDofTutor;
-    private TextView slideNumView;
-    private int amountOfSlides;
-    private String noOfSlides;
-    private TextView descView;
-    private Button enrollButt;
     private DisplayMetrics displayMetrics;
 
     @Override
@@ -60,7 +48,7 @@ public class ViewLibPopUpModDisplay extends Activity {
     }
 
     private void setUpEnrollButton() {
-        enrollButt = (Button) findViewById(R.id.enrollButt);
+        Button enrollButt = (Button) findViewById(R.id.enrollButt);
         if (pro == 1) {
             enrollButt.setText(R.string.popup_view_enroll_pro);
         } else {
@@ -101,17 +89,17 @@ public class ViewLibPopUpModDisplay extends Activity {
 
     private void initVars() {
         user = new User();
-        screenWidth = displayMetrics.widthPixels;
-        screenHeight = displayMetrics.heightPixels;
+        int screenWidth = displayMetrics.widthPixels;
+        int screenHeight = displayMetrics.heightPixels;
         getWindow().setLayout((int) (screenWidth * 0.8), (int) (screenHeight * 0.6));
-        slideNumView = (TextView) findViewById(R.id.popUpTextNoOfSlides);
+        TextView slideNumView = (TextView) findViewById(R.id.popUpTextNoOfSlides);
         userMap = (HashMap<String, Object>) getIntent().getSerializableExtra("User");
         infoToShow = getIntent().getStringArrayListExtra("Module Info");
         moduleMap = (HashMap<String, String>) getIntent().getSerializableExtra("Module");
-        nameView = (TextView) findViewById(R.id.popUpTextViewName);
+        TextView nameView = (TextView) findViewById(R.id.popUpTextViewName);
         nameView.setText(infoToShow.get(3));
-        authView = (TextView) findViewById(R.id.popUpTextViewAuth);
-        author = "by " + moduleMap.get("authorName").toString();
+        TextView authView = (TextView) findViewById(R.id.popUpTextViewAuth);
+        String author = "by " + moduleMap.get("authorName");
         authView.setText(author);
 
         TextView proView = (TextView) findViewById(R.id.popUpTextViewPro);
@@ -127,26 +115,23 @@ public class ViewLibPopUpModDisplay extends Activity {
             proView.setText(R.string.popup_view_free_tag);
         }
 
-        ratingView = (TextView) findViewById(R.id.popUpTextViewRating);
-        ratingText = "Review IDs: " + infoToShow.get(5);
+        TextView ratingView = (TextView) findViewById(R.id.popUpTextViewRating);
+        String ratingText = "Review IDs: " + infoToShow.get(5);
         ratingView.setText(ratingText);
-        amountOfSlides = Integer.parseInt(infoToShow.get(7));
+        int amountOfSlides = Integer.parseInt(infoToShow.get(7));
         if (amountOfSlides > 1) {
-            noOfSlides = getString(R.string.noOfSlides_contains) + infoToShow.get(7) + getString(R.string.noOfSlides_slides);
+            String noOfSlides = getString(R.string.noOfSlides_contains) + infoToShow.get(7) + getString(R.string.noOfSlides_slides);
             slideNumView.setText(noOfSlides);
         } else {
             slideNumView.setText(R.string.noOfSlides_contains_one);
         }
 
-        descView = (TextView) findViewById(R.id.popUpTextViewDesc);
+        TextView descView = (TextView) findViewById(R.id.popUpTextViewDesc);
         descView.setText(infoToShow.get(4));
     }
 
     private boolean ownModule() {
-        if (userMap.get("id").toString().equals(moduleMap.get("author")))
-            return true;
-
-        return false;
+        return userMap.get("id").toString().equals(moduleMap.get("author"));
     }
 
 }

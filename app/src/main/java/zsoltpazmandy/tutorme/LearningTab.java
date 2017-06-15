@@ -52,10 +52,8 @@ public class LearningTab extends Fragment {
     private Set<String> modIDsLearning;
     private ArrayList<HashMap<String, Object>> modules;
     private TextView learningView;
-    private Button browseAllButt;
     private ListView learningList;
     private HashMap<String, Object> userMap;
-    private Cloud cloud;
 
     public LearningTab() {
     }
@@ -70,13 +68,13 @@ public class LearningTab extends Fragment {
         }
 
         userMap = (HashMap<String, Object>) getActivity().getIntent().getSerializableExtra("User");
-        cloud = new Cloud();
+        Cloud cloud = new Cloud();
 
         modsLearningNames = new ArrayList<>();
         modsLearningTotSlides = new ArrayList<>();
         modsLearningLastSlides = new ArrayList<>();
         modules = new ArrayList<>();
-        modIDsLearning = new HashSet<String>();
+        modIDsLearning = new HashSet<>();
     }
 
     @Nullable
@@ -96,7 +94,7 @@ public class LearningTab extends Fragment {
 
     private void setupElements() {
         learningView = (TextView) getActivity().findViewById(R.id.learning_tab_currently_learning_top);
-        browseAllButt = (Button) getActivity().findViewById(R.id.viewLibButt);
+        Button browseAllButt = (Button) getActivity().findViewById(R.id.viewLibButt);
         browseAllButt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -129,7 +127,7 @@ public class LearningTab extends Fragment {
     }
 
 
-    public void setupLearningTab() {
+    private void setupLearningTab() {
         if (modsLearningNames.get(0).equals("")) {
             learningView.setText(R.string.no_module_taken_yet);
             return;
@@ -146,7 +144,7 @@ public class LearningTab extends Fragment {
                 learningDisplayArray.add(modsLearningNames.get(i) + "\n(" + percentCompleted + "%)");
             }
 //            learningDisplayArray = showMostRecentFirst(learningDisplayArray);
-            final ListAdapter currentModulesAdapter = new ArrayAdapter<String>(getActivity(),
+            final ListAdapter currentModulesAdapter = new ArrayAdapter<>(getActivity(),
                     android.R.layout.simple_list_item_1, learningDisplayArray);
             learningList.setAdapter(currentModulesAdapter);
             learningList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -191,7 +189,7 @@ public class LearningTab extends Fragment {
         return orderedDesc;
     }
 
-    class AsyncGetMyModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
+    private class AsyncGetMyModules extends AsyncTask<String, ArrayList<HashMap<String, Object>>, String> {
 
         @Override
         protected String doInBackground(String... uid) {
@@ -203,7 +201,7 @@ public class LearningTab extends Fragment {
                         public void onDataChange(DataSnapshot dataSnapshot) {
                             for (String s : modIDsLearning) {
 
-                                HashMap<String, Object> modMap = new HashMap<String, Object>();
+                                HashMap<String, Object> modMap = new HashMap<>();
                                 modMap.put("name", dataSnapshot.child(s).child("name").getValue().toString());
                                 modMap.put("description", dataSnapshot.child(s).child("description").getValue().toString());
                                 modMap.put("id", dataSnapshot.child(s).child("id").getValue().toString());
